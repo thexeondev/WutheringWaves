@@ -5,6 +5,8 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class AuthMessageHandler : MessageHandlerBase
 {
+    private const int CharacterId = 1601;
+
     public AuthMessageHandler(KcpSession session) : base(session)
     {
         // AuthMessageHandler.
@@ -56,7 +58,7 @@ internal class AuthMessageHandler : MessageHandlerBase
                 new RoleShowEntry
                 {
                     Level = 1,
-                    RoleId = 1302
+                    RoleId = CharacterId
                 }
             },
         });
@@ -84,7 +86,7 @@ internal class AuthMessageHandler : MessageHandlerBase
                             EntityType = (int)EEntityType.Player,
                             PlayerId = 1337,
                             LivingStatus = (int)LivingStatus.Alive,
-                            ConfigId = 1302,
+                            ConfigId = CharacterId,
                             ConfigType = (int)EntityConfigType.Character,
                             Id = 1,
                             IsVisible = true,
@@ -225,7 +227,7 @@ internal class AuthMessageHandler : MessageHandlerBase
                                 CurHp = 1000,
                                 MaxHp = 1000,
                                 IsControl = true,
-                                RoleId = 1302,
+                                RoleId = CharacterId,
                                 RoleLevel = 1,
                             }
                         },
@@ -283,10 +285,10 @@ internal class AuthMessageHandler : MessageHandlerBase
             {
                 new FightFormation
                 {
-                    CurRole = 1302,
+                    CurRole = CharacterId,
                     FormationId = 1,
                     IsCurrent = true,
-                    RoleIds = { 1302 },
+                    RoleIds = { CharacterId },
                 }
             },
         });
