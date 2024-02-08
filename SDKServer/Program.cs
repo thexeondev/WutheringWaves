@@ -16,6 +16,9 @@ internal static class Program
 
         app.MapGet("/api/login", LoginHandler.Login);
         app.MapGet("/config/index.json", ConfigHandler.GetBaseConfig);
+        
+        app.MapGet("/config", TDHandler.Config);
+        app.MapPost("/sync", TDHandler.Sync);
 
         app.MapGet("/dev/client/7cyFLmtLJlUauZ1hM8DsL5Sj7cXxSNQD/Windows/KeyList_0.8.0.json", HotPatchHandler.OnKeyListRequest);
         app.MapGet("/dev/client/7cyFLmtLJlUauZ1hM8DsL5Sj7cXxSNQD/Windows/config.json", HotPatchHandler.OnConfigRequest);

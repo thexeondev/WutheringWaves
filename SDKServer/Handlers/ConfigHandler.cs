@@ -26,7 +26,8 @@ internal static class ConfigHandler
             PayUrl = "http://114.132.150.182:12281/ReceiptNotify/PayNotify",
             TDCfg = new TDConfig
             {
-                Url = "https://ali-sh-datareceiver.kurogame.xyz",
+                //Url = "https://ali-sh-datareceiver.kurogame.xyz",
+                Url = "http://localhost:5500",
                 AppID = "364c899beea94b92b87ae30869b492d6"
             },
             LogReport = new LogReportConfig
@@ -41,7 +42,7 @@ internal static class ConfigHandler
                 new LoginServerEntry
                 {
                     Id = "1074",
-                    Name = "ReversedRooms",
+                    Name = "PepegaLand",
                     Ip = "127.0.0.1"
                 }
             ],
