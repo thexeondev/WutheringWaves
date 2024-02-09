@@ -1,6 +1,7 @@
 ﻿using GameServer.Extensions;
 using GameServer.Handlers;
 using GameServer.Handlers.Factory;
+using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Rpc;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ internal static class Program
                         .AddScoped<MessageManager>().AddSingleton<MessageHandlerFactory>()
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()
                         .AddSingleton<SessionManager>()
+                        .AddScoped<ModelManager>()
                         .AddHostedService<WWGameServer>();
 
         await builder.Build().RunAsync();
