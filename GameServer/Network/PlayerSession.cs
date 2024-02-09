@@ -1,6 +1,4 @@
-﻿using GameServer.Handlers;
-using GameServer.Network.Messages;
-using GameServer.Network.Packets;
+﻿using GameServer.Network.Messages;
 using GameServer.Network.Rpc;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
@@ -27,17 +25,17 @@ internal class PlayerSession
         switch (message)
         {
             case RequestMessage request:
-                await Rpc.HandleRpcRequest(request);
+                await Rpc.Execute(request);
                 break;
             case PushMessage push:
-                if (!await _messageManager.ProcessMessage(push.MessageId, push.Payload))
+                if (!await _messageManager.HandlePush(push.MessageId, push.Payload))
                     _logger.LogWarning("Push message ({id}) was not handled", push.MessageId);
 
                 break;
         }
     }
 
-    public Task PushMessage<TProtoBuf>(MessageId id, TProtoBuf data) where TProtoBuf : IMessage<TProtoBuf>
+    public Task Push<TProtoBuf>(MessageId id, TProtoBuf data) where TProtoBuf : IMessage<TProtoBuf>
     {
         return Listener?.OnServerMessageAvailable(new PushMessage
         {

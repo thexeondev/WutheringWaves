@@ -1,6 +1,6 @@
 ﻿using System.Buffers.Binary;
 
-namespace GameServer.Network.Packets;
+namespace GameServer.Network.Messages;
 internal abstract class BaseMessage
 {
     public const int LengthFieldSize = 3;

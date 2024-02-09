@@ -1,8 +1,12 @@
-﻿namespace GameServer.Models;
+﻿using GameServer.Controllers.Attributes;
+using GameServer.Controllers.Event;
+
+namespace GameServer.Models;
 internal class ModelManager
 {
     private PlayerModel? _playerModel;
 
+    [GameEvent(GameEventType.Login)]
     public void OnLogin()
     {
         _playerModel = PlayerModel.CreateDefaultPlayer();

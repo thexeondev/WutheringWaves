@@ -1,8 +1,7 @@
 ﻿using GameServer.Extensions;
-using GameServer.Handlers;
-using GameServer.Network.Packets;
 using System.Buffers;
 using KcpSharp;
+using GameServer.Network.Messages;
 
 namespace GameServer.Network.Kcp;
 internal class KcpConnection : IConnection

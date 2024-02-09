@@ -1,5 +1,5 @@
 ﻿using GameServer.Network.Kcp;
-using GameServer.Network.Packets;
+using GameServer.Network.Messages;
 using KcpSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

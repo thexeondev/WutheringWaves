@@ -1,4 +1,4 @@
-﻿using GameServer.Handlers.Factory;
+﻿using GameServer.Controllers.Factory;
 using GameServer.Network.Kcp;
 using Microsoft.Extensions.Hosting;
 
@@ -7,7 +7,7 @@ internal class WWGameServer : IHostedService
 {
     private readonly KcpGateway _gateway;
 
-    public WWGameServer(KcpGateway gateway, MessageHandlerFactory messageHandlerFactory)
+    public WWGameServer(KcpGateway gateway, EventHandlerFactory messageHandlerFactory)
     {
         _ = messageHandlerFactory;
         _gateway = gateway;
@@ -20,8 +20,5 @@ internal class WWGameServer : IHostedService
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
