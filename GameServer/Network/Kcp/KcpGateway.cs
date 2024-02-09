@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using KcpSharp;
 using Microsoft.Extensions.Logging;
 
-namespace GameServer.Network;
+namespace GameServer.Network.Kcp;
 internal class KcpGateway
 {
     private const int KcpSynPacketSize = 1;

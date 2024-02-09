@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class LordGymMessageHandler : MessageHandlerBase
 {
-    public LordGymMessageHandler(KcpSession session) : base(session)
+    public LordGymMessageHandler(PlayerSession session) : base(session)
     {
         // LordGymMessageHandler.
     }

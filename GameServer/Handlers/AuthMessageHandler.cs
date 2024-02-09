@@ -8,7 +8,7 @@ internal class AuthMessageHandler : MessageHandlerBase
 {
     private readonly ModelManager _modelManager;
 
-    public AuthMessageHandler(KcpSession session, ModelManager modelManager) : base(session)
+    public AuthMessageHandler(PlayerSession session, ModelManager modelManager) : base(session)
     {
         _modelManager = modelManager;
     }

@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class WorldMessageHandler : MessageHandlerBase
 {
-    public WorldMessageHandler(KcpSession session) : base(session)
+    public WorldMessageHandler(PlayerSession session) : base(session)
     {
         // WorldMessageHandler.
     }

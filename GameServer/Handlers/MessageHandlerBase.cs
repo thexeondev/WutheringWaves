@@ -3,9 +3,9 @@
 namespace GameServer.Handlers;
 internal abstract class MessageHandlerBase
 {
-    protected KcpSession Session { get; }
+    protected PlayerSession Session { get; }
 
-    public MessageHandlerBase(KcpSession session)
+    public MessageHandlerBase(PlayerSession session)
     {
         Session = session;
     }

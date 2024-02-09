@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class TowerMessageHandler : MessageHandlerBase
 {
-    public TowerMessageHandler(KcpSession session) : base(session)
+    public TowerMessageHandler(PlayerSession session) : base(session)
     {
         // TowerMessageHandler.
     }

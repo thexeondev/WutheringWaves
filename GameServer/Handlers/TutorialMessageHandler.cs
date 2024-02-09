@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class TutorialMessageHandler : MessageHandlerBase
 {
-    public TutorialMessageHandler(KcpSession session) : base(session)
+    public TutorialMessageHandler(PlayerSession session) : base(session)
     {
         // TutorialMessageHandler.
     }

@@ -3,6 +3,7 @@ using GameServer.Handlers;
 using GameServer.Handlers.Factory;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Network.Kcp;
 using GameServer.Network.Rpc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,7 +19,7 @@ internal static class Program
         builder.Logging.AddConsole();
 
         builder.Services.AddHandlers()
-                        .AddSingleton<KcpGateway>().AddScoped<KcpSession>()
+                        .AddSingleton<KcpGateway>().AddScoped<PlayerSession>()
                         .AddScoped<MessageManager>().AddSingleton<MessageHandlerFactory>()
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()
                         .AddSingleton<SessionManager>()

@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class RoleMessageHandler : MessageHandlerBase
 {
-    public RoleMessageHandler(KcpSession session) : base(session)
+    public RoleMessageHandler(PlayerSession session) : base(session)
     {
         // RoleMessageHandler.
     }

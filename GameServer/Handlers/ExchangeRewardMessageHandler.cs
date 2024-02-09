@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class ExchangeRewardMessageHandler : MessageHandlerBase
 {
-    public ExchangeRewardMessageHandler(KcpSession session) : base(session)
+    public ExchangeRewardMessageHandler(PlayerSession session) : base(session)
     {
         // ExchangeRewardMessageHandler.
     }

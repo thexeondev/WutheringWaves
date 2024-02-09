@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class AchievementMessageHandler : MessageHandlerBase
 {
-    public AchievementMessageHandler(KcpSession session) : base(session)
+    public AchievementMessageHandler(PlayerSession session) : base(session)
     {
         // AchievementMessageHandler.
     }

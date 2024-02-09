@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class FriendMessageHandler : MessageHandlerBase
 {
-    public FriendMessageHandler(KcpSession session) : base(session)
+    public FriendMessageHandler(PlayerSession session) : base(session)
     {
         // FriendMessageHandler.
     }

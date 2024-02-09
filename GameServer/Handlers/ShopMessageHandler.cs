@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class ShopMessageHandler : MessageHandlerBase
 {
-    public ShopMessageHandler(KcpSession session) : base(session)
+    public ShopMessageHandler(PlayerSession session) : base(session)
     {
         // ShopMessageHandler.
     }

@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class InventoryMessageHandler : MessageHandlerBase
 {
-    public InventoryMessageHandler(KcpSession session) : base(session)
+    public InventoryMessageHandler(PlayerSession session) : base(session)
     {
         // InventoryMessageHandler.
     }

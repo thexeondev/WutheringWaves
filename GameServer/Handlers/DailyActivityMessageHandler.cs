@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class DailyActivityMessageHandler : MessageHandlerBase
 {
-    public DailyActivityMessageHandler(KcpSession session) : base(session)
+    public DailyActivityMessageHandler(PlayerSession session) : base(session)
     {
         // DailyActivityMessageHandler.
     }

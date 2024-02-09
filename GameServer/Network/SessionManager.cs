@@ -1,4 +1,6 @@
-﻿using KcpSharp;
+﻿using GameServer.Network.Kcp;
+using GameServer.Network.Packets;
+using KcpSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -17,12 +19,19 @@ internal class SessionManager
     public async Task RunSessionAsync(KcpConversation kcpConv)
     {
         using IServiceScope scope = _scopeFactory.CreateScope();
-        KcpSession session = scope.ServiceProvider.GetRequiredService<KcpSession>();
+        PlayerSession session = scope.ServiceProvider.GetRequiredService<PlayerSession>();
+        KcpConnection connection = new(kcpConv);
+        session.Listener = connection;
 
         try
         {
-            session.SetConv(kcpConv);
-            await session.RunAsync();
+            while (connection.Active)
+            {
+                BaseMessage? message = await connection.ReceiveMessageAsync();
+                if (message == null) break;
+
+                await session.HandleMessageAsync(message);
+            }
         }
         catch (Exception exception)
         {

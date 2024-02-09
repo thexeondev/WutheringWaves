@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class GachaMessageHandler : MessageHandlerBase
 {
-    public GachaMessageHandler(KcpSession session) : base(session)
+    public GachaMessageHandler(PlayerSession session) : base(session)
     {
         // GachaMessageHandler.
     }

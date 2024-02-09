@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class RoguelikeMessageHandler : MessageHandlerBase
 {
-    public RoguelikeMessageHandler(KcpSession session) : base(session)
+    public RoguelikeMessageHandler(PlayerSession session) : base(session)
     {
         // RoguelikeMessageHandler.
     }

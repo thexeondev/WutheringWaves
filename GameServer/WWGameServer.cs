@@ -1,5 +1,5 @@
 ﻿using GameServer.Handlers.Factory;
-using GameServer.Network;
+using GameServer.Network.Kcp;
 using Microsoft.Extensions.Hosting;
 
 namespace GameServer;

@@ -8,7 +8,7 @@ internal class FormationMessageHandler : MessageHandlerBase
 {
     private readonly ModelManager _modelManager;
 
-    public FormationMessageHandler(KcpSession session, ModelManager modelManager) : base(session)
+    public FormationMessageHandler(PlayerSession session, ModelManager modelManager) : base(session)
     {
         _modelManager = modelManager;
     }

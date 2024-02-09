@@ -5,7 +5,7 @@ using Protocol;
 namespace GameServer.Handlers;
 internal class InfluenceReputationMessageHandler : MessageHandlerBase
 {
-    public InfluenceReputationMessageHandler(KcpSession session) : base(session)
+    public InfluenceReputationMessageHandler(PlayerSession session) : base(session)
     {
         // InfluenceReputationMessageHandler.
     }
