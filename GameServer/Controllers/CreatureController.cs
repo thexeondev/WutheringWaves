@@ -24,7 +24,7 @@ internal class CreatureController : Controller
     public async Task JoinScene(int instanceId)
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
-        CreateInitialPlayer();
+        CreateTeamPlayerEntities();
 
         await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
         {
@@ -73,7 +73,7 @@ internal class CreatureController : Controller
     [GameEvent(GameEventType.VisionSkillChanged)]
     public async Task OnVisionSkillChanged()
     {
-        PlayerEntity? playerEntity = GetPlayerEntity(_modelManager.Player.Id);
+        PlayerEntity? playerEntity = GetPlayerEntity();
         if (playerEntity == null) return;
 
         EntityVisionSkillComponent visionSkillComponent = playerEntity.ComponentSystem.Get<EntityVisionSkillComponent>();
@@ -84,9 +84,25 @@ internal class CreatureController : Controller
         await Session.Push(MessageId.VisionSkillChangeNotify, skillChangeNotify);
     }
 
-    public PlayerEntity? GetPlayerEntity(int playerId)
+    public PlayerEntity? GetPlayerEntity()
     {
-        return _entitySystem.EnumerateEntities().FirstOrDefault(entity => entity is PlayerEntity p && p.PlayerId == playerId) as PlayerEntity;
+        return _entitySystem.EnumerateEntities().FirstOrDefault(entity => entity.Id == _modelManager.Creature.PlayerEntityId) as PlayerEntity;
+    }
+
+    public async Task SwitchPlayerEntity(int roleId)
+    {
+        PlayerEntity? prevEntity = GetPlayerEntity();
+        if (prevEntity == null) return;
+
+        prevEntity.IsCurrentRole = false;
+
+        PlayerEntity? newEntity = _entitySystem.EnumerateEntities().FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId) as PlayerEntity;
+        if (newEntity == null) return;
+
+        _modelManager.Creature.PlayerEntityId = newEntity.Id;
+        newEntity.IsCurrentRole = true;
+
+        await OnVisionSkillChanged();
     }
 
     private SceneInformation CreateSceneInfo()
@@ -111,37 +127,44 @@ internal class CreatureController : Controller
                         Y = -2000,
                         Z = 260
                     },
-                    FightRoleInfos =
-                    {
-                        new FightRoleInformation
-                        {
-                            EntityId = 1,
-                            CurHp = 1000,
-                            MaxHp = 1000,
-                            IsControl = true,
-                            RoleId = _modelManager.Player.CharacterId,
-                            RoleLevel = 1,
-                        }
-                    },
                     PlayerName = _modelManager.Player.Name
                 }
             }
         };
 
+        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
+        {
+            scene.PlayerInfos[0].FightRoleInfos.Add(new FightRoleInformation
+            {
+                EntityId = i + 1,
+                CurHp = 1000,
+                MaxHp = 1000,
+                IsControl = i == 0,
+                RoleId = _modelManager.Player.Characters[i],
+                RoleLevel = 1,
+            });
+        }
+
         scene.AoiData.Entities.AddRange(_entitySystem.Pb);
         return scene;
     }
 
-    private void CreateInitialPlayer()
+    private void CreateTeamPlayerEntities()
     {
-        PlayerEntity entity = _entityFactory.CreatePlayer(1601, _modelManager.Player.Id);
-        entity.Pos = new()
+        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
         {
-            X = 4000,
-            Y = -2000,
-            Z = 260
-        };
+            PlayerEntity entity = _entityFactory.CreatePlayer(_modelManager.Player.Characters[i], _modelManager.Player.Id);
+            entity.Pos = new()
+            {
+                X = 4000,
+                Y = -2000,
+                Z = 260
+            };
+            entity.IsCurrentRole = i == 0;
 
-        _entitySystem.Create(entity);
+            _entitySystem.Create(entity);
+
+            if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
+        }
     }
 }

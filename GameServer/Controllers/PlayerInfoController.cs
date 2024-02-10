@@ -17,7 +17,7 @@ internal class PlayerInfoController : Controller
     {
         PlayerModel player = modelManager.Player;
 
-        await Session.Push(MessageId.BasicInfoNotify, new BasicInfoNotify
+        BasicInfoNotify basicInfo = new()
         {
             RandomSeed = 1337,
             Id = player.Id,
@@ -36,15 +36,18 @@ internal class PlayerInfoController : Controller
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 10
                 }
-            },
-            RoleShowList =
+            }
+        };
+        
+        for (int i = 0; i < player.Characters.Length; i++)
+        {
+            basicInfo.RoleShowList.Add(new RoleShowEntry
             {
-                new RoleShowEntry
-                {
-                    Level = 1,
-                    RoleId = player.CharacterId
-                }
-            },
-        });
+                Level = 1,
+                RoleId = player.Characters[i]
+            });
+        }
+
+        await Session.Push(MessageId.BasicInfoNotify, basicInfo);
     }
 }

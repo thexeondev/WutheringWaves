@@ -22,12 +22,21 @@ internal class RoleController : Controller
         {
             RoleList =
             {
-                new roleInfo
+                player.Characters.Select(i => new roleInfo
                 {
-                    RoleId = player.CharacterId,
-                    Level = 1,
-                }
+                    RoleId = i,
+                    Level = 1
+                })
             }
+        });
+    }
+
+    [NetEvent(MessageId.SwitchRoleRequest)]
+    public ResponseMessage OnSwitchRoleRequest(SwitchRoleRequest request)
+    {
+        return Response(MessageId.SwitchRoleResponse, new SwitchRoleResponse
+        {
+            RoleId = request.RoleId
         });
     }
 

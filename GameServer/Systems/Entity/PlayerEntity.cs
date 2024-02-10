@@ -13,15 +13,23 @@ internal class PlayerEntity : EntityBase
     public int ConfigId { get; }
     public int PlayerId { get; }
 
-    public override void AddComponents()
-    {
-        base.AddComponents();
+    public bool IsCurrentRole { get; set; }
 
+    public override void OnCreate()
+    {
+        base.OnCreate();
+
+        // Should be created immediately
         EntityConcomitantsComponent concomitantsComponent = ComponentSystem.Create<EntityConcomitantsComponent>();
         concomitantsComponent.CustomEntityIds.Add(Id);
 
         EntityVisionSkillComponent visionSkillComponent = ComponentSystem.Create<EntityVisionSkillComponent>();
         visionSkillComponent.SetExploreTool(1001);
+    }
+
+    public override void Activate()
+    {
+        base.Activate();
 
         _ = ComponentSystem.Create<EntityAttributeComponent>();
         InitAttributes();
@@ -39,6 +47,8 @@ internal class PlayerEntity : EntityBase
 
     public override EEntityType Type => EEntityType.Player;
     public override EntityConfigType ConfigType => EntityConfigType.Character;
+
+    public override bool IsVisible => IsCurrentRole;
 
     public override EntityPb Pb
     {

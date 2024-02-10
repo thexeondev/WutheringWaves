@@ -29,14 +29,9 @@ internal abstract class EntityBase
         State = EntityState.Born;
     }
 
-    public void Activate()
+    public virtual void Activate()
     {
-        AddComponents();
-    }
-
-    public virtual void AddComponents()
-    {
-        // AddComponents.
+        // Activate.
     }
 
     public virtual LivingStatus LivingStatus => LivingStatus.Alive;

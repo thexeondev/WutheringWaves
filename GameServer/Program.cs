@@ -23,8 +23,7 @@ internal static class Program
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
         builder.Logging.AddConsole();
 
-        builder.Services.Configure<GatewaySettings>(builder.Configuration.GetRequiredSection("Gateway"));
-
+        builder.SetupConfiguration();
         builder.Services.AddControllers()
                         .AddSingleton<KcpGateway>().AddScoped<PlayerSession>()
                         .AddScoped<MessageManager>().AddSingleton<EventHandlerFactory>()
@@ -35,5 +34,12 @@ internal static class Program
                         .AddHostedService<WWGameServer>();
 
         await builder.Build().RunAsync();
+    }
+
+    private static void SetupConfiguration(this HostApplicationBuilder builder)
+    {
+        builder.Configuration.AddJsonFile("gameplay.json");
+        builder.Services.Configure<GatewaySettings>(builder.Configuration.GetRequiredSection("Gateway"));
+        builder.Services.Configure<PlayerStartingValues>(builder.Configuration.GetRequiredSection("StartingValues"));
     }
 }
