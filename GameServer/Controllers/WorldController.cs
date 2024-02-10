@@ -70,12 +70,10 @@ internal class WorldController : Controller
                                         {
                                             new VisionSkillInformation
                                             {
-                                                SkillId = 1302001,
-                                                Level = 1,
-                                                Quality = 1,
+                                                SkillId = 1001
                                             }
                                         }
-                                    },
+                                    }
                                 },
                                 new EntityComponentPb
                                 {
