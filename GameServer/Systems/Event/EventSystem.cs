@@ -6,7 +6,7 @@ using GameServer.Controllers.Manager;
 using GameServer.Models;
 using Microsoft.Extensions.Logging;
 
-namespace GameServer.Controllers.Event;
+namespace GameServer.Systems.Event;
 internal class EventSystem
 {
     private static readonly ImmutableDictionary<GameEventType, Func<ModelManager, Task>> s_modelManagerEventHandlers = RegisterModelManagerEvents();

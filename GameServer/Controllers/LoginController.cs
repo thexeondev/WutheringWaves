@@ -1,7 +1,7 @@
 ﻿using GameServer.Controllers.Attributes;
-using GameServer.Controllers.Event;
 using GameServer.Network;
 using GameServer.Network.Messages;
+using GameServer.Systems.Event;
 using Microsoft.Extensions.Logging;
 using Protocol;
 

@@ -1,6 +1,5 @@
-﻿using GameServer.Controllers.Event;
-using GameServer.Controllers.Factory;
-using GameServer.Network;
+﻿using GameServer.Controllers.Factory;
+using GameServer.Systems.Event;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameServer.Controllers.Manager;

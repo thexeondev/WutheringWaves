@@ -1,7 +1,7 @@
 ﻿using GameServer.Controllers.Attributes;
-using GameServer.Controllers.Event;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Systems.Event;
 using Protocol;
 
 namespace GameServer.Controllers;

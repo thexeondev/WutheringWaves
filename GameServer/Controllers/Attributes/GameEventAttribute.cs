@@ -1,4 +1,4 @@
-﻿using GameServer.Controllers.Event;
+﻿using GameServer.Systems.Event;
 
 namespace GameServer.Controllers.Attributes;
 

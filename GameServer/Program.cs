@@ -1,5 +1,4 @@
-﻿using GameServer.Controllers.Event;
-using GameServer.Controllers.Factory;
+﻿using GameServer.Controllers.Factory;
 using GameServer.Controllers.Manager;
 using GameServer.Extensions;
 using GameServer.Models;
@@ -7,6 +6,8 @@ using GameServer.Network;
 using GameServer.Network.Kcp;
 using GameServer.Network.Messages;
 using GameServer.Network.Rpc;
+using GameServer.Systems.Entity;
+using GameServer.Systems.Event;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,8 @@ internal static class Program
                         .AddScoped<MessageManager>().AddSingleton<EventHandlerFactory>()
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()
                         .AddSingleton<SessionManager>()
-                        .AddScoped<EventSystem>().AddScoped<ModelManager>().AddScoped<ControllerManager>()
+                        .AddScoped<EventSystem>().AddScoped<EntitySystem>().AddScoped<EntityFactory>()
+                        .AddScoped<ModelManager>().AddScoped<ControllerManager>()
                         .AddHostedService<WWGameServer>();
 
         await builder.Build().RunAsync();

@@ -2,8 +2,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using GameServer.Controllers.Attributes;
-using GameServer.Controllers.Event;
 using GameServer.Network.Messages;
+using GameServer.Systems.Event;
 using Google.Protobuf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

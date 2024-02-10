@@ -1,7 +1,10 @@
 ﻿using GameServer.Controllers.Attributes;
-using GameServer.Controllers.Event;
+using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
+using GameServer.Systems.Entity;
+using GameServer.Systems.Entity.Component;
+using GameServer.Systems.Event;
 using Protocol;
 
 namespace GameServer.Controllers;
@@ -38,19 +41,15 @@ internal class RouletteController : Controller
     }
 
     [NetEvent(MessageId.VisionExploreSkillSetRequest)]
-    public async Task<ResponseMessage> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request)
+    public async Task<ResponseMessage> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request, CreatureController creatureController, ModelManager modelManager, EventSystem eventSystem)
     {
-        await Session.Push(MessageId.VisionSkillChangeNotify, new VisionSkillChangeNotify
-        {
-            EntityId = 1,
-            VisionSkillInfos =
-            {
-                new VisionSkillInformation
-                {
-                    SkillId = request.SkillId
-                }
-            }
-        });
+        PlayerEntity? playerEntity = creatureController.GetPlayerEntity(modelManager.Player.Id);
+        if (playerEntity == null) return Response(MessageId.VisionExploreSkillSetResponse, new VisionExploreSkillSetResponse { ErrCode = (int)ErrorCode.PlayerNotInAnyScene });
+
+        EntityVisionSkillComponent visionSkillComponent = playerEntity.ComponentSystem.Get<EntityVisionSkillComponent>();
+        visionSkillComponent.SetExploreTool(request.SkillId);
+
+        await eventSystem.Emit(GameEventType.VisionSkillChanged);
 
         return Response(MessageId.VisionExploreSkillSetResponse, new VisionExploreSkillSetResponse
         {
