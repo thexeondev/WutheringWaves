@@ -8,7 +8,7 @@ internal class InfluenceReputationController : Controller
 {
     public InfluenceReputationController(PlayerSession session) : base(session)
     {
-        // InfluenceReputationMessageHandler.
+        // InfluenceReputationController.
     }
 
     [NetEvent(MessageId.InfluenceInfoRequest)]

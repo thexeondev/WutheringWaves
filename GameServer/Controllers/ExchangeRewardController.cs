@@ -8,7 +8,7 @@ internal class ExchangeRewardController : Controller
 {
     public ExchangeRewardController(PlayerSession session) : base(session)
     {
-        // ExchangeRewardMessageHandler.
+        // ExchangeRewardController.
     }
 
     [NetEvent(MessageId.ExchangeRewardInfoRequest)]

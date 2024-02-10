@@ -8,7 +8,7 @@ internal class DailyActivityController : Controller
 {
     public DailyActivityController(PlayerSession session) : base(session)
     {
-        // DailyActivityMessageHandler.
+        // DailyActivityController.
     }
 
     [NetEvent(MessageId.ActivityRequest)]

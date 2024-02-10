@@ -8,7 +8,7 @@ internal class InventoryController : Controller
 {
     public InventoryController(PlayerSession session) : base(session)
     {
-        // InventoryMessageHandler.
+        // InventoryController.
     }
 
     [NetEvent(MessageId.NormalItemRequest)]

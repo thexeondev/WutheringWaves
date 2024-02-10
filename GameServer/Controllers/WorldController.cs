@@ -10,7 +10,7 @@ internal class WorldController : Controller
 {
     public WorldController(PlayerSession session) : base(session)
     {
-        // WorldMessageHandler.
+        // WorldController.
     }
 
     [GameEvent(GameEventType.EnterGame)]

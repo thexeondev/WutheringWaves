@@ -8,7 +8,7 @@ internal class AchievementController : Controller
 {
     public AchievementController(PlayerSession session) : base(session)
     {
-        // AchievementMessageHandler.
+        // AchievementController.
     }
 
     [NetEvent(MessageId.AchievementInfoRequest)]

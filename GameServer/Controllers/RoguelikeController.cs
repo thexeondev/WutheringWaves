@@ -8,7 +8,7 @@ internal class RoguelikeController : Controller
 {
     public RoguelikeController(PlayerSession session) : base(session)
     {
-        // RoguelikeMessageHandler.
+        // RoguelikeController.
     }
 
     [NetEvent(MessageId.RoguelikeSeasonDataRequest)]

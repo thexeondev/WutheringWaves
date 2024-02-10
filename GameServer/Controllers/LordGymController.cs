@@ -8,7 +8,7 @@ internal class LordGymController : Controller
 {
     public LordGymController(PlayerSession session) : base(session)
     {
-        // LordGymMessageHandler.
+        // LordGymController.
     }
 
     [NetEvent(MessageId.LordGymInfoRequest)]

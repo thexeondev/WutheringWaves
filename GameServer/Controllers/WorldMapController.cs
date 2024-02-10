@@ -8,7 +8,7 @@ internal class WorldMapController : Controller
 {
     public WorldMapController(PlayerSession session) : base(session)
     {
-        // WorldMapMessageHandler.
+        // WorldMapController.
     }
 
     [NetEvent(MessageId.MapTraceInfoRequest)]

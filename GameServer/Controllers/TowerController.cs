@@ -8,7 +8,7 @@ internal class TowerController : Controller
 {
     public TowerController(PlayerSession session) : base(session)
     {
-        // TowerMessageHandler.
+        // TowerController.
     }
 
     [NetEvent(MessageId.TowerChallengeRequest)]

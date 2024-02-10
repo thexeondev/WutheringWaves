@@ -34,7 +34,7 @@ internal class EventSystem
         _logger.LogInformation("Event {type} emitted", eventType);
     }
 
-    public static ImmutableDictionary<GameEventType, Func<ModelManager, Task>> RegisterModelManagerEvents()
+    private static ImmutableDictionary<GameEventType, Func<ModelManager, Task>> RegisterModelManagerEvents()
     {
         var builder = ImmutableDictionary.CreateBuilder<GameEventType, Func<ModelManager, Task>>();
 

@@ -14,36 +14,36 @@ namespace GameServer.Controllers.Factory;
 internal delegate Task GameEventHandler(IServiceProvider serviceProvider);
 internal class EventHandlerFactory
 {
-    private readonly ImmutableDictionary<MessageId, RpcHandler> s_rpcHandlers;
-    private readonly ImmutableDictionary<MessageId, PushHandler> s_pushHandlers;
-    private readonly ImmutableDictionary<GameEventType, List<GameEventHandler>> s_eventHandlers;
+    private readonly ImmutableDictionary<MessageId, RpcHandler> _rpcHandlers;
+    private readonly ImmutableDictionary<MessageId, PushHandler> _pushHandlers;
+    private readonly ImmutableDictionary<GameEventType, List<GameEventHandler>> _eventHandlers;
 
     public EventHandlerFactory(ILogger<EventHandlerFactory> logger)
     {
         IEnumerable<Type> controllerTypes = Assembly.GetExecutingAssembly().GetTypes()
         .Where(t => t.IsAssignableTo(typeof(Controller)) && !t.IsAbstract);
 
-        s_rpcHandlers = RegisterRpcHandlers(controllerTypes);
-        s_pushHandlers = RegisterPushHandlers(controllerTypes);
-        s_eventHandlers = RegisterEventHandlers(controllerTypes);
-        logger.LogInformation("Registered {rpc_count} rpc handlers, {push_count} push handlers", s_rpcHandlers.Count, s_pushHandlers.Count);
+        _rpcHandlers = RegisterRpcHandlers(controllerTypes);
+        _pushHandlers = RegisterPushHandlers(controllerTypes);
+        _eventHandlers = RegisterEventHandlers(controllerTypes);
+        logger.LogInformation("Registered {rpc_count} rpc handlers, {push_count} push handlers", _rpcHandlers.Count, _pushHandlers.Count);
     }
 
     public RpcHandler? GetRpcHandler(MessageId messageId)
     {
-        s_rpcHandlers.TryGetValue(messageId, out RpcHandler? handler);
+        _rpcHandlers.TryGetValue(messageId, out RpcHandler? handler);
         return handler;
     }
 
     public PushHandler? GetPushHandler(MessageId messageId)
     {
-        s_pushHandlers.TryGetValue(messageId, out PushHandler? handler);
+        _pushHandlers.TryGetValue(messageId, out PushHandler? handler);
         return handler;
     }
 
     public IEnumerable<GameEventHandler> GetEventHandlers(GameEventType eventType)
     {
-        if (!s_eventHandlers.TryGetValue(eventType, out List<GameEventHandler>? handlers))
+        if (!_eventHandlers.TryGetValue(eventType, out List<GameEventHandler>? handlers))
             return [];
 
         return handlers;

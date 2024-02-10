@@ -8,7 +8,7 @@ internal class TutorialController : Controller
 {
     public TutorialController(PlayerSession session) : base(session)
     {
-        // TutorialMessageHandler.
+        // TutorialController.
     }
 
     [NetEvent(MessageId.TutorialInfoRequest)]

@@ -8,7 +8,7 @@ internal class GachaController : Controller
 {
     public GachaController(PlayerSession session) : base(session)
     {
-        // GachaMessageHandler.
+        // GachaController.
     }
 
     [NetEvent(MessageId.GachaInfoRequest)]

@@ -8,7 +8,7 @@ internal class FriendSystemController : Controller
 {
     public FriendSystemController(PlayerSession session) : base(session)
     {
-        // FriendMessageHandler.
+        // FriendController.
     }
 
     [NetEvent(MessageId.FriendAllRequest)]

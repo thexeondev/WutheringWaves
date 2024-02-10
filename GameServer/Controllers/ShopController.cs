@@ -8,7 +8,7 @@ internal class ShopController : Controller
 {
     public ShopController(PlayerSession session) : base(session)
     {
-        // ShopMessageHandler.
+        // ShopController.
     }
 
     [NetEvent(MessageId.PayShopInfoRequest)]

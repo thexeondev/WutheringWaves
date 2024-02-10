@@ -10,7 +10,7 @@ internal class RoleController : Controller
 {
     public RoleController(PlayerSession session) : base(session)
     {
-        // RoleMessageHandler.
+        // RoleController.
     }
 
     [GameEvent(GameEventType.EnterGame)]
