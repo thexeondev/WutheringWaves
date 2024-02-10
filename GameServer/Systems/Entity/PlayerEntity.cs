@@ -33,6 +33,8 @@ internal class PlayerEntity : EntityBase
         attributeComponent.SetAttribute(EAttributeType.Life, 1000);
         attributeComponent.SetAttribute(EAttributeType.LifeMax, 1000);
         attributeComponent.SetAttribute(EAttributeType.Lv, 1);
+        attributeComponent.SetAttribute(EAttributeType.AutoAttackSpeed, 10000);
+        attributeComponent.SetAttribute(EAttributeType.CastAttackSpeed, 10000);
     }
 
     public override EEntityType Type => EEntityType.Player;
