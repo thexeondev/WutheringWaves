@@ -35,6 +35,12 @@ internal class PlayerInfoController : Controller
                     Key = (int)PlayerAttrKey.Level,
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 10
+                },
+                new PlayerAttr
+                {
+                    Key = (int)PlayerAttrKey.HeadPhoto,
+                    ValueType = (int)PlayerAttrType.Int32,
+                    Int32Value = 1601
                 }
             }
         };
