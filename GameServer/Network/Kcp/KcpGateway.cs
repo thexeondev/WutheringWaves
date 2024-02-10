@@ -2,8 +2,10 @@
 using System.Buffers.Binary;
 using System.Net;
 using System.Net.Sockets;
+using GameServer.Settings;
 using KcpSharp;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace GameServer.Network.Kcp;
 internal class KcpGateway
@@ -15,21 +17,22 @@ internal class KcpGateway
     private const byte NetFlagAck = 0xEE;
 
     private readonly ILogger _logger;
+    private readonly IOptions<GatewaySettings> _options;
     private readonly SessionManager _sessionManager;
 
     private IKcpTransport<IKcpMultiplexConnection>? _kcpTransport;
     private int _convCounter;
 
-    public KcpGateway(ILogger<KcpGateway> logger, SessionManager sessionManager)
+    public KcpGateway(ILogger<KcpGateway> logger, IOptions<GatewaySettings> options, SessionManager sessionManager)
     {
         _logger = logger;
+        _options = options;
         _sessionManager = sessionManager;
     }
 
     public void Start()
     {
-        IPEndPoint endPoint = new(IPAddress.Any, 1337);
-
+        IPEndPoint endPoint = _options.Value.EndPoint;
         _kcpTransport = KcpSocketTransport.CreateMultiplexConnection(new(endPoint), 1400);
         _kcpTransport.SetHandshakeHandler(KcpSynPacketSize, HandleKcpSynPacket);
         _kcpTransport.Start();

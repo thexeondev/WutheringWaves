@@ -6,8 +6,10 @@ using GameServer.Network;
 using GameServer.Network.Kcp;
 using GameServer.Network.Messages;
 using GameServer.Network.Rpc;
+using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Event;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,6 +22,8 @@ internal static class Program
     {
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
         builder.Logging.AddConsole();
+
+        builder.Services.Configure<GatewaySettings>(builder.Configuration.GetRequiredSection("Gateway"));
 
         builder.Services.AddControllers()
                         .AddSingleton<KcpGateway>().AddScoped<PlayerSession>()
