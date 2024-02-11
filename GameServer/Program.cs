@@ -1,4 +1,6 @@
-﻿using GameServer.Controllers.Factory;
+﻿using Core.Config;
+using Core.Extensions;
+using GameServer.Controllers.Factory;
 using GameServer.Controllers.Manager;
 using GameServer.Extensions;
 using GameServer.Models;
@@ -24,7 +26,9 @@ internal static class Program
         builder.Logging.AddConsole();
 
         builder.SetupConfiguration();
-        builder.Services.AddControllers()
+        builder.Services.UseLocalResources()
+                        .AddControllers()
+                        .AddSingleton<ConfigManager>()
                         .AddSingleton<KcpGateway>().AddScoped<PlayerSession>()
                         .AddScoped<MessageManager>().AddSingleton<EventHandlerFactory>()
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()

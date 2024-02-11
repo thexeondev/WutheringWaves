@@ -1,4 +1,5 @@
-﻿using GameServer.Controllers.Attributes;
+﻿using Core.Config;
+using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
@@ -14,7 +15,7 @@ internal class RoleController : Controller
     }
 
     [GameEvent(GameEventType.EnterGame)]
-    public async Task OnEnterGame(ModelManager modelManager)
+    public async Task OnEnterGame(ModelManager modelManager, ConfigManager configManager)
     {
         PlayerModel player = modelManager.Player;
 
@@ -22,9 +23,11 @@ internal class RoleController : Controller
         {
             RoleList =
             {
-                player.Characters.Select(i => new roleInfo
+                configManager.GetCollection(ConfigType.RoleInfo)
+                .Enumerate<RoleInfoConfig>()
+                .Select(config => new roleInfo
                 {
-                    RoleId = i,
+                    RoleId = config.Id,
                     Level = 1
                 })
             }

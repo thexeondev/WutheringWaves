@@ -2,6 +2,8 @@
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
+using GameServer.Systems.Entity;
+using GameServer.Systems.Event;
 using Protocol;
 
 namespace GameServer.Controllers;
@@ -28,6 +30,18 @@ internal class FormationController : Controller
                 }
             },
     });
+
+    [NetEvent(MessageId.UpdateFormationRequest)]
+    public async Task<ResponseMessage> OnUpdateFormationRequest(UpdateFormationRequest request, EventSystem eventSystem)
+    {
+        _modelManager.Formation.Set([.. request.Formation.RoleIds]);
+        await eventSystem.Emit(GameEventType.FormationUpdated);
+
+        return Response(MessageId.UpdateFormationResponse, new UpdateFormationResponse
+        {
+            Formation = request.Formation
+        });
+    }
 
     [NetEvent(MessageId.FormationAttrRequest)]
     public ResponseMessage OnFormationAttrRequest() => Response(MessageId.FormationAttrResponse, new FormationAttrResponse());

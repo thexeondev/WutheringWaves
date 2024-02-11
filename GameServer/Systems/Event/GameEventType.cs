@@ -5,5 +5,6 @@ internal enum GameEventType
     EnterGame,
 
     // Actions
+    FormationUpdated,
     VisionSkillChanged
 }

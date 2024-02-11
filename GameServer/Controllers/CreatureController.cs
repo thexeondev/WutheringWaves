@@ -1,4 +1,5 @@
-﻿using GameServer.Controllers.Attributes;
+﻿using System.Security.Principal;
+using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
@@ -70,6 +71,69 @@ internal class CreatureController : Controller
         return Response(MessageId.SceneLoadingFinishResponse, new SceneLoadingFinishResponse());
     }
 
+    [GameEvent(GameEventType.FormationUpdated)]
+    public async Task OnFormationUpdated()
+    {
+        // Remove old entities
+
+        IEnumerable<PlayerEntity> oldEntities = _entitySystem.EnumerateEntities()
+                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
+                                                   .Cast<PlayerEntity>().ToArray();
+
+        foreach (PlayerEntity oldEntity in oldEntities)
+        {
+            _entitySystem.Destroy(oldEntity);
+        }
+
+        await Session.Push(MessageId.EntityRemoveNotify, new EntityRemoveNotify
+        {
+            IsRemove = true,
+            RemoveInfos =
+            {
+                oldEntities.Select(entity => new EntityRemoveInfo
+                {
+                    EntityId = entity.Id,
+                    Type = (int)entity.Type
+                })
+            }
+        });
+
+        // Spawn new entities
+
+        CreateTeamPlayerEntities();
+
+        IEnumerable<PlayerEntity> newEntities = _entitySystem.EnumerateEntities()
+                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
+                                                   .Cast<PlayerEntity>();
+
+        await Session.Push(MessageId.EntityAddNotify, new EntityAddNotify
+        {
+            IsAdd = true,
+            EntityPbs =
+            {
+                newEntities.Select(entity => entity.Pb)
+            }
+        });
+
+        _modelManager.Creature.PlayerEntityId = newEntities.First().Id;
+        await Session.Push(MessageId.UpdatePlayerAllFightRoleNotify, new UpdatePlayerAllFightRoleNotify
+        {
+            PlayerId = _modelManager.Player.Id,
+            FightRoleInfos =
+            {
+                newEntities.Select(entity => new FightRoleInformation
+                {
+                    EntityId = entity.Id,
+                    CurHp = 1000,
+                    MaxHp = 1000,
+                    IsControl = _modelManager.Creature.PlayerEntityId == entity.Id,
+                    RoleId = entity.ConfigId,
+                    RoleLevel = 1,
+                })
+            }
+        });
+    }
+
     [GameEvent(GameEventType.VisionSkillChanged)]
     public async Task OnVisionSkillChanged()
     {
@@ -86,7 +150,13 @@ internal class CreatureController : Controller
 
     public PlayerEntity? GetPlayerEntity()
     {
-        return _entitySystem.EnumerateEntities().FirstOrDefault(entity => entity.Id == _modelManager.Creature.PlayerEntityId) as PlayerEntity;
+        return _entitySystem.Get<PlayerEntity>(_modelManager.Creature.PlayerEntityId);
+    }
+
+    public PlayerEntity? GetPlayerEntityByRoleId(int roleId)
+    {
+        return _entitySystem.EnumerateEntities()
+        .FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId && playerEntity.PlayerId == _modelManager.Player.Id) as PlayerEntity;
     }
 
     public async Task SwitchPlayerEntity(int roleId)
@@ -151,9 +221,9 @@ internal class CreatureController : Controller
 
     private void CreateTeamPlayerEntities()
     {
-        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
+        for (int i = 0; i < _modelManager.Formation.RoleIds.Length; i++)
         {
-            PlayerEntity entity = _entityFactory.CreatePlayer(_modelManager.Player.Characters[i], _modelManager.Player.Id);
+            PlayerEntity entity = _entityFactory.CreatePlayer(_modelManager.Formation.RoleIds[i], _modelManager.Player.Id);
             entity.Pos = new()
             {
                 X = 4000,

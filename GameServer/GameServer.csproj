@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\KcpSharp\KcpSharp.csproj" />
     <ProjectReference Include="..\Protocol\Protocol.csproj" />
   </ItemGroup>

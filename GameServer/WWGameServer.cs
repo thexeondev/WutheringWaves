@@ -1,4 +1,5 @@
-﻿using GameServer.Controllers.Factory;
+﻿using Core.Config;
+using GameServer.Controllers.Factory;
 using GameServer.Network.Kcp;
 using Microsoft.Extensions.Hosting;
 
@@ -7,8 +8,9 @@ internal class WWGameServer : IHostedService
 {
     private readonly KcpGateway _gateway;
 
-    public WWGameServer(KcpGateway gateway, EventHandlerFactory messageHandlerFactory)
+    public WWGameServer(KcpGateway gateway, ConfigManager manager, EventHandlerFactory messageHandlerFactory)
     {
+        _ = manager;
         _ = messageHandlerFactory;
         _gateway = gateway;
     }
