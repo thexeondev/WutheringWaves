@@ -41,6 +41,12 @@ internal class PlayerInfoController : Controller
                     Key = (int)PlayerAttrKey.HeadPhoto,
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 1601
+                },
+                new PlayerAttr
+                {
+                    Key = (int)PlayerAttrKey.HeadFrame,
+                    ValueType = (int)PlayerAttrType.Int32,
+                    Int32Value = 80060009
                 }
             }
         };
