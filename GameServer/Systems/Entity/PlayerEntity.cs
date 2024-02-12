@@ -21,6 +21,18 @@ internal class PlayerEntity : EntityBase
         set => ComponentSystem.Get<EntityEquipComponent>().WeaponId = value;
     }
 
+    public int Health
+    {
+        get => ComponentSystem.Get<EntityAttributeComponent>().GetAttribute(EAttributeType.Life);
+        set => ComponentSystem.Get<EntityAttributeComponent>().SetAttribute(EAttributeType.Life, value);
+    }
+
+    public int HealthMax
+    {
+        get => ComponentSystem.Get<EntityAttributeComponent>().GetAttribute(EAttributeType.LifeMax);
+        set => ComponentSystem.Get<EntityAttributeComponent>().SetAttribute(EAttributeType.LifeMax, value);
+    }
+
     public override void OnCreate()
     {
         base.OnCreate();
@@ -33,14 +45,14 @@ internal class PlayerEntity : EntityBase
         visionSkillComponent.SetExploreTool(1001);
 
         _ = ComponentSystem.Create<EntityEquipComponent>();
+        _ = ComponentSystem.Create<EntityAttributeComponent>();
+
+        InitAttributes();
     }
 
     public override void Activate()
     {
         base.Activate();
-
-        _ = ComponentSystem.Create<EntityAttributeComponent>();
-        InitAttributes();
     }
 
     private void InitAttributes()

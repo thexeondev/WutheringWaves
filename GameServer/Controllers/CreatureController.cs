@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using Core.Config;
+﻿using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
@@ -81,7 +80,7 @@ internal class CreatureController : Controller
 
         IEnumerable<PlayerEntity> oldEntities = _entitySystem.EnumerateEntities()
                                                    .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
-                                                   .Cast<PlayerEntity>().ToArray();
+                                                   .Cast<PlayerEntity>();
 
         foreach (PlayerEntity oldEntity in oldEntities)
         {
@@ -122,18 +121,7 @@ internal class CreatureController : Controller
         await Session.Push(MessageId.UpdatePlayerAllFightRoleNotify, new UpdatePlayerAllFightRoleNotify
         {
             PlayerId = _modelManager.Player.Id,
-            FightRoleInfos =
-            {
-                newEntities.Select(entity => new FightRoleInformation
-                {
-                    EntityId = entity.Id,
-                    CurHp = 1000,
-                    MaxHp = 1000,
-                    IsControl = _modelManager.Creature.PlayerEntityId == entity.Id,
-                    RoleId = entity.ConfigId,
-                    RoleLevel = 1,
-                })
-            }
+            FightRoleInfos = { GetFightRoleInfos() }
         });
     }
 
@@ -178,48 +166,50 @@ internal class CreatureController : Controller
         await OnVisionSkillChanged();
     }
 
-    private SceneInformation CreateSceneInfo()
+    private SceneInformation CreateSceneInfo() => new()
     {
-        SceneInformation scene = new()
+        InstanceId = _modelManager.Creature.InstanceId,
+        OwnerId = _modelManager.Creature.OwnerId,
+        CurContextId = _modelManager.Player.Id,
+        TimeInfo = new(),
+        AoiData = new PlayerSceneAoiData
         {
-            InstanceId = _modelManager.Creature.InstanceId,
-            OwnerId = _modelManager.Creature.OwnerId,
-            CurContextId = _modelManager.Player.Id,
-            TimeInfo = new(),
-            AoiData = new(),
-            PlayerInfos =
+            Entities = { _entitySystem.Pb }
+        },
+        PlayerInfos =
+        {
+            new ScenePlayerInformation
             {
-                new ScenePlayerInformation
+                PlayerId = _modelManager.Player.Id,
+                Level = 1,
+                IsOffline = false,
+                Location = new()
                 {
-                    PlayerId = _modelManager.Player.Id,
-                    Level = 1,
-                    IsOffline = false,
-                    Location = new()
-                    {
-                        X = 4000,
-                        Y = -2000,
-                        Z = 260
-                    },
-                    PlayerName = _modelManager.Player.Name
-                }
+                    X = 4000,
+                    Y = -2000,
+                    Z = 260
+                },
+                PlayerName = _modelManager.Player.Name,
+                FightRoleInfos = { GetFightRoleInfos() }
             }
-        };
-
-        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
-        {
-            scene.PlayerInfos[0].FightRoleInfos.Add(new FightRoleInformation
-            {
-                EntityId = i + 1,
-                CurHp = 1000,
-                MaxHp = 1000,
-                IsControl = i == 0,
-                RoleId = _modelManager.Player.Characters[i],
-                RoleLevel = 1,
-            });
         }
+    };
 
-        scene.AoiData.Entities.AddRange(_entitySystem.Pb);
-        return scene;
+    private IEnumerable<FightRoleInformation> GetFightRoleInfos()
+    {
+        IEnumerable<PlayerEntity> playerEntities = _entitySystem.EnumerateEntities()
+                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
+                                                   .Cast<PlayerEntity>();
+
+        return playerEntities.Select(playerEntity => new FightRoleInformation
+        {
+            EntityId = playerEntity.Id,
+            CurHp = playerEntity.Health,
+            MaxHp = playerEntity.HealthMax,
+            IsControl = playerEntity.Id == _modelManager.Creature.PlayerEntityId,
+            RoleId = playerEntity.ConfigId,
+            RoleLevel = 1,
+        });
     }
 
     private void CreateTeamPlayerEntities()
