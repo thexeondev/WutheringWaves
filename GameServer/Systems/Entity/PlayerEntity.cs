@@ -15,6 +15,12 @@ internal class PlayerEntity : EntityBase
 
     public bool IsCurrentRole { get; set; }
 
+    public int WeaponId
+    {
+        get => ComponentSystem.Get<EntityEquipComponent>().WeaponId;
+        set => ComponentSystem.Get<EntityEquipComponent>().WeaponId = value;
+    }
+
     public override void OnCreate()
     {
         base.OnCreate();
@@ -25,6 +31,8 @@ internal class PlayerEntity : EntityBase
 
         EntityVisionSkillComponent visionSkillComponent = ComponentSystem.Create<EntityVisionSkillComponent>();
         visionSkillComponent.SetExploreTool(1001);
+
+        _ = ComponentSystem.Create<EntityEquipComponent>();
     }
 
     public override void Activate()

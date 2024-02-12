@@ -1,4 +1,5 @@
 ﻿using System.Security.Principal;
+using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
@@ -14,12 +15,14 @@ internal class CreatureController : Controller
     private readonly EntitySystem _entitySystem;
     private readonly EntityFactory _entityFactory;
     private readonly ModelManager _modelManager;
+    private readonly ConfigManager _configManager;
 
-    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager) : base(session)
+    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager) : base(session)
     {
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _modelManager = modelManager;
+        _configManager = configManager;
     }
 
     public async Task JoinScene(int instanceId)
@@ -233,6 +236,11 @@ internal class CreatureController : Controller
             entity.IsCurrentRole = i == 0;
 
             _entitySystem.Create(entity);
+
+            // Give weapon to entity
+            RoleInfoConfig roleConfig = _configManager.GetConfig<RoleInfoConfig>(entity.ConfigId)!;
+            WeaponConfig weaponConfig = _configManager.GetCollection<WeaponConfig>().Enumerate<WeaponConfig>().First(weapon => weapon.WeaponType == roleConfig.WeaponType);
+            entity.WeaponId = weaponConfig.ItemId;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
         }
