@@ -42,7 +42,4 @@ internal class FormationController : Controller
             Formation = request.Formation
         });
     }
-
-    [NetEvent(MessageId.FormationAttrRequest)]
-    public ResponseMessage OnFormationAttrRequest() => Response(MessageId.FormationAttrResponse, new FormationAttrResponse());
 }
