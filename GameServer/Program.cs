@@ -45,5 +45,6 @@ internal static class Program
         builder.Configuration.AddJsonFile("gameplay.json");
         builder.Services.Configure<GatewaySettings>(builder.Configuration.GetRequiredSection("Gateway"));
         builder.Services.Configure<PlayerStartingValues>(builder.Configuration.GetRequiredSection("StartingValues"));
+        builder.Services.Configure<GameplayFeatureSettings>(builder.Configuration.GetRequiredSection("Features"));
     }
 }

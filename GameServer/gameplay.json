@@ -2,5 +2,8 @@
   "StartingValues": {
     "Name": "ReversedRooms",
     "Characters": [ 1601, 1302, 1203 ]
+  },
+  "Features": {
+    "TeleportByMapMark": true
   }
 }
