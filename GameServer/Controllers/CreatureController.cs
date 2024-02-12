@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
@@ -80,7 +80,7 @@ internal class CreatureController : Controller
 
         IEnumerable<PlayerEntity> oldEntities = _entitySystem.EnumerateEntities()
                                                    .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
-                                                   .Cast<PlayerEntity>();
+                                                   .Cast<PlayerEntity>().ToArray();
 
         foreach (PlayerEntity oldEntity in oldEntities)
         {
