@@ -229,7 +229,7 @@ internal class CreatureController : Controller
 
             // Give weapon to entity
             RoleInfoConfig roleConfig = _configManager.GetConfig<RoleInfoConfig>(entity.ConfigId)!;
-            WeaponConfig weaponConfig = _configManager.GetCollection<WeaponConfig>().Enumerate<WeaponConfig>().First(weapon => weapon.WeaponType == roleConfig.WeaponType);
+            WeaponConfig weaponConfig = _configManager.GetConfig<WeaponConfig>(roleConfig.InitWeaponItemId)!;
             entity.WeaponId = weaponConfig.ItemId;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
