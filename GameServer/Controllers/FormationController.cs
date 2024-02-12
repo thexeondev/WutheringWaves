@@ -23,10 +23,10 @@ internal class FormationController : Controller
             {
                 new FightFormation
                 {
-                    CurRole = _modelManager.Player.Characters[0],
+                    CurRole = _modelManager.Formation.RoleIds[0],
                     FormationId = 1,
                     IsCurrent = true,
-                    RoleIds = { _modelManager.Player.Characters },
+                    RoleIds = { _modelManager.Formation.RoleIds },
                 }
             },
     });

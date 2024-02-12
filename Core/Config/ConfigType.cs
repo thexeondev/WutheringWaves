@@ -2,5 +2,8 @@
 public enum ConfigType
 {
     RoleInfo,
-    Weapon
+    Weapon,
+    BaseProperty,
+    LevelEntity,
+    Blueprint
 }

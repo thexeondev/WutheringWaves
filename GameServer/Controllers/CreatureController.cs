@@ -31,7 +31,7 @@ internal class CreatureController : Controller
 
         await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
         {
-            MaxEntityId = 10000,
+            MaxEntityId = 10000000,
             TransitionOption = new TransitionOptionPb
             {
                 TransitionType = (int)TransitionType.Empty
@@ -226,6 +226,7 @@ internal class CreatureController : Controller
             entity.IsCurrentRole = i == 0;
 
             _entitySystem.Create(entity);
+            entity.InitProps(_configManager.GetConfig<BasePropertyConfig>(entity.ConfigId)!);
 
             // Give weapon to entity
             RoleInfoConfig roleConfig = _configManager.GetConfig<RoleInfoConfig>(entity.ConfigId)!;
@@ -234,5 +235,17 @@ internal class CreatureController : Controller
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
         }
+
+        // Test monster
+        MonsterEntity monster = _entityFactory.CreateMonster(102000014); // Monster001
+        monster.Pos = new()
+        {
+            X = 4444,
+            Y = -2222,
+            Z = 260
+        };
+
+        _entitySystem.Create(monster);
+        monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
     }
 }
