@@ -30,4 +30,5 @@ internal class ModelManager
     public CreatureModel Creature => _creatureModel ?? throw new InvalidOperationException($"Trying to access {nameof(CreatureModel)} instance before initialization!");
 
     public FormationModel Formation { get; } = new();
+    public ChatModel Chat { get; } = new();
 }

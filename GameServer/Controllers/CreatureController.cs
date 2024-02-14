@@ -28,6 +28,7 @@ internal class CreatureController : Controller
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
         CreateTeamPlayerEntities();
+        CreateWorldEntities();
 
         await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
         {
@@ -150,6 +151,13 @@ internal class CreatureController : Controller
         .FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId && playerEntity.PlayerId == _modelManager.Player.Id) as PlayerEntity;
     }
 
+    public IEnumerable<PlayerEntity> GetPlayerEntities()
+    {
+        return _entitySystem.EnumerateEntities()
+        .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
+        .Cast<PlayerEntity>();
+    }
+
     public async Task SwitchPlayerEntity(int roleId)
     {
         PlayerEntity? prevEntity = GetPlayerEntity();
@@ -235,7 +243,10 @@ internal class CreatureController : Controller
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
         }
+    }
 
+    private void CreateWorldEntities()
+    {
         // Test monster
         MonsterEntity monster = _entityFactory.CreateMonster(102000014); // Monster001
         monster.Pos = new()

@@ -28,10 +28,19 @@ internal class MonsterEntity : EntityBase
         aiComponent.AiTeamInitId = 100;
 
         EntityFsmComponent fsm = ComponentSystem.Create<EntityFsmComponent>();
+
         fsm.Fsms.Add(new DFsm
         {
             FsmId = 10007, // Main State Machine
-            CurrentState = 10009, // Standby Entry
+            CurrentState = 10013, // Battle Branching
+            Status = 1, // ??
+            Flag = (int)EFsmStateFlag.Confirmed
+        });
+
+        fsm.Fsms.Add(new DFsm
+        {
+            FsmId = 10007, // Main State Machine
+            CurrentState = 10015, // Moving Combat
             Status = 1, // ??
             Flag = (int)EFsmStateFlag.Confirmed
         });

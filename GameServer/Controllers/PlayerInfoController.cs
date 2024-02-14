@@ -1,6 +1,7 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Network.Messages;
 using GameServer.Systems.Event;
 using Protocol;
 
@@ -55,5 +56,23 @@ internal class PlayerInfoController : Controller
         }
 
         await Session.Push(MessageId.BasicInfoNotify, basicInfo);
+    }
+
+    [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
+    public ResponseMessage OnPlayerBasicInfoGetRequest()
+    {
+        return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse
+        {
+            Info = new PlayerDetails
+            {
+                Name = "Taoqi",
+                Signature = "discord.gg/reversedrooms",
+                HeadId = 1601,
+                PlayerId = 1338,
+                IsOnline = true,
+                LastOfflineTime = -1,
+                Level = 5
+            }
+        });
     }
 }
