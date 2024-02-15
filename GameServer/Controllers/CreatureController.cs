@@ -191,12 +191,7 @@ internal class CreatureController : Controller
                 PlayerId = _modelManager.Player.Id,
                 Level = 1,
                 IsOffline = false,
-                Location = new()
-                {
-                    X = 4000,
-                    Y = -2000,
-                    Z = 260
-                },
+                Location = _modelManager.Player.Position,
                 PlayerName = _modelManager.Player.Name,
                 FightRoleInfos = { GetFightRoleInfos() }
             }
@@ -225,12 +220,7 @@ internal class CreatureController : Controller
         for (int i = 0; i < _modelManager.Formation.RoleIds.Length; i++)
         {
             PlayerEntity entity = _entityFactory.CreatePlayer(_modelManager.Formation.RoleIds[i], _modelManager.Player.Id);
-            entity.Pos = new()
-            {
-                X = 4000,
-                Y = -2000,
-                Z = 260
-            };
+            entity.Pos = _modelManager.Player.Position.Clone();
             entity.IsCurrentRole = i == 0;
 
             _entitySystem.Create(entity);
@@ -247,13 +237,15 @@ internal class CreatureController : Controller
 
     private void CreateWorldEntities()
     {
+        Vector playerPos = _modelManager.Player.Position;
+
         // Test monster
-        MonsterEntity monster = _entityFactory.CreateMonster(102000014); // Monster001
+        MonsterEntity monster = _entityFactory.CreateMonster(106003002); // Turtle.
         monster.Pos = new()
         {
-            X = 4444,
-            Y = -2222,
-            Z = 260
+            X = playerPos.X + 250,
+            Y = playerPos.Y + 250,
+            Z = playerPos.Z
         };
 
         _entitySystem.Create(monster);
