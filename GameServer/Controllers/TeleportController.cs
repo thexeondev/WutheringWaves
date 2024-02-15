@@ -13,4 +13,7 @@ internal class TeleportController : Controller
 
     [NetEvent(MessageId.TeleportFinishRequest)]
     public ResponseMessage OnTeleportFinishRequest() => Response(MessageId.TeleportFinishResponse, new TeleportFinishResponse());
+
+    [NetEvent(MessageId.TeleportDataRequest)]
+    public ResponseMessage OnTeleportDataRequest() => Response(MessageId.TeleportDataResponse, new TeleportDataResponse());
 }
