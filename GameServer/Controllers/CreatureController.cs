@@ -249,12 +249,40 @@ internal class CreatureController : Controller
             _entitySystem.Create(entity);
             entity.InitProps(_configManager.GetConfig<BasePropertyConfig>(entity.ConfigId)!);
 
+            CreateConcomitants(entity);
+
             // Give weapon to entity
             RoleInfoConfig roleConfig = _configManager.GetConfig<RoleInfoConfig>(entity.ConfigId)!;
             WeaponConfig weaponConfig = _configManager.GetConfig<WeaponConfig>(roleConfig.InitWeaponItemId)!;
             entity.WeaponId = weaponConfig.ItemId;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
+        }
+    }
+
+    private void CreateConcomitants(PlayerEntity entity)
+    {
+        (int roleId, int summonConfigId) = entity.ConfigId switch
+        {
+            1302 => (5002, 10070301),
+            _ => (-1, -1)
+        };
+
+        if (roleId != -1)
+        {
+            PlayerEntity concomitant = _entityFactory.CreatePlayer(roleId, 0);
+            _entitySystem.Create(concomitant);
+
+            EntityConcomitantsComponent concomitants = entity.ComponentSystem.Get<EntityConcomitantsComponent>();
+            concomitants.CustomEntityIds.Clear();
+            concomitants.CustomEntityIds.Add(concomitant.Id);
+
+            EntitySummonerComponent summoner = concomitant.ComponentSystem.Create<EntitySummonerComponent>();
+            summoner.SummonerId = entity.Id;
+            summoner.SummonConfigId = summonConfigId;
+            summoner.SummonType = ESummonType.ConcomitantCustom;
+            summoner.PlayerId = _modelManager.Player.Id;
+            concomitant.InitProps(_configManager.GetConfig<BasePropertyConfig>(roleId)!);
         }
     }
 
