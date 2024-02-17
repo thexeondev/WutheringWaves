@@ -67,9 +67,10 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.SceneLoadingFinishRequest)]
-    public ResponseMessage OnSceneLoadingFinishRequest()
+    public async Task<ResponseMessage> OnSceneLoadingFinishRequest()
     {
         _modelManager.Creature.OnWorldDone();
+        await UpdateAiHate();
 
         return Response(MessageId.SceneLoadingFinishResponse, new SceneLoadingFinishResponse());
     }
@@ -79,10 +80,7 @@ internal class CreatureController : Controller
     {
         // Remove old entities
 
-        IEnumerable<PlayerEntity> oldEntities = _entitySystem.EnumerateEntities()
-                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
-                                                   .Cast<PlayerEntity>().ToArray();
-
+        IEnumerable<PlayerEntity> oldEntities = GetPlayerEntities().ToArray();
         foreach (PlayerEntity oldEntity in oldEntities)
         {
             _entitySystem.Destroy(oldEntity);
@@ -105,10 +103,7 @@ internal class CreatureController : Controller
 
         CreateTeamPlayerEntities();
 
-        IEnumerable<PlayerEntity> newEntities = _entitySystem.EnumerateEntities()
-                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
-                                                   .Cast<PlayerEntity>();
-
+        IEnumerable<PlayerEntity> newEntities = GetPlayerEntities();
         await Session.Push(MessageId.EntityAddNotify, new EntityAddNotify
         {
             IsAdd = true,
@@ -124,6 +119,8 @@ internal class CreatureController : Controller
             PlayerId = _modelManager.Player.Id,
             FightRoleInfos = { GetFightRoleInfos() }
         });
+
+        await UpdateAiHate();
     }
 
     [GameEvent(GameEventType.VisionSkillChanged)]
@@ -165,13 +162,43 @@ internal class CreatureController : Controller
 
         prevEntity.IsCurrentRole = false;
 
-        PlayerEntity? newEntity = _entitySystem.EnumerateEntities().FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId) as PlayerEntity;
-        if (newEntity == null) return;
+        if (_entitySystem.EnumerateEntities().FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId) is not PlayerEntity newEntity) return;
 
         _modelManager.Creature.PlayerEntityId = newEntity.Id;
         newEntity.IsCurrentRole = true;
 
-        await OnVisionSkillChanged();
+        await UpdateAiHate();
+    }
+
+    public async Task UpdateAiHate()
+    {
+        IEnumerable<EntityBase> monsters = _entitySystem.EnumerateEntities().Where(e => e is MonsterEntity);
+        if (!monsters.Any()) return;
+
+        await Session.Push(MessageId.CombatReceivePackNotify, new CombatReceivePackNotify
+        {
+            Data =
+            {
+                monsters.Select(monster => new CombatReceiveData
+                {
+                    CombatNotifyData = new()
+                    {
+                        CombatCommon = new() { EntityId = monster.Id },
+                        AiHateNotify = new()
+                        {
+                            HateList =
+                            {
+                                GetPlayerEntities().Select(player => new AiHateEntity
+                                {
+                                    EntityId = player.Id,
+                                    HatredValue = 99999 // currently this, TODO!
+                                })
+                            }
+                        }
+                    }
+                })
+            }
+        });
     }
 
     private SceneInformation CreateSceneInfo() => new()
@@ -200,11 +227,7 @@ internal class CreatureController : Controller
 
     private IEnumerable<FightRoleInformation> GetFightRoleInfos()
     {
-        IEnumerable<PlayerEntity> playerEntities = _entitySystem.EnumerateEntities()
-                                                   .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
-                                                   .Cast<PlayerEntity>();
-
-        return playerEntities.Select(playerEntity => new FightRoleInformation
+        return GetPlayerEntities().Select(playerEntity => new FightRoleInformation
         {
             EntityId = playerEntity.Id,
             CurHp = playerEntity.Health,

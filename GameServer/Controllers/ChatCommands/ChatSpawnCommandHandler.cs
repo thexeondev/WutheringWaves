@@ -16,14 +16,16 @@ internal class ChatSpawnCommandHandler
     private readonly EntityFactory _entityFactory;
     private readonly PlayerSession _session;
     private readonly ConfigManager _configManager;
+    private readonly CreatureController _creatureController;
 
-    public ChatSpawnCommandHandler(ModelManager modelManager, EntitySystem entitySystem, EntityFactory entityFactory, PlayerSession session, ConfigManager configManager)
+    public ChatSpawnCommandHandler(ModelManager modelManager, EntitySystem entitySystem, EntityFactory entityFactory, PlayerSession session, ConfigManager configManager, CreatureController creatureController)
     {
         _helperRoom = modelManager.Chat.GetChatRoom(1338);
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _session = session;
         _configManager = configManager;
+        _creatureController = creatureController;
     }
 
     [ChatCommand("monster")]
@@ -56,6 +58,8 @@ internal class ChatSpawnCommandHandler
             IsAdd = true,
             EntityPbs = { monster.Pb }
         });
+
+        await _creatureController.UpdateAiHate();
 
         _helperRoom.AddMessage(1338, 0, $"Successfully spawned monster with id {levelEntityId} at ({x}, {y}, {z})");
     }

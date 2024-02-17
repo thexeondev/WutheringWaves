@@ -28,6 +28,8 @@ internal abstract class EntityBase
     public virtual void OnCreate()
     {
         State = EntityState.Born;
+
+        _ = ComponentSystem.Create<EntityLogicStateComponent>();
     }
 
     public virtual void Activate()

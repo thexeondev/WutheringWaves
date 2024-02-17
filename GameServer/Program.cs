@@ -1,6 +1,7 @@
 ﻿using Core.Config;
 using Core.Extensions;
 using GameServer.Controllers.ChatCommands;
+using GameServer.Controllers.Combat;
 using GameServer.Controllers.Factory;
 using GameServer.Controllers.Manager;
 using GameServer.Extensions;
@@ -39,7 +40,8 @@ internal static class Program
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()
                         .AddSingleton<SessionManager>()
                         .AddScoped<EventSystem>().AddScoped<EntitySystem>().AddScoped<EntityFactory>()
-                        .AddScoped<ModelManager>().AddScoped<ControllerManager>().AddScoped<ChatCommandManager>()
+                        .AddScoped<ModelManager>().AddScoped<ControllerManager>()
+                        .AddScoped<CombatManager>().AddScoped<ChatCommandManager>()
                         .AddHostedService<WWGameServer>();
 
         IHost host = builder.Build();

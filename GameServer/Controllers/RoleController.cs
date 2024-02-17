@@ -35,8 +35,9 @@ internal class RoleController : Controller
     }
 
     [NetEvent(MessageId.SwitchRoleRequest)]
-    public ResponseMessage OnSwitchRoleRequest(SwitchRoleRequest request)
+    public async Task<ResponseMessage> OnSwitchRoleRequest(SwitchRoleRequest request, CreatureController creatureController)
     {
+        await creatureController.SwitchPlayerEntity(request.RoleId);
         return Response(MessageId.SwitchRoleResponse, new SwitchRoleResponse
         {
             RoleId = request.RoleId

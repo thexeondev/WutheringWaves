@@ -37,6 +37,7 @@ internal class EntityAttributeComponent : EntityComponentBase
         }
 
         attribute.CurrentValue = currentValue;
+        attribute.BaseValue = currentValue;
     }
 
     public int GetAttribute(EAttributeType type)
