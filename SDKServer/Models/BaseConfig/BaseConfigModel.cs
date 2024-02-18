@@ -10,6 +10,12 @@ public record BaseConfigModel
     [JsonPropertyName("SecondaryUrl")]
     public required CdnUrlEntry[] SecondaryUrl { get; set; }
 
+    [JsonPropertyName("SpeedRatio")]
+    public int SpeedRatio { get; set; }
+
+    [JsonPropertyName("PriceRatio")]
+    public int PriceRatio { get; set; }
+
     [JsonPropertyName("GmOpen")]
     public bool GmOpen { get; set; }
 
