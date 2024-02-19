@@ -10,7 +10,7 @@ internal static class Program
     private const string ProtoNamespace = "Protocol";
     private const string MessageParserProperty = "Parser";
 
-    private static readonly DumpOptions s_objectDumperOpts = new() { DumpStyle = DumpStyle.CSharp, IndentSize = 4, IndentChar = ' ' };
+    private static readonly DumpOptions s_objectDumperOpts = new() { DumpStyle = DumpStyle.CSharp, IndentSize = 4, IndentChar = ' ', IgnoreDefaultValues = true };
 
     private static void Main(string[] args)
     {
@@ -21,15 +21,13 @@ internal static class Program
         string? idInput;
         string? payloadInput;
 
-        while (!string.IsNullOrEmpty(idInput = Console.ReadLine()) && !string.IsNullOrEmpty(payloadInput = Console.ReadLine()))
+        while (!string.IsNullOrEmpty(idInput = Console.ReadLine()) && (payloadInput = Console.ReadLine()) != null)
         {
             int messageId = int.Parse(idInput);
             byte[] payload = Convert.FromHexString(payloadInput);
 
             inList.Add(Tuple.Create(messageId, payload));
         }
-
-        Console.Clear();
 
         foreach ((int messageId, byte[] payload) in inList)
         {
