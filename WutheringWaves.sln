@@ -16,7 +16,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KcpSharp", "KcpSharp\KcpSha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Protocol", "Protocol\Protocol.csproj", "{9900A88C-7818-4335-84F7-1538ECC8B338}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{C025BDED-6DC7-493D-8D10-05DCCB3072F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C025BDED-6DC7-493D-8D10-05DCCB3072F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficAnalyzer", "TrafficAnalyzer\TrafficAnalyzer.csproj", "{7DA57BA1-215F-4DD8-86A9-CAC62908A6F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{C025BDED-6DC7-493D-8D10-05DCCB3072F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C025BDED-6DC7-493D-8D10-05DCCB3072F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C025BDED-6DC7-493D-8D10-05DCCB3072F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA57BA1-215F-4DD8-86A9-CAC62908A6F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA57BA1-215F-4DD8-86A9-CAC62908A6F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA57BA1-215F-4DD8-86A9-CAC62908A6F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA57BA1-215F-4DD8-86A9-CAC62908A6F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
