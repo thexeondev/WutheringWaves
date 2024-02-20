@@ -16,7 +16,7 @@ internal class FriendSystemController : Controller
     {
         FriendInfoList = 
         {
-            CreateDummyFriendInfo(1338, "Taoqi", "discord.gg/reversedrooms", 1601)
+            CreateDummyFriendInfo(1338, "Yangyang", "discord.gg/reversedrooms", 1402)
         }
     });
 

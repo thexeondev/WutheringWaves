@@ -52,7 +52,8 @@ internal class CreatureController : Controller
             _entitySystem.Activate(entity);
             response = new EntityActiveResponse
             {
-                ErrorCode = (int)ErrorCode.Success
+                ErrorCode = (int)ErrorCode.Success,
+                IsVisible = entity.IsVisible
             };
 
             response.ComponentPbs.AddRange(entity.ComponentSystem.Pb);

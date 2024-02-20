@@ -21,7 +21,7 @@ internal class LoginController : Controller
         return Response(MessageId.LoginResponse, new LoginResponse
         {
             Code = 0,
-            Platform = "PC",
+            Platform = "CBT3_EU",
             Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds()
         });
     }
