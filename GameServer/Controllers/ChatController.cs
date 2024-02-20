@@ -18,7 +18,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatDataRequest)]
-    public async Task<ResponseMessage> OnPrivateChatDataRequest()
+    public async Task<RpcResult> OnPrivateChatDataRequest()
     {
         if (!_modelManager.Chat.AllChatRooms.Any())
         {
@@ -31,7 +31,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatRequest)]
-    public async Task<ResponseMessage> OnPrivateChatRequest(PrivateChatRequest request, ChatCommandManager chatCommandManager)
+    public async Task<RpcResult> OnPrivateChatRequest(PrivateChatRequest request, ChatCommandManager chatCommandManager)
     {
         ChatRoom chatRoom = _modelManager.Chat.GetChatRoom(1338);
 
@@ -54,7 +54,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatOperateRequest)]
-    public ResponseMessage OnPrivateChatOperateRequest() => Response(MessageId.PrivateChatOperateResponse, new PrivateChatOperateResponse());
+    public RpcResult OnPrivateChatOperateRequest() => Response(MessageId.PrivateChatOperateResponse, new PrivateChatOperateResponse());
 
     private async Task PushPrivateChatHistory()
     {

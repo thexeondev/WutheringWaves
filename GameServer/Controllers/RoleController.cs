@@ -36,7 +36,7 @@ internal class RoleController : Controller
     }
 
     [NetEvent(MessageId.SwitchRoleRequest)]
-    public async Task<ResponseMessage> OnSwitchRoleRequest(SwitchRoleRequest request, CreatureController creatureController)
+    public async Task<RpcResult> OnSwitchRoleRequest(SwitchRoleRequest request, CreatureController creatureController)
     {
         await creatureController.SwitchPlayerEntity(request.RoleId);
         return Response(MessageId.SwitchRoleResponse, new SwitchRoleResponse
@@ -46,7 +46,7 @@ internal class RoleController : Controller
     }
 
     [NetEvent(MessageId.RoleFavorListRequest)]
-    public ResponseMessage OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
+    public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
 
     private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {

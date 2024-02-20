@@ -13,7 +13,7 @@ internal class CombatMessageController : Controller
     }
 
     [NetEvent(MessageId.CombatSendPackRequest)] // TODO: CombatSendPackRequest is important
-    public async Task<ResponseMessage> OnCombatSendPackRequest(CombatSendPackRequest request, CombatManager combatManager)
+    public async Task<RpcResult> OnCombatSendPackRequest(CombatSendPackRequest request, CombatManager combatManager)
     {
         CombatReceivePackNotify combatPackNotify = new();
 

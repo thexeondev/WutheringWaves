@@ -12,5 +12,5 @@ internal class GachaController : Controller
     }
 
     [NetEvent(MessageId.GachaInfoRequest)]
-    public ResponseMessage OnGachaInfoRequest() => Response(MessageId.GachaInfoResponse, new GachaInfoResponse());
+    public RpcResult OnGachaInfoRequest() => Response(MessageId.GachaInfoResponse, new GachaInfoResponse());
 }

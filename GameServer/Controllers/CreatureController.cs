@@ -42,7 +42,7 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.EntityActiveRequest)]
-    public async Task<ResponseMessage> OnEntityActiveRequest(EntityActiveRequest request)
+    public async Task<RpcResult> OnEntityActiveRequest(EntityActiveRequest request)
     {
         EntityActiveResponse response;
 
@@ -68,7 +68,7 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.SceneLoadingFinishRequest)]
-    public async Task<ResponseMessage> OnSceneLoadingFinishRequest()
+    public async Task<RpcResult> OnSceneLoadingFinishRequest()
     {
         _modelManager.Creature.OnWorldDone();
         await UpdateAiHate();

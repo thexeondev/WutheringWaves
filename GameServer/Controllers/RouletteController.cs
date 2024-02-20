@@ -41,7 +41,7 @@ internal class RouletteController : Controller
     }
 
     [NetEvent(MessageId.VisionExploreSkillSetRequest)]
-    public async Task<ResponseMessage> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request, CreatureController creatureController, EventSystem eventSystem)
+    public async Task<RpcResult> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request, CreatureController creatureController, EventSystem eventSystem)
     {
         PlayerEntity? playerEntity = creatureController.GetPlayerEntity();
         if (playerEntity == null) return Response(MessageId.VisionExploreSkillSetResponse, new VisionExploreSkillSetResponse { ErrCode = (int)ErrorCode.PlayerNotInAnyScene });

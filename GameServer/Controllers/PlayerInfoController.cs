@@ -42,6 +42,12 @@ internal class PlayerInfoController : Controller
                     Key = (int)PlayerAttrKey.HeadPhoto,
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 1402
+                },
+                new PlayerAttr
+                {
+                    Key = (int)PlayerAttrKey.Sex,
+                    ValueType = (int)PlayerAttrType.Int32,
+                    Int32Value = 1
                 }
             },
             RoleShowList =
@@ -67,7 +73,7 @@ internal class PlayerInfoController : Controller
     }
 
     [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
-    public ResponseMessage OnPlayerBasicInfoGetRequest()
+    public RpcResult OnPlayerBasicInfoGetRequest()
     {
         return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse
         {

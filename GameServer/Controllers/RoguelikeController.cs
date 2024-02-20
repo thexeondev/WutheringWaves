@@ -12,5 +12,5 @@ internal class RoguelikeController : Controller
     }
 
     [NetEvent(MessageId.RoguelikeSeasonDataRequest)]
-    public ResponseMessage OnRoguelikeSeasonDataRequest() => Response(MessageId.RoguelikeSeasonDataResponse, new RoguelikeSeasonDataResponse());
+    public RpcResult OnRoguelikeSeasonDataRequest() => Response(MessageId.RoguelikeSeasonDataResponse, new RoguelikeSeasonDataResponse());
 }

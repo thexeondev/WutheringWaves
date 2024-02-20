@@ -12,14 +12,14 @@ internal class InventoryController : Controller
     }
 
     [NetEvent(MessageId.NormalItemRequest)]
-    public ResponseMessage OnNormalItemRequest() => Response(MessageId.NormalItemResponse, new NormalItemResponse());
+    public RpcResult OnNormalItemRequest() => Response(MessageId.NormalItemResponse, new NormalItemResponse());
 
     [NetEvent(MessageId.WeaponItemRequest)]
-    public ResponseMessage OnWeaponItemRequest() => Response(MessageId.WeaponItemResponse, new WeaponItemResponse());
+    public RpcResult OnWeaponItemRequest() => Response(MessageId.WeaponItemResponse, new WeaponItemResponse());
 
     [NetEvent(MessageId.PhantomItemRequest)]
-    public ResponseMessage OnPhantomItemRequest() => Response(MessageId.PhantomItemResponse, new PhantomItemResponse());
+    public RpcResult OnPhantomItemRequest() => Response(MessageId.PhantomItemResponse, new PhantomItemResponse());
 
     [NetEvent(MessageId.ItemExchangeInfoRequest)]
-    public ResponseMessage OnItemExchangeInfoRequest() => Response(MessageId.ItemExchangeInfoResponse, new ItemExchangeInfoResponse());
+    public RpcResult OnItemExchangeInfoRequest() => Response(MessageId.ItemExchangeInfoResponse, new ItemExchangeInfoResponse());
 }

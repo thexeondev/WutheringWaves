@@ -12,5 +12,5 @@ internal class ExchangeRewardController : Controller
     }
 
     [NetEvent(MessageId.ExchangeRewardInfoRequest)]
-    public ResponseMessage OnExchangeRewardInfoRequest() => Response(MessageId.ExchangeRewardInfoResponse, new ExchangeRewardInfoResponse());
+    public RpcResult OnExchangeRewardInfoRequest() => Response(MessageId.ExchangeRewardInfoResponse, new ExchangeRewardInfoResponse());
 }

@@ -17,7 +17,7 @@ internal class FormationController : Controller
     }
 
     [NetEvent(MessageId.GetFormationDataRequest)]
-    public ResponseMessage OnGetFormationDataRequest() => Response(MessageId.GetFormationDataResponse, new GetFormationDataResponse
+    public RpcResult OnGetFormationDataRequest() => Response(MessageId.GetFormationDataResponse, new GetFormationDataResponse
     {
         Formations =
             {
@@ -32,7 +32,7 @@ internal class FormationController : Controller
     });
 
     [NetEvent(MessageId.UpdateFormationRequest)]
-    public async Task<ResponseMessage> OnUpdateFormationRequest(UpdateFormationRequest request, EventSystem eventSystem)
+    public async Task<RpcResult> OnUpdateFormationRequest(UpdateFormationRequest request, EventSystem eventSystem)
     {
         _modelManager.Formation.Set([.. request.Formation.RoleIds]);
         await eventSystem.Emit(GameEventType.FormationUpdated);

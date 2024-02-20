@@ -12,5 +12,5 @@ internal class ShopController : Controller
     }
 
     [NetEvent(MessageId.PayShopInfoRequest)]
-    public ResponseMessage OnPayShopInfoRequest() => Response(MessageId.PayShopInfoResponse, new PayShopInfoResponse());
+    public RpcResult OnPayShopInfoRequest() => Response(MessageId.PayShopInfoResponse, new PayShopInfoResponse());
 }

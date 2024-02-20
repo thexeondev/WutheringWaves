@@ -3,6 +3,7 @@ internal enum GameEventType
 {
     Login = 1,
     EnterGame,
+    PushDataDone,
 
     // Actions
     FormationUpdated,

@@ -15,7 +15,7 @@ internal class ExploreProgressController : Controller
     }
 
     [NetEvent(MessageId.ExploreProgressRequest)]
-    public ResponseMessage OnExploreProgressRequest()
+    public RpcResult OnExploreProgressRequest()
     {
         return Response(MessageId.ExploreProgressResponse, new ExploreProgressResponse
         {

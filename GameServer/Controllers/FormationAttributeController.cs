@@ -12,8 +12,8 @@ internal class FormationAttributeController : Controller
     }
 
     [NetEvent(MessageId.TimeCheckRequest)]
-    public ResponseMessage OnTimeCheckRequest() => Response(MessageId.TimeCheckResponse, new TimeCheckResponse());
+    public RpcResult OnTimeCheckRequest() => Response(MessageId.TimeCheckResponse, new TimeCheckResponse());
 
     [NetEvent(MessageId.FormationAttrRequest)]
-    public ResponseMessage OnFormationAttrRequest() => Response(MessageId.FormationAttrResponse, new FormationAttrResponse());
+    public RpcResult OnFormationAttrRequest() => Response(MessageId.FormationAttrResponse, new FormationAttrResponse());
 }

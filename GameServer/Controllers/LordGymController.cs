@@ -12,5 +12,5 @@ internal class LordGymController : Controller
     }
 
     [NetEvent(MessageId.LordGymInfoRequest)]
-    public ResponseMessage OnLordGymInfoRequest() => Response(MessageId.LordGymInfoResponse, new LordGymInfoResponse());
+    public RpcResult OnLordGymInfoRequest() => Response(MessageId.LordGymInfoResponse, new LordGymInfoResponse());
 }

@@ -19,14 +19,14 @@ internal class WorldController : Controller
     }
 
     [NetEvent(MessageId.EntityOnLandedRequest)]
-    public ResponseMessage OnEntityOnLandedRequest() => Response(MessageId.EntityOnLandedResponse, new EntityOnLandedResponse());
+    public RpcResult OnEntityOnLandedRequest() => Response(MessageId.EntityOnLandedResponse, new EntityOnLandedResponse());
 
     [NetEvent(MessageId.PlayerMotionRequest)]
-    public ResponseMessage OnPlayerMotionRequest() => Response(MessageId.PlayerMotionResponse, new PlayerMotionResponse());
+    public RpcResult OnPlayerMotionRequest() => Response(MessageId.PlayerMotionResponse, new PlayerMotionResponse());
 
     [NetEvent(MessageId.EntityLoadCompleteRequest)]
-    public ResponseMessage OnEntityLoadCompleteRequest() => Response(MessageId.EntityLoadCompleteResponse, new EntityLoadCompleteResponse());
+    public RpcResult OnEntityLoadCompleteRequest() => Response(MessageId.EntityLoadCompleteResponse, new EntityLoadCompleteResponse());
 
     [NetEvent(MessageId.UpdateSceneDateRequest)]
-    public ResponseMessage OnUpdateSceneDateRequest() => Response(MessageId.UpdateSceneDateResponse, new UpdateSceneDateResponse());
+    public RpcResult OnUpdateSceneDateRequest() => Response(MessageId.UpdateSceneDateResponse, new UpdateSceneDateResponse());
 }
