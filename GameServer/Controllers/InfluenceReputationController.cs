@@ -12,5 +12,5 @@ internal class InfluenceReputationController : Controller
     }
 
     [NetEvent(MessageId.InfluenceInfoRequest)]
-    public ResponseMessage OnInfluenceInfoRequest() => Response(MessageId.InfluenceInfoResponse, new InfluenceInfoResponse());
+    public RpcResult OnInfluenceInfoRequest() => Response(MessageId.InfluenceInfoResponse, new InfluenceInfoResponse());
 }

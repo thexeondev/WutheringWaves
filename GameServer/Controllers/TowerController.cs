@@ -12,8 +12,8 @@ internal class TowerController : Controller
     }
 
     [NetEvent(MessageId.TowerChallengeRequest)]
-    public ResponseMessage OnTowerChallengeRequest() => Response(MessageId.TowerChallengeResponse, new TowerChallengeResponse());
+    public RpcResult OnTowerChallengeRequest() => Response(MessageId.TowerChallengeResponse, new TowerChallengeResponse());
 
     [NetEvent(MessageId.CycleTowerChallengeRequest)]
-    public ResponseMessage OnCycleTowerChallengeRequest() => Response(MessageId.CycleTowerChallengeResponse, new CycleTowerChallengeResponse());
+    public RpcResult OnCycleTowerChallengeRequest() => Response(MessageId.CycleTowerChallengeResponse, new CycleTowerChallengeResponse());
 }

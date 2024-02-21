@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using GameServer.Controllers.Attributes;
 using GameServer.Controllers.ChatCommands;
 using GameServer.Models;
@@ -8,7 +9,7 @@ using GameServer.Network.Messages;
 using Protocol;
 
 namespace GameServer.Controllers;
-internal class ChatController : Controller
+internal partial class ChatController : Controller
 {
     private readonly ModelManager _modelManager;
 
@@ -18,7 +19,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatDataRequest)]
-    public async Task<ResponseMessage> OnPrivateChatDataRequest()
+    public async Task<RpcResult> OnPrivateChatDataRequest()
     {
         if (!_modelManager.Chat.AllChatRooms.Any())
         {
@@ -31,7 +32,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatRequest)]
-    public async Task<ResponseMessage> OnPrivateChatRequest(PrivateChatRequest request, ChatCommandManager chatCommandManager)
+    public async Task<RpcResult> OnPrivateChatRequest(PrivateChatRequest request, ChatCommandManager chatCommandManager)
     {
         ChatRoom chatRoom = _modelManager.Chat.GetChatRoom(1338);
 
@@ -42,7 +43,8 @@ internal class ChatController : Controller
         }
         else
         {
-            string[] split = request.Content[1..].Split(' ');
+            string content = MultipleSpacesRegex().Replace(request.Content, " ");
+            string[] split = content[1..].Split(' ');
             if (split.Length >= 2)
             {
                 await chatCommandManager.InvokeCommandAsync(split[0], split[1], split[2..]);
@@ -54,7 +56,7 @@ internal class ChatController : Controller
     }
 
     [NetEvent(MessageId.PrivateChatOperateRequest)]
-    public ResponseMessage OnPrivateChatOperateRequest() => Response(MessageId.PrivateChatOperateResponse, new PrivateChatOperateResponse());
+    public RpcResult OnPrivateChatOperateRequest() => Response(MessageId.PrivateChatOperateResponse, new PrivateChatOperateResponse());
 
     private async Task PushPrivateChatHistory()
     {
@@ -85,4 +87,7 @@ internal class ChatController : Controller
 
         return builder.ToString();
     }
+
+    [GeneratedRegex(@"\s+")]
+    private static partial Regex MultipleSpacesRegex();
 }

@@ -12,8 +12,8 @@ internal class DailyActivityController : Controller
     }
 
     [NetEvent(MessageId.ActivityRequest)]
-    public ResponseMessage OnActivityRequest() => Response(MessageId.ActivityResponse, new ActivityResponse());
+    public RpcResult OnActivityRequest() => Response(MessageId.ActivityResponse, new ActivityResponse());
 
     [NetEvent(MessageId.LivenessRequest)]
-    public ResponseMessage OnLivenessRequest() => Response(MessageId.LivenessResponse, new LivenessResponse());
+    public RpcResult OnLivenessRequest() => Response(MessageId.LivenessResponse, new LivenessResponse());
 }

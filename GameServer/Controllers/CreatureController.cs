@@ -42,7 +42,7 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.EntityActiveRequest)]
-    public async Task<ResponseMessage> OnEntityActiveRequest(EntityActiveRequest request)
+    public async Task<RpcResult> OnEntityActiveRequest(EntityActiveRequest request)
     {
         EntityActiveResponse response;
 
@@ -52,7 +52,8 @@ internal class CreatureController : Controller
             _entitySystem.Activate(entity);
             response = new EntityActiveResponse
             {
-                ErrorCode = (int)ErrorCode.Success
+                ErrorCode = (int)ErrorCode.Success,
+                IsVisible = entity.IsVisible
             };
 
             response.ComponentPbs.AddRange(entity.ComponentSystem.Pb);
@@ -67,7 +68,7 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.SceneLoadingFinishRequest)]
-    public async Task<ResponseMessage> OnSceneLoadingFinishRequest()
+    public async Task<RpcResult> OnSceneLoadingFinishRequest()
     {
         _modelManager.Creature.OnWorldDone();
         await UpdateAiHate();

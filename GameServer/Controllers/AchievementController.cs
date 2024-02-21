@@ -12,5 +12,5 @@ internal class AchievementController : Controller
     }
 
     [NetEvent(MessageId.AchievementInfoRequest)]
-    public ResponseMessage OnAchievementInfoRequest() => Response(MessageId.AchievementInfoResponse, new AchievementInfoResponse());
+    public RpcResult OnAchievementInfoRequest() => Response(MessageId.AchievementInfoResponse, new AchievementInfoResponse());
 }

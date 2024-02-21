@@ -1573,6 +1573,17 @@ message ClientBasicInfoRequest { // MessageId: 5165
 message ClientBasicInfoResponse { // MessageId: 3017
 }
 
+message ClientCurrentRoleReportRequest { // MessageId: 12217
+  int32 player_id = 1;
+  int32 current_role_id = 2;
+  int64 current_entity_id = 3;
+}
+
+message ClientCurrentRoleReportResponse { // MessageId: 12218
+  int32 player_id = 1;
+  int64 current_entity_id = 2;
+}
+
 message ClientDataComponentPb {
   bool is_static_init = 1;
   int64 owner_id = 2;
@@ -2633,6 +2644,7 @@ message EntityActiveRequest { // MessageId: 1541
 message EntityActiveResponse { // MessageId: 1542
   int32 error_code = 1;
   repeated EntityComponentPb component_pbs = 2;
+  bool is_visible = 3;
 }
 
 message EntityAddBubbleNotify { // MessageId: 12203
@@ -7900,6 +7912,7 @@ message SeasonData {
   int64 end_time = 3;
   repeated RoguelikeToken roguelike_token_list = 4;
   repeated SeasonReward season_reward_list = 5;
+  int32 token_item_count = 6;
 }
 
 message SeasonReward {
@@ -10931,6 +10944,7 @@ enum ErrorCode {
   ERROR_CODE_ERR_ENTITY_PATROL_COMPONENT_NOT_EXIST = 600088;
   ERROR_CODE_ERR_INTERACT_IS_NOT_PARTICIPANT = 600089;
   ERROR_CODE_ERR_VISION_ENTITY_INTERACT_FAIL = 600090;
+  ERROR_CODE_ERR_MAX_DROP_TIMES = 600091;
   ERROR_CODE_ERR_SCENE_WORLD_NOT_EXIST = 700000;
   ERROR_CODE_ERR_PLAYER_NOT_IN_SCENE = 700001;
   ERROR_CODE_ERR_DROP_ENTITY_NOT_EXIST = 700002;
@@ -11297,6 +11311,7 @@ enum ErrorCode {
   ERROR_CODE_ERR_ITEM_POS_INVAILD = 900058;
   ERROR_CODE_ERR_ITEM_ID_INVAILD = 900059;
   ERROR_CODE_ERR_ROULETTE_FUNC_ID_INVAILD = 900060;
+  ERROR_CODE_ERR_STATE_IS_RUNNING = 900061;
   ERROR_CODE_ERR_BUFF_ITEM_CONFIG = 1000000;
   ERROR_CODE_ERR_BUFF_ITEM_NOT_SHARE = 1000001;
   ERROR_CODE_ERR_BUFF_ITEM_SHARE_ROLE_ID = 1000002;
@@ -11755,6 +11770,9 @@ enum ErrorCode {
   ERROR_CODE_ERR_EXPLORE_SKILL_PULL_GIANT_NOT_EXIST = 1800027;
   ERROR_CODE_ERR_HTTP_RPC_PARAM = 1800028;
   ERROR_CODE_ERR_PLAYER_NOT_IN_GAME_NODE = 1800029;
+  ERROR_CODE_ERR_APPLY_JOIN_PLAYER_CUR_ROLE_IS_DEAD = 1800030;
+  ERROR_CODE_ERR_PLAYER_CUR_ROLE_IS_DEAD_NO_JOIN = 1800031;
+  ERROR_CODE_ERR_PLAYER_CUR_ROLE_IS_DEAD = 1800032;
   ERROR_CODE_ERR_CALABASH_LEVEL_REQUEST = 1900000;
   ERROR_CODE_ERR_CALABASH_LEVEL_REWARD_DONE = 1900001;
   ERROR_CODE_ERR_CALABASH_LEVEL_CONFIG = 1900002;
@@ -11793,6 +11811,7 @@ enum ErrorCode {
   ERROR_CODE_ERR_NEW_BIE_COURSE_CONFIG = 1900035;
   ERROR_CODE_ERR_NEW_BIE_COURSE_REWARD_HAD = 1900036;
   ERROR_CODE_ERR_NEW_BIE_COURSE_LEVEL = 1900037;
+  ERROR_CODE_ERR_DETECTION_TARGET_SILENCE = 1900038;
   ERROR_CODE_ERR_DO_COMMON_REWARD_CONFIG_ERROR = 2000000;
   ERROR_CODE_INST_PLAY_NOT_SETTLE = 2000001;
   ERROR_CODE_INST_PLAY_NOT_FINISH_EXECUTE = 2000002;
@@ -12290,6 +12309,7 @@ enum WorldTeamLeaveReason {
   WORLD_TEAM_LEAVE_REASON_BE_KICK = 1;
   WORLD_TEAM_LEAVE_REASON_DISSOLVE = 2;
   WORLD_TEAM_LEAVE_REASON_LOGOUT = 3;
+  WORLD_TEAM_LEAVE_REASON_TO_OWN_BIG_WORLD = 4;
 }
 
 enum WorldTeamPlayerChangeType {

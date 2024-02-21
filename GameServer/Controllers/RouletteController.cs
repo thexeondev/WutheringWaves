@@ -20,7 +20,7 @@ internal class RouletteController : Controller
     {
         await Session.Push(MessageId.ExploreToolAllNotify, new ExploreToolAllNotify
         {
-            SkillList = { 1001, 1004, 1003 },
+            SkillList = { 3001, 3002, 1005, 1006, 1001, 1004, 1003, 1007, 1009 },
             ExploreSkill = 1001
         });
 
@@ -34,14 +34,14 @@ internal class RouletteController : Controller
                 },
                 new ExploreSkillRoulette
                 {
-                    SkillIds = {1001, 1004, 1003, 0, 0, 0, 0, 0},
+                    SkillIds = {10002, 10004, 0, 0, 0, 0, 0, 0},
                 }
             }
         });
     }
 
     [NetEvent(MessageId.VisionExploreSkillSetRequest)]
-    public async Task<ResponseMessage> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request, CreatureController creatureController, EventSystem eventSystem)
+    public async Task<RpcResult> OnVisionExploreSkillSetRequest(VisionExploreSkillSetRequest request, CreatureController creatureController, EventSystem eventSystem)
     {
         PlayerEntity? playerEntity = creatureController.GetPlayerEntity();
         if (playerEntity == null) return Response(MessageId.VisionExploreSkillSetResponse, new VisionExploreSkillSetResponse { ErrCode = (int)ErrorCode.PlayerNotInAnyScene });

@@ -1,12 +1,13 @@
 # WutheringWaves
 
-Wuthering Waves server emulator (0.8.2)
+Wuthering Waves server emulator (0.9.0)
 
 ## How to run
 - Compile and run SDKServer and GameServer using dotnet8 (Visual Studio 2022 recommended)
 
 ## Connecting
-- Download [Game Client](https://nogatekeep.ing/assets/ww/0.8.2/ww.7z), it's **pre-patched** and redirects http requests to `127.0.0.1:5500`
+- Get game client from somewhere. For example using official launcher (you can find it in our discord)
+- [Download and extract patch](https://nogatekeep.ing/assets/ww/0.9.0/WuWa-0.9-patch.zip) to the game folder, it will redirect all http requests to `127.0.0.1:5500`
 - Run game and connect to the server
 
 ## Need help?
