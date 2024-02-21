@@ -1,55 +1,22 @@
 ﻿using Core.Config;
-using GameServer.Controllers.Attributes;
-using GameServer.Models;
-using GameServer.Network;
-using GameServer.Systems.Event;
 using Protocol;
 
-namespace GameServer.Controllers;
-internal class RoleController : Controller
+namespace GameServer.Models;
+internal class RoleModel
 {
-    public RoleController(PlayerSession session) : base(session)
-    {
-        // RoleController.
-    }
+    public List<roleInfo> Roles { get; } = [];
 
-    [GameEvent(GameEventType.DebugUnlockAllRoles)]
-    public void UnlockAllRoles(ConfigManager configManager, ModelManager modelManager)
+    public roleInfo Create(int id)
     {
-        foreach (RoleInfoConfig roleConfig in configManager.Enumerate<RoleInfoConfig>())
+        roleInfo info = new()
         {
-            roleInfo role = modelManager.Roles.Create(roleConfig.Id);
-            role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
+            RoleId = id,
+            Level = 1,
+        };
 
-            WeaponItem weapon = modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
-            weapon.RoleId = role.RoleId;
-        }
+        Roles.Add(info);
+        return info;
     }
-
-    [GameEvent(GameEventType.EnterGame)]
-    public async Task OnEnterGame(ModelManager modelManager)
-    {
-        await Session.Push(MessageId.PbGetRoleListNotify, new PbGetRoleListNotify
-        {
-            RoleList =
-            {
-                modelManager.Roles.Roles
-            }
-        });
-    }
-
-    [NetEvent(MessageId.SwitchRoleRequest)]
-    public async Task<RpcResult> OnSwitchRoleRequest(SwitchRoleRequest request, CreatureController creatureController)
-    {
-        await creatureController.SwitchPlayerEntity(request.RoleId);
-        return Response(MessageId.SwitchRoleResponse, new SwitchRoleResponse
-        {
-            RoleId = request.RoleId
-        });
-    }
-
-    [NetEvent(MessageId.RoleFavorListRequest)]
-    public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
 
     private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {
