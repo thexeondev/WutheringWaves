@@ -1,5 +1,6 @@
 ﻿using Core.Config;
 using GameServer.Controllers.Attributes;
+using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Entity;
@@ -34,7 +35,7 @@ internal class InventoryController : Controller
     public RpcResult OnItemExchangeInfoRequest() => Response(MessageId.ItemExchangeInfoResponse, new ItemExchangeInfoResponse());
 
     [NetEvent(MessageId.EquipTakeOnRequest)]
-    public async Task<RpcResult> OnEquipTakeOnRequest(EquipTakeOnRequest request, ModelManager modelManager, CreatureController creatureController)
+    public async Task<RpcResult> OnEquipTakeOnRequest(EquipTakeOnRequest request, ModelManager modelManager, CreatureController creatureController, ConfigManager configManager)
     {
         WeaponItem? weapon = modelManager.Inventory.GetWeaponById(request.Data.EquipIncId);
         if (weapon == null) return Response(MessageId.EquipTakeOnResponse, new EquipTakeOnResponse
@@ -42,9 +43,34 @@ internal class InventoryController : Controller
             ErrorCode = (int)ErrorCode.ErrItemIdInvaild
         });
 
-        PlayerEntity? entity = creatureController.GetPlayerEntityByRoleId(request.Data.RoleId);
-        if (entity != null) 
+        WeaponConfig weaponConf = configManager.GetConfig<WeaponConfig>(weapon.Id)!;
+
+        roleInfo? role = modelManager.Roles.GetRoleById(request.Data.RoleId);
+        if (role == null) return Response(MessageId.EquipTakeOnResponse, new EquipTakeOnResponse
         {
+            ErrorCode = (int)ErrorCode.NotValidRole
+        });
+
+        // Take off previous weapon
+        WeaponItem? prevWeapon = modelManager.Inventory.WeaponList.SingleOrDefault(weapon => weapon.RoleId == role.RoleId);
+        if (prevWeapon != null) prevWeapon.RoleId = 0;
+
+        // Set new weapon
+        weapon.RoleId = role.RoleId;
+        role.ApplyWeaponProperties(weaponConf);
+
+        // Update role prop data on client
+        await Session.Push(MessageId.PbRolePropsNotify, new PbRolePropsNotify
+        {
+            RoleId = role.RoleId,
+            BaseProp = { role.BaseProp },
+            AddProp = { role.AddProp }
+        });
+
+        PlayerEntity? entity = creatureController.GetPlayerEntityByRoleId(request.Data.RoleId);
+        if (entity != null)
+        {
+            // Update entity equipment
             EntityEquipComponent equipComponent = entity.ComponentSystem.Get<EntityEquipComponent>();
             equipComponent.WeaponId = weapon.Id;
 
@@ -53,6 +79,41 @@ internal class InventoryController : Controller
                 EntityId = entity.Id,
                 EquipComponent = equipComponent.Pb.EquipComponent
             });
+
+            // Update entity gameplay attributes
+            EntityAttributeComponent attrComponent = entity.ComponentSystem.Get<EntityAttributeComponent>();
+            attrComponent.SetAll(role.GetAttributeList());
+
+            await Session.Push(MessageId.AttributeChangedNotify, new AttributeChangedNotify
+            {
+                Id = entity.Id,
+                Attributes = { attrComponent.Pb.AttributeComponent.GameAttributes }
+            });
+        }
+
+        // Notify to take off previous one
+        {
+            EquipTakeOnNotify equipTakeOnNotify = new()
+            {
+                DataList =
+                {
+                    new RoleLoadEquipData
+                    {
+                        EquipIncId = weapon.IncrId,
+                        RoleId = role.RoleId
+                    }
+                }
+            };
+
+            if (prevWeapon != null)
+            {
+                equipTakeOnNotify.DataList.Add(new RoleLoadEquipData
+                {
+                    EquipIncId = prevWeapon.IncrId
+                });
+            }
+
+            await Session.Push(MessageId.EquipTakeOnNotify, equipTakeOnNotify);
         }
 
         return Response(MessageId.EquipTakeOnResponse, new EquipTakeOnResponse

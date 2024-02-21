@@ -18,6 +18,11 @@ internal class RoleModel
         return info;
     }
 
+    public roleInfo? GetRoleById(int roleId)
+    {
+        return Roles.SingleOrDefault(role => role.RoleId == roleId);
+    }
+
     private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {
         List<ArrayIntInt> baseProp = [];

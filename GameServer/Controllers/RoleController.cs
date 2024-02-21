@@ -1,5 +1,6 @@
 ﻿using Core.Config;
 using GameServer.Controllers.Attributes;
+using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Event;
@@ -23,6 +24,8 @@ internal class RoleController : Controller
 
             WeaponItem weapon = modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
             weapon.RoleId = role.RoleId;
+
+            role.ApplyWeaponProperties(configManager.GetConfig<WeaponConfig>(weapon.Id)!);
         }
     }
 
