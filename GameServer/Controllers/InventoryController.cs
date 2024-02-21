@@ -91,32 +91,8 @@ internal class InventoryController : Controller
             });
         }
 
-        // Notify to take off previous one
-        {
-            EquipTakeOnNotify equipTakeOnNotify = new()
-            {
-                DataList =
-                {
-                    new RoleLoadEquipData
-                    {
-                        EquipIncId = weapon.IncrId,
-                        RoleId = role.RoleId
-                    }
-                }
-            };
-
-            if (prevWeapon != null)
-            {
-                equipTakeOnNotify.DataList.Add(new RoleLoadEquipData
-                {
-                    EquipIncId = prevWeapon.IncrId
-                });
-            }
-
-            await Session.Push(MessageId.EquipTakeOnNotify, equipTakeOnNotify);
-        }
-
-        return Response(MessageId.EquipTakeOnResponse, new EquipTakeOnResponse
+        // Response
+        EquipTakeOnResponse response = new()
         {
             DataList =
             {
@@ -127,7 +103,17 @@ internal class InventoryController : Controller
                     EquipIncId = request.Data.EquipIncId
                 }
             }
-        });
+        };
+
+        if (prevWeapon != null)
+        {
+            response.DataList.Add(new RoleLoadEquipData
+            {
+                EquipIncId = prevWeapon.IncrId
+            });
+        }
+
+        return Response(MessageId.EquipTakeOnResponse, response);
     }
 
     [GameEvent(GameEventType.EnterGame)]

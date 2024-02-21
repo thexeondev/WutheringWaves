@@ -254,11 +254,7 @@ internal class CreatureController : Controller
             entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
 
             CreateConcomitants(entity);
-
-            // Give weapon to entity
-            RoleInfoConfig roleConfig = _configManager.GetConfig<RoleInfoConfig>(entity.ConfigId)!;
-            WeaponConfig weaponConfig = _configManager.GetConfig<WeaponConfig>(roleConfig.InitWeaponItemId)!;
-            entity.WeaponId = weaponConfig.ItemId;
+            entity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(roleId)?.Id ?? 0;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
         }

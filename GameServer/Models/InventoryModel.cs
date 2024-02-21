@@ -8,6 +8,11 @@ internal class InventoryModel
 
     public List<WeaponItem> WeaponList { get; } = [];
 
+    public WeaponItem? GetEquippedWeapon(int roleId)
+    {
+        return WeaponList.SingleOrDefault(weapon => weapon.RoleId == roleId);
+    }
+
     public WeaponItem? GetWeaponById(int incrId)
     {
         return WeaponList.SingleOrDefault(weapon => weapon.IncrId == incrId);
