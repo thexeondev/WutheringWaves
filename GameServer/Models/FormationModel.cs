@@ -10,7 +10,7 @@ internal class FormationModel
 
     public void Set(int[] roleIds)
     {
-        for (int i = 0; i < RoleIds.Length; i++)
+        for (int i = 0; i < roleIds.Length; i++)
         {
             RoleIds[i] = roleIds[i];
         }
