@@ -22,6 +22,7 @@ internal class MonsterEntity : EntityBase
         attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
         attributeComponent.SetAttribute(EAttributeType.Life, 100);
 
+
         State = EntityState.Born;
 
         EntityMonsterAiComponent aiComponent = ComponentSystem.Create<EntityMonsterAiComponent>();

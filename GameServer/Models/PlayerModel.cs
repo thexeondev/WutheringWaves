@@ -20,7 +20,7 @@ internal class PlayerModel
     {
         return new PlayerModel
         {
-            Id = 1337,
+            Id = 10001,
             Name = startingValues.Name,
             Characters = startingValues.Characters,
             Position = startingValues.Position.Clone()

@@ -54,7 +54,7 @@ internal class PlayerInfoController : Controller
             {
                 new RoleShowEntry
                 {
-                    Level = 1,
+                    Level = 90,
                     RoleId = 1501 // Rover
                 }
             },
@@ -79,13 +79,13 @@ internal class PlayerInfoController : Controller
         {
             Info = new PlayerDetails
             {
-                Name = "Yangyang",
-                Signature = "discord.gg/reversedrooms",
+                Name = "Server",
+                Signature = "Server Bot",
                 HeadId = 1402,
-                PlayerId = 1338,
+                PlayerId = 10000,
                 IsOnline = true,
                 LastOfflineTime = -1,
-                Level = 5
+                Level = 99
             }
         });
     }

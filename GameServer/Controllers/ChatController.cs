@@ -77,7 +77,7 @@ internal partial class ChatController : Controller
     private static string BuildWelcomeMessage()
     {
         StringBuilder builder = new();
-        builder.AppendLine("Welcome to ReversedRooms WutheringWaves private server!\nTo get support, join:\ndiscord.gg/reversedrooms");
+        builder.AppendLine("Welcome to WutheringWaves private server!");
         builder.AppendLine("List of all commands:");
 
         foreach (string description in ChatCommandManager.CommandDescriptions)

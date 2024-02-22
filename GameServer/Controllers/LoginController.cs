@@ -19,7 +19,7 @@ internal class LoginController : Controller
         return Response(MessageId.LoginResponse, new LoginResponse
         {
             Code = 0,
-            Platform = "CBT3_EU",
+            Platform = "Android",
             Timestamp = DateTimeOffset.Now.ToUnixTimeSeconds()
         });
     }

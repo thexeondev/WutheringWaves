@@ -1,5 +1,6 @@
-using SDKServer.Handlers;
+﻿using SDKServer.Handlers;
 using SDKServer.Middleware;
+
 
 namespace SDKServer;
 
@@ -11,7 +12,8 @@ internal static class Program
         Console.WriteLine(" __      __        __  .__                 .__                  __      __                            \r\n/  \\    /  \\__ ___/  |_|  |__   ___________|__| ____    ____   /  \\    /  \\_____ ___  __ ____   ______\r\n\\   \\/\\/   /  |  \\   __\\  |  \\_/ __ \\_  __ \\  |/    \\  / ___\\  \\   \\/\\/   /\\__  \\\\  \\/ // __ \\ /  ___/\r\n \\        /|  |  /|  | |   Y  \\  ___/|  | \\/  |   |  \\/ /_/  >  \\        /  / __ \\\\   /\\  ___/ \\___ \\ \r\n  \\__/\\  / |____/ |__| |___|  /\\___  >__|  |__|___|  /\\___  /    \\__/\\  /  (____  /\\_/  \\___  >____  >\r\n       \\/                   \\/     \\/              \\//_____/          \\/        \\/          \\/     \\/ \r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\tSDK Server\n");
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.UseUrls("http://*:5500");
+        var config = GetConfig.ConfigManager.GetConfig()!;
+        builder.WebHost.UseUrls($"http://*:{config.Http.Port}");
         builder.Logging.AddSimpleConsole();
 
         WebApplication app = builder.Build();

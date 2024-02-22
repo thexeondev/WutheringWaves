@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
@@ -28,7 +28,7 @@ internal class CreatureController : Controller
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
         CreateTeamPlayerEntities();
-        CreateWorldEntities();
+        //CreateWorldEntities();
 
         await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
         {
@@ -287,20 +287,20 @@ internal class CreatureController : Controller
         }
     }
 
-    private void CreateWorldEntities()
-    {
-        Vector playerPos = _modelManager.Player.Position;
+    //private void CreateWorldEntities()
+    //{
+    //    Vector playerPos = _modelManager.Player.Position;
 
-        // Test monster
-        MonsterEntity monster = _entityFactory.CreateMonster(106003002); // Turtle.
-        monster.Pos = new()
-        {
-            X = playerPos.X + 250,
-            Y = playerPos.Y + 250,
-            Z = playerPos.Z
-        };
+    //    // Test monster
+    //    MonsterEntity monster = _entityFactory.CreateMonster(106003002); // Turtle.
+    //    monster.Pos = new()
+    //    {
+    //        X = playerPos.X + 250,
+    //        Y = playerPos.Y + 250,
+    //        Z = playerPos.Z
+    //    };
 
-        _entitySystem.Create(monster);
-        monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
-    }
+    //    _entitySystem.Create(monster);
+    //    monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
+    //}
 }
