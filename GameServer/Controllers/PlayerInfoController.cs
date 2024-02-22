@@ -1,6 +1,7 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Network.Messages;
 using GameServer.Systems.Event;
 using Protocol;
 
@@ -40,26 +41,58 @@ internal class PlayerInfoController : Controller
                 {
                     Key = (int)PlayerAttrKey.HeadPhoto,
                     ValueType = (int)PlayerAttrType.Int32,
-                    Int32Value = 1601
+                    Int32Value = 1402
                 },
                 new PlayerAttr
                 {
                     Key = (int)PlayerAttrKey.HeadFrame,
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 80060009
+                },
+                new PlayerAttr
+                {
+                    Key = (int)PlayerAttrKey.Sex,
+                    ValueType = (int)PlayerAttrType.Int32,
+                    Int32Value = 1
+                }
+            },
+            RoleShowList =
+            {
+                new RoleShowEntry
+                {
+                    Level = 1,
+                    RoleId = 1501 // Rover
+                }
+            },
+            CurCardId = 80060000,
+            CardUnlockList =
+            {
+                new CardShowEntry
+                {
+                    CardId = 80060000,
+                    IsRead = true
                 }
             }
         };
-        
-        for (int i = 0; i < player.Characters.Length; i++)
-        {
-            basicInfo.RoleShowList.Add(new RoleShowEntry
-            {
-                Level = 1,
-                RoleId = player.Characters[i]
-            });
-        }
 
         await Session.Push(MessageId.BasicInfoNotify, basicInfo);
+    }
+
+    [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
+    public RpcResult OnPlayerBasicInfoGetRequest()
+    {
+        return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse
+        {
+            Info = new PlayerDetails
+            {
+                Name = "Yangyang",
+                Signature = "discord.gg/reversedrooms",
+                HeadId = 1402,
+                PlayerId = 1338,
+                IsOnline = true,
+                LastOfflineTime = -1,
+                Level = 5
+            }
+        });
     }
 }

@@ -24,6 +24,11 @@ internal class EntitySystem
         _entities.Add(entity);
     }
 
+    public void Destroy(EntityBase entity)
+    {
+        _ = _entities.Remove(entity);
+    }
+
     public void Activate(EntityBase entity)
     {
         entity.Activate();

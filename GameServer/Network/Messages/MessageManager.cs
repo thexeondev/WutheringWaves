@@ -4,7 +4,7 @@ using Protocol;
 namespace GameServer.Network.Messages;
 
 internal delegate Task PushHandler(IServiceProvider serviceProvider, ReadOnlySpan<byte> data);
-internal delegate Task<ResponseMessage> RpcHandler(IServiceProvider serviceProvider, ReadOnlySpan<byte> data);
+internal delegate Task<RpcResult> RpcHandler(IServiceProvider serviceProvider, ReadOnlySpan<byte> data);
 internal class MessageManager
 {
     private readonly EventHandlerFactory _handlerFactory;
@@ -16,7 +16,7 @@ internal class MessageManager
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<ResponseMessage?> ExecuteRpc(MessageId messageId, ReadOnlyMemory<byte> data)
+    public async Task<RpcResult?> ExecuteRpc(MessageId messageId, ReadOnlyMemory<byte> data)
     {
         RpcHandler? handler = _handlerFactory.GetRpcHandler(messageId);
         if (handler != null)

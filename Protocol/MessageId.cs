@@ -795,6 +795,8 @@ public enum MessageId
     NewBieCourseRewardResponse = 12153,
     NewJourneyRequest = 12214,
     NewJourneyResponse = 12215,
+    ClientCurrentRoleReportRequest = 12217,
+    ClientCurrentRoleReportResponse = 12218,
     NormalItemAddNotify = 5268,
     NormalItemRemoveNotify = 5269,
     NormalItemRequest = 5265,

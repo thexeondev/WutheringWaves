@@ -1,4 +1,5 @@
-﻿using Protocol;
+﻿using System.Diagnostics.CodeAnalysis;
+using Protocol;
 
 namespace GameServer.Systems.Entity.Component;
 internal class EntityComponentSystem
@@ -25,7 +26,7 @@ internal class EntityComponentSystem
         return (_components.Single(component => component is TEntityComponent) as TEntityComponent)!;
     }
 
-    public bool TryGet<TEntityComponent>(out TEntityComponent? component) where TEntityComponent : EntityComponentBase
+    public bool TryGet<TEntityComponent>([NotNullWhen(true)] out TEntityComponent? component) where TEntityComponent : EntityComponentBase
     {
         return (component = _components.SingleOrDefault(component => component is TEntityComponent) as TEntityComponent) != null;
     }

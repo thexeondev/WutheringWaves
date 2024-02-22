@@ -2,6 +2,8 @@
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
+using GameServer.Systems.Entity;
+using GameServer.Systems.Event;
 using Protocol;
 
 namespace GameServer.Controllers;
@@ -15,20 +17,29 @@ internal class FormationController : Controller
     }
 
     [NetEvent(MessageId.GetFormationDataRequest)]
-    public ResponseMessage OnGetFormationDataRequest() => Response(MessageId.GetFormationDataResponse, new GetFormationDataResponse
+    public RpcResult OnGetFormationDataRequest() => Response(MessageId.GetFormationDataResponse, new GetFormationDataResponse
     {
         Formations =
             {
                 new FightFormation
                 {
-                    CurRole = _modelManager.Player.Characters[0],
+                    CurRole = _modelManager.Formation.RoleIds[0],
                     FormationId = 1,
                     IsCurrent = true,
-                    RoleIds = { _modelManager.Player.Characters },
+                    RoleIds = { _modelManager.Formation.RoleIds },
                 }
             },
     });
 
-    [NetEvent(MessageId.FormationAttrRequest)]
-    public ResponseMessage OnFormationAttrRequest() => Response(MessageId.FormationAttrResponse, new FormationAttrResponse());
+    [NetEvent(MessageId.UpdateFormationRequest)]
+    public async Task<RpcResult> OnUpdateFormationRequest(UpdateFormationRequest request, EventSystem eventSystem)
+    {
+        _modelManager.Formation.Set([.. request.Formation.RoleIds]);
+        await eventSystem.Emit(GameEventType.FormationUpdated);
+
+        return Response(MessageId.UpdateFormationResponse, new UpdateFormationResponse
+        {
+            Formation = request.Formation
+        });
+    }
 }

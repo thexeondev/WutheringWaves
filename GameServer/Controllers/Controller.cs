@@ -1,4 +1,5 @@
-﻿using GameServer.Network;
+﻿global using GameServer.Controllers.Result;
+using GameServer.Network;
 using GameServer.Network.Messages;
 using Google.Protobuf;
 using Protocol;
@@ -13,9 +14,9 @@ internal abstract class Controller
         Session = session;
     }
 
-    protected static ResponseMessage Response<TProtoBuf>(MessageId messageId, TProtoBuf protoBuf) where TProtoBuf : IMessage<TProtoBuf> => new()
+    protected static RpcResult Response<TProtoBuf>(MessageId messageId, TProtoBuf protoBuf) where TProtoBuf : IMessage<TProtoBuf> => new(new ResponseMessage
     {
         MessageId = messageId,
         Payload = protoBuf.ToByteArray()
-    };
+    });
 }

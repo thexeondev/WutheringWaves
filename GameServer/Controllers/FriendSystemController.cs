@@ -12,5 +12,25 @@ internal class FriendSystemController : Controller
     }
 
     [NetEvent(MessageId.FriendAllRequest)]
-    public ResponseMessage OnFriendAllRequest() => Response(MessageId.FriendAllResponse, new FriendAllResponse());
+    public RpcResult OnFriendAllRequest() => Response(MessageId.FriendAllResponse, new FriendAllResponse
+    {
+        FriendInfoList = 
+        {
+            CreateDummyFriendInfo(1338, "Yangyang", "discord.gg/reversedrooms", 1402)
+        }
+    });
+
+    private static FriendInfo CreateDummyFriendInfo(int id, string name, string signature, int headIconId) => new()
+    {
+        Info = new()
+        {
+            PlayerId = id,
+            Name = name,
+            Signature = signature,
+            Level = 5,
+            HeadId = headIconId,
+            IsOnline = true,
+            LastOfflineTime = -1
+        }
+    };
 }

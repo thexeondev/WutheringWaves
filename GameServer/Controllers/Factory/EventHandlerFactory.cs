@@ -90,13 +90,13 @@ internal class EventHandlerFactory
         var builder = ImmutableDictionary.CreateBuilder<MessageId, RpcHandler>();
 
         MethodInfo getServiceMethod = typeof(ServiceProviderServiceExtensions).GetMethod(nameof(ServiceProviderServiceExtensions.GetRequiredService), [typeof(IServiceProvider)])!;
-        MethodInfo taskFromResultMethod = typeof(Task).GetMethod(nameof(Task.FromResult))!.MakeGenericMethod(typeof(ResponseMessage));
+        MethodInfo taskFromResultMethod = typeof(Task).GetMethod(nameof(Task.FromResult))!.MakeGenericMethod(typeof(RpcResult));
 
         foreach (Type type in controllerTypes)
         {
             IEnumerable<MethodInfo> methods = type.GetMethods()
                                    .Where(method => method.GetCustomAttribute<NetEventAttribute>() != null
-                                   && (method.ReturnType == typeof(Task<ResponseMessage>) || method.ReturnType == typeof(ResponseMessage)));
+                                   && (method.ReturnType == typeof(Task<RpcResult>) || method.ReturnType == typeof(RpcResult)));
 
             foreach (MethodInfo method in methods)
             {
@@ -108,7 +108,7 @@ internal class EventHandlerFactory
                 MethodCallExpression getServiceCall = Expression.Call(getServiceMethod.MakeGenericMethod(type), serviceProviderParam);
                 Expression handlerCall = Expression.Call(getServiceCall, method, FetchArgumentsForMethod(method, serviceProviderParam, getServiceMethod, dataParam));
 
-                if (method.ReturnType == typeof(ResponseMessage)) // Allow non-async methods as well
+                if (method.ReturnType == typeof(RpcResult)) // Allow non-async methods as well
                     handlerCall = Expression.Call(taskFromResultMethod, handlerCall);
 
                 Expression<RpcHandler> lambda = Expression.Lambda<RpcHandler>(handlerCall, serviceProviderParam, dataParam);

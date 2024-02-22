@@ -12,6 +12,14 @@ internal class EntityAttributeComponent : EntityComponentBase
         _gameplayAttributes = [];
     }
 
+    public void SetAll(IEnumerable<GameplayAttributeData> attributes)
+    {
+        foreach (GameplayAttributeData attr in attributes)
+        {
+            SetAttribute((EAttributeType)attr.AttributeType, attr.CurrentValue, attr.BaseValue);
+        }
+    }
+
     public void SetAttribute(EAttributeType type, int currentValue, int baseValue)
     {
         if (!_gameplayAttributes.TryGetValue(type, out GameplayAttributeData? attribute))
@@ -37,6 +45,7 @@ internal class EntityAttributeComponent : EntityComponentBase
         }
 
         attribute.CurrentValue = currentValue;
+        attribute.BaseValue = currentValue;
     }
 
     public int GetAttribute(EAttributeType type)

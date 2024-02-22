@@ -1,4 +1,6 @@
-﻿using GameServer.Controllers.Attributes;
+using Core.Config;
+using GameServer.Controllers.Attributes;
+using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
@@ -13,22 +15,25 @@ internal class CreatureController : Controller
     private readonly EntitySystem _entitySystem;
     private readonly EntityFactory _entityFactory;
     private readonly ModelManager _modelManager;
+    private readonly ConfigManager _configManager;
 
-    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager) : base(session)
+    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager) : base(session)
     {
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _modelManager = modelManager;
+        _configManager = configManager;
     }
 
     public async Task JoinScene(int instanceId)
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
         CreateTeamPlayerEntities();
+        CreateWorldEntities();
 
         await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
         {
-            MaxEntityId = 10000,
+            MaxEntityId = 10000000,
             TransitionOption = new TransitionOptionPb
             {
                 TransitionType = (int)TransitionType.Empty
@@ -38,7 +43,7 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.EntityActiveRequest)]
-    public async Task<ResponseMessage> OnEntityActiveRequest(EntityActiveRequest request)
+    public async Task<RpcResult> OnEntityActiveRequest(EntityActiveRequest request)
     {
         EntityActiveResponse response;
 
@@ -48,7 +53,8 @@ internal class CreatureController : Controller
             _entitySystem.Activate(entity);
             response = new EntityActiveResponse
             {
-                ErrorCode = (int)ErrorCode.Success
+                ErrorCode = (int)ErrorCode.Success,
+                IsVisible = entity.IsVisible
             };
 
             response.ComponentPbs.AddRange(entity.ComponentSystem.Pb);
@@ -63,11 +69,60 @@ internal class CreatureController : Controller
     }
 
     [NetEvent(MessageId.SceneLoadingFinishRequest)]
-    public ResponseMessage OnSceneLoadingFinishRequest()
+    public async Task<RpcResult> OnSceneLoadingFinishRequest()
     {
         _modelManager.Creature.OnWorldDone();
+        await UpdateAiHate();
 
         return Response(MessageId.SceneLoadingFinishResponse, new SceneLoadingFinishResponse());
+    }
+
+    [GameEvent(GameEventType.FormationUpdated)]
+    public async Task OnFormationUpdated()
+    {
+        // Remove old entities
+
+        IEnumerable<PlayerEntity> oldEntities = GetPlayerEntities().ToArray();
+        foreach (PlayerEntity oldEntity in oldEntities)
+        {
+            _entitySystem.Destroy(oldEntity);
+        }
+
+        await Session.Push(MessageId.EntityRemoveNotify, new EntityRemoveNotify
+        {
+            IsRemove = true,
+            RemoveInfos =
+            {
+                oldEntities.Select(entity => new EntityRemoveInfo
+                {
+                    EntityId = entity.Id,
+                    Type = (int)entity.Type
+                })
+            }
+        });
+
+        // Spawn new entities
+
+        CreateTeamPlayerEntities();
+
+        IEnumerable<PlayerEntity> newEntities = GetPlayerEntities();
+        await Session.Push(MessageId.EntityAddNotify, new EntityAddNotify
+        {
+            IsAdd = true,
+            EntityPbs =
+            {
+                newEntities.Select(entity => entity.Pb)
+            }
+        });
+
+        _modelManager.Creature.PlayerEntityId = newEntities.First().Id;
+        await Session.Push(MessageId.UpdatePlayerAllFightRoleNotify, new UpdatePlayerAllFightRoleNotify
+        {
+            PlayerId = _modelManager.Player.Id,
+            FightRoleInfos = { GetFightRoleInfos() }
+        });
+
+        await UpdateAiHate();
     }
 
     [GameEvent(GameEventType.VisionSkillChanged)]
@@ -86,7 +141,20 @@ internal class CreatureController : Controller
 
     public PlayerEntity? GetPlayerEntity()
     {
-        return _entitySystem.EnumerateEntities().FirstOrDefault(entity => entity.Id == _modelManager.Creature.PlayerEntityId) as PlayerEntity;
+        return _entitySystem.Get<PlayerEntity>(_modelManager.Creature.PlayerEntityId);
+    }
+
+    public PlayerEntity? GetPlayerEntityByRoleId(int roleId)
+    {
+        return _entitySystem.EnumerateEntities()
+        .FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId && playerEntity.PlayerId == _modelManager.Player.Id) as PlayerEntity;
+    }
+
+    public IEnumerable<PlayerEntity> GetPlayerEntities()
+    {
+        return _entitySystem.EnumerateEntities()
+        .Where(e => e is PlayerEntity entity && entity.PlayerId == _modelManager.Player.Id)
+        .Cast<PlayerEntity>();
     }
 
     public async Task SwitchPlayerEntity(int roleId)
@@ -96,75 +164,142 @@ internal class CreatureController : Controller
 
         prevEntity.IsCurrentRole = false;
 
-        PlayerEntity? newEntity = _entitySystem.EnumerateEntities().FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId) as PlayerEntity;
-        if (newEntity == null) return;
+        if (_entitySystem.EnumerateEntities().FirstOrDefault(e => e is PlayerEntity playerEntity && playerEntity.ConfigId == roleId) is not PlayerEntity newEntity) return;
 
         _modelManager.Creature.PlayerEntityId = newEntity.Id;
         newEntity.IsCurrentRole = true;
 
-        await OnVisionSkillChanged();
+        await UpdateAiHate();
     }
 
-    private SceneInformation CreateSceneInfo()
+    public async Task UpdateAiHate()
     {
-        SceneInformation scene = new()
+        IEnumerable<EntityBase> monsters = _entitySystem.EnumerateEntities().Where(e => e is MonsterEntity);
+        if (!monsters.Any()) return;
+
+        await Session.Push(MessageId.CombatReceivePackNotify, new CombatReceivePackNotify
         {
-            InstanceId = _modelManager.Creature.InstanceId,
-            OwnerId = _modelManager.Creature.OwnerId,
-            CurContextId = _modelManager.Player.Id,
-            TimeInfo = new(),
-            AoiData = new(),
-            PlayerInfos =
+            Data =
             {
-                new ScenePlayerInformation
+                monsters.Select(monster => new CombatReceiveData
                 {
-                    PlayerId = _modelManager.Player.Id,
-                    Level = 1,
-                    IsOffline = false,
-                    Location = new()
+                    CombatNotifyData = new()
                     {
-                        X = 4000,
-                        Y = -2000,
-                        Z = 260
-                    },
-                    PlayerName = _modelManager.Player.Name
-                }
+                        CombatCommon = new() { EntityId = monster.Id },
+                        AiHateNotify = new()
+                        {
+                            HateList =
+                            {
+                                GetPlayerEntities().Select(player => new AiHateEntity
+                                {
+                                    EntityId = player.Id,
+                                    HatredValue = 99999 // currently this, TODO!
+                                })
+                            }
+                        }
+                    }
+                })
             }
-        };
+        });
+    }
 
-        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
+    private SceneInformation CreateSceneInfo() => new()
+    {
+        InstanceId = _modelManager.Creature.InstanceId,
+        OwnerId = _modelManager.Creature.OwnerId,
+        CurContextId = _modelManager.Player.Id,
+        TimeInfo = new(),
+        AoiData = new PlayerSceneAoiData
         {
-            scene.PlayerInfos[0].FightRoleInfos.Add(new FightRoleInformation
+            Entities = { _entitySystem.Pb }
+        },
+        PlayerInfos =
+        {
+            new ScenePlayerInformation
             {
-                EntityId = i + 1,
-                CurHp = 1000,
-                MaxHp = 1000,
-                IsControl = i == 0,
-                RoleId = _modelManager.Player.Characters[i],
-                RoleLevel = 1,
-            });
+                PlayerId = _modelManager.Player.Id,
+                Level = 1,
+                IsOffline = false,
+                Location = _modelManager.Player.Position,
+                PlayerName = _modelManager.Player.Name,
+                FightRoleInfos = { GetFightRoleInfos() }
+            }
         }
+    };
 
-        scene.AoiData.Entities.AddRange(_entitySystem.Pb);
-        return scene;
+    private IEnumerable<FightRoleInformation> GetFightRoleInfos()
+    {
+        return GetPlayerEntities().Select(playerEntity => new FightRoleInformation
+        {
+            EntityId = playerEntity.Id,
+            CurHp = playerEntity.Health,
+            MaxHp = playerEntity.HealthMax,
+            IsControl = playerEntity.Id == _modelManager.Creature.PlayerEntityId,
+            RoleId = playerEntity.ConfigId,
+            RoleLevel = 1,
+        });
     }
 
     private void CreateTeamPlayerEntities()
     {
-        for (int i = 0; i < _modelManager.Player.Characters.Length; i++)
+        for (int i = 0; i < _modelManager.Formation.RoleIds.Length; i++)
         {
-            PlayerEntity entity = _entityFactory.CreatePlayer(_modelManager.Player.Characters[i], _modelManager.Player.Id);
-            entity.Pos = new()
-            {
-                X = 4000,
-                Y = -2000,
-                Z = 260
-            };
+            int roleId = _modelManager.Formation.RoleIds[i];
+
+            PlayerEntity entity = _entityFactory.CreatePlayer(roleId, _modelManager.Player.Id);
+            entity.Pos = _modelManager.Player.Position.Clone();
             entity.IsCurrentRole = i == 0;
 
             _entitySystem.Create(entity);
+            entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
+
+            CreateConcomitants(entity);
+            entity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(roleId)?.Id ?? 0;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
         }
+    }
+
+    private void CreateConcomitants(PlayerEntity entity)
+    {
+        (int roleId, int summonConfigId) = entity.ConfigId switch
+        {
+            1302 => (5002, 10070301),
+            _ => (-1, -1)
+        };
+
+        if (roleId != -1)
+        {
+            PlayerEntity concomitant = _entityFactory.CreatePlayer(roleId, 0);
+            _entitySystem.Create(concomitant);
+
+            EntityConcomitantsComponent concomitants = entity.ComponentSystem.Get<EntityConcomitantsComponent>();
+            concomitants.CustomEntityIds.Clear();
+            concomitants.CustomEntityIds.Add(concomitant.Id);
+
+            EntitySummonerComponent summoner = concomitant.ComponentSystem.Create<EntitySummonerComponent>();
+            summoner.SummonerId = entity.Id;
+            summoner.SummonConfigId = summonConfigId;
+            summoner.SummonType = ESummonType.ConcomitantCustom;
+            summoner.PlayerId = _modelManager.Player.Id;
+            concomitant.InitProps(_configManager.GetConfig<BasePropertyConfig>(roleId)!);
+        }
+    }
+
+    private void CreateWorldEntities()
+    {
+        Vector playerPos = _modelManager.Player.Position;
+
+        // Test monster
+        MonsterEntity monster = _entityFactory.CreateMonster(106003002); // Turtle.
+        monster.Pos = new()
+        {
+            X = playerPos.X + 250,
+            Y = playerPos.Y + 250,
+            Z = playerPos.Z
+        };
+
+        _entitySystem.Create(monster);
+        monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
     }
 }
