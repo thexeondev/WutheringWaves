@@ -45,6 +45,12 @@ internal class PlayerInfoController : Controller
                 },
                 new PlayerAttr
                 {
+                    Key = (int)PlayerAttrKey.HeadFrame,
+                    ValueType = (int)PlayerAttrType.Int32,
+                    Int32Value = 80060009
+                },
+                new PlayerAttr
+                {
                     Key = (int)PlayerAttrKey.Sex,
                     ValueType = (int)PlayerAttrType.Int32,
                     Int32Value = 1
