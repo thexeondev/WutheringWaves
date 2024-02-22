@@ -46,6 +46,32 @@ internal class PlayerEntity : EntityBase
 
         _ = ComponentSystem.Create<EntityEquipComponent>();
         _ = ComponentSystem.Create<EntityAttributeComponent>();
+
+        // TODO: temporary solution to enable glider and wall run, should implement proper buff management.
+        EntityFightBuffComponent fightBuffComponent = ComponentSystem.Get<EntityFightBuffComponent>();
+        fightBuffComponent.BuffInfoList.Add(new FightBuffInformation
+        {
+            BuffId = 3004,
+            EntityId = Id,
+            InstigatorId = Id,
+            IsActive = true,
+            Duration = -1,
+            LeftDuration = -1,
+            Level = 1,
+            StackCount = 1
+        });
+
+        fightBuffComponent.BuffInfoList.Add(new FightBuffInformation
+        {
+            BuffId = 3003,
+            EntityId = Id,
+            InstigatorId = Id,
+            IsActive = true,
+            Duration = -1,
+            LeftDuration = -1,
+            Level = 1,
+            StackCount = 1
+        });
     }
 
     public override void Activate()

@@ -10,14 +10,14 @@
     "ResonLevelLimit": 5,
     "FirstPropId": {
       "Id": 7,
-      "Value": 54,
+      "Value": 47,
       "IsRatio": false
     },
     "FirstCurve": 1,
     "SecondPropId": {
-      "Id": 11,
-      "Value": 432,
-      "IsRatio": false
+      "Id": 10007,
+      "Value": 0.08100000023841858,
+      "IsRatio": true
     },
     "SecondCurve": 2,
     "ResonId": 21010015,
@@ -26,7 +26,7 @@
     "Desc": "WeaponConf_21010015_Desc",
     "DescParams": [
       {
-        "ArrayString": [ "12%", "15%", "18%", "21%", "24%" ]
+        "ArrayString": [ "12.8%", "16%", "19.2%", "22.4%", "25.6%" ]
       },
       {
         "ArrayString": [ "8%", "10%", "12%", "14%", "16%" ]
@@ -35,7 +35,7 @@
         "ArrayString": [ "2", "2", "2", "2", "2" ]
       },
       {
-        "ArrayString": [ "8", "8", "8", "8", "8" ]
+        "ArrayString": [ "12", "12", "12", "12", "12" ]
       }
     ],
     "TypeDescription": "WeaponConf_21010015_TypeDescription",
@@ -84,16 +84,16 @@
     "Desc": "WeaponConf_21020015_Desc",
     "DescParams": [
       {
-        "ArrayString": [ "16%", "20%", "24%", "28%", "32%" ]
+        "ArrayString": [ "12.8%", "16%", "19.2%", "22.4%", "25.6%" ]
       },
       {
-        "ArrayString": [ "8%", "10%", "12%", "14%", "16%" ]
+        "ArrayString": [ "6%", "7.5%", "9%", "10.5%", "12%" ]
       },
       {
         "ArrayString": [ "2", "2", "2", "2", "2" ]
       },
       {
-        "ArrayString": [ "8", "8", "8", "8", "8" ]
+        "ArrayString": [ "10", "10", "10", "10", "10" ]
       }
     ],
     "TypeDescription": "WeaponConf_21020015_TypeDescription",
@@ -142,16 +142,16 @@
     "Desc": "WeaponConf_21030015_Desc",
     "DescParams": [
       {
-        "ArrayString": [ "12%", "15%", "18%", "21%", "24%" ]
+        "ArrayString": [ "12.8%", "16%", "19.2%", "22.4%", "25.6%" ]
       },
       {
-        "ArrayString": [ "2.4%", "3%", "3.6%", "4.2%", "4.8%" ]
+        "ArrayString": [ "10%", "12.5%", "15%", "17.5%", "20%" ]
       },
       {
-        "ArrayString": [ "5", "5", "5", "5", "5" ]
+        "ArrayString": [ "1", "1", "1", "1", "1" ]
       },
       {
-        "ArrayString": [ "8", "8", "8", "8", "8" ]
+        "ArrayString": [ "14", "14", "14", "14", "14" ]
       }
     ],
     "TypeDescription": "WeaponConf_21030015_TypeDescription",
@@ -189,9 +189,9 @@
     },
     "FirstCurve": 1,
     "SecondPropId": {
-      "Id": 11,
-      "Value": 864,
-      "IsRatio": false
+      "Id": 10007,
+      "Value": 0.08100000023841858,
+      "IsRatio": true
     },
     "SecondCurve": 2,
     "ResonId": 21040015,
@@ -200,7 +200,7 @@
     "Desc": "WeaponConf_21040015_Desc",
     "DescParams": [
       {
-        "ArrayString": [ "8%", "10%", "12%", "14%", "16%" ]
+        "ArrayString": [ "12.8%", "16%", "19.2%", "22.4%", "25.6%" ]
       },
       {
         "ArrayString": [ "10%", "12.5%", "15%", "17.5%", "20%" ]
@@ -250,9 +250,9 @@
     },
     "FirstCurve": 1,
     "SecondPropId": {
-      "Id": 11,
-      "Value": 1280,
-      "IsRatio": false
+      "Id": 10007,
+      "Value": 0.11999999731779099,
+      "IsRatio": true
     },
     "SecondCurve": 2,
     "ResonId": 21050015,
@@ -261,7 +261,7 @@
     "Desc": "WeaponConf_21050015_Desc",
     "DescParams": [
       {
-        "ArrayString": [ "16%", "20%", "24%", "28%", "32%" ]
+        "ArrayString": [ "12.8%", "16%", "19.2%", "22.4%", "25.6%" ]
       },
       {
         "ArrayString": [ "3.2%", "4%", "4.8%", "5.6%", "6.4%" ]
@@ -1670,13 +1670,13 @@
     "ResonLevelLimit": 5,
     "FirstPropId": {
       "Id": 7,
-      "Value": 31,
+      "Value": 27,
       "IsRatio": false
     },
     "FirstCurve": 1,
     "SecondPropId": {
       "Id": 10010,
-      "Value": 0.10260000079870224,
+      "Value": 0.13680000603199005,
       "IsRatio": true
     },
     "SecondCurve": 2,
@@ -1834,8 +1834,8 @@
     },
     "FirstCurve": 1,
     "SecondPropId": {
-      "Id": 10007,
-      "Value": 0.1080000028014183,
+      "Id": 10010,
+      "Value": 0.13680000603199005,
       "IsRatio": true
     },
     "SecondCurve": 2,
@@ -1886,7 +1886,7 @@
     },
     "FirstCurve": 1,
     "SecondPropId": {
-      "Id": 10002,
+      "Id": 10007,
       "Value": 0.08100000023841858,
       "IsRatio": true
     },
@@ -2248,13 +2248,13 @@
     "ResonLevelLimit": 5,
     "FirstPropId": {
       "Id": 7,
-      "Value": 26,
+      "Value": 24,
       "IsRatio": false
     },
     "FirstCurve": 1,
     "SecondPropId": {
       "Id": 10010,
-      "Value": 0.06840000301599503,
+      "Value": 0.08550000190734863,
       "IsRatio": true
     },
     "SecondCurve": 2,
@@ -3128,7 +3128,7 @@
         "ArrayString": [ "2", "2", "2", "2", "2" ]
       },
       {
-        "ArrayString": [ "10", "10", "10", "10", "10" ]
+        "ArrayString": [ "14", "14", "14", "14", "14" ]
       }
     ],
     "TypeDescription": "WeaponConf_21010016_TypeDescription",
@@ -3180,13 +3180,16 @@
         "ArrayString": [ "12%", "15%", "18%", "21%", "24%" ]
       },
       {
-        "ArrayString": [ "20%", "25%", "30%", "35%", "40%" ]
+        "ArrayString": [ "12%", "15%", "18%", "21%", "24%" ]
+      },
+      {
+        "ArrayString": [ "12%", "15%", "18%", "21%", "24%" ]
       },
       {
         "ArrayString": [ "2", "2", "2", "2", "2" ]
       },
       {
-        "ArrayString": [ "18", "18", "18", "18", "18" ]
+        "ArrayString": [ "5", "5", "5", "5", "5" ]
       }
     ],
     "TypeDescription": "WeaponConf_21050016_TypeDescription",

@@ -7,5 +7,9 @@ internal enum GameEventType
 
     // Actions
     FormationUpdated,
-    VisionSkillChanged
+    VisionSkillChanged,
+
+    // Debug
+    DebugUnlockAllRoles,
+    DebugUnlockAllWeapons
 }

@@ -16,7 +16,12 @@ public class ConfigManager
         logger.LogInformation("Loaded {count} config collections", _collectionsByEnum.Count);
     }
 
-    public ConfigCollection GetCollection<TConfigType>()
+    public IEnumerable<TConfig> Enumerate<TConfig>() where TConfig : IConfig
+    {
+        return GetCollection<TConfig>().Enumerate<TConfig>();
+    }
+
+    public ConfigCollection GetCollection<TConfigType>() where TConfigType : IConfig
     {
         return _collectionsByType[typeof(TConfigType)];
     }

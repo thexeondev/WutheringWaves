@@ -30,6 +30,7 @@ internal abstract class EntityBase
         State = EntityState.Born;
 
         _ = ComponentSystem.Create<EntityLogicStateComponent>();
+        _ = ComponentSystem.Create<EntityFightBuffComponent>();
     }
 
     public virtual void Activate()

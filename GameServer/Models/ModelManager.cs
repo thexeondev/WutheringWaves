@@ -1,4 +1,5 @@
-﻿using GameServer.Controllers.Attributes;
+﻿using Core.Config;
+using GameServer.Controllers.Attributes;
 using GameServer.Settings;
 using GameServer.Systems.Event;
 using Microsoft.Extensions.Options;
@@ -7,13 +8,15 @@ namespace GameServer.Models;
 internal class ModelManager
 {
     private readonly IOptions<PlayerStartingValues> _playerStartingValues;
+    private readonly ConfigManager _configManager;
 
     private PlayerModel? _playerModel;
     private CreatureModel? _creatureModel;
 
-    public ModelManager(IOptions<PlayerStartingValues> playerStartingValues)
+    public ModelManager(IOptions<PlayerStartingValues> playerStartingValues, ConfigManager configManager)
     {
         _playerStartingValues = playerStartingValues;
+        _configManager = configManager;
     }
 
     [GameEvent(GameEventType.Login)]
@@ -29,6 +32,8 @@ internal class ModelManager
 
     public CreatureModel Creature => _creatureModel ?? throw new InvalidOperationException($"Trying to access {nameof(CreatureModel)} instance before initialization!");
 
+    public RoleModel Roles { get; } = new();
     public FormationModel Formation { get; } = new();
+    public InventoryModel Inventory { get; } = new();
     public ChatModel Chat { get; } = new();
 }
