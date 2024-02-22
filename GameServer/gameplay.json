@@ -1,6 +1,7 @@
 {
   "StartingValues": {
     "Name": "ReversedRooms",
+    "Level": 8,
     "Characters": [ 1402, 1302, 1203 ],
     "Position": {
       "X": -35823,

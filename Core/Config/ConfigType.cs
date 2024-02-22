@@ -5,5 +5,6 @@ public enum ConfigType
     Weapon,
     BaseProperty,
     LevelEntity,
-    Blueprint
+    Blueprint,
+    ItemInfo
 }
