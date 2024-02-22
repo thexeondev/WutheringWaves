@@ -1,7 +1,6 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
-using GameServer.Network.Messages;
 using GameServer.Systems.Event;
 using Protocol;
 
@@ -22,40 +21,8 @@ internal class PlayerInfoController : Controller
         {
             RandomSeed = 1337,
             Id = player.Id,
-            Birthday = 0,
-            Attributes =
-            {
-                new PlayerAttr
-                {
-                    Key = (int)PlayerAttrKey.Name,
-                    ValueType = (int)PlayerAttrType.String,
-                    StringValue = player.Name
-                },
-                new PlayerAttr
-                {
-                    Key = (int)PlayerAttrKey.Level,
-                    ValueType = (int)PlayerAttrType.Int32,
-                    Int32Value = 10
-                },
-                new PlayerAttr
-                {
-                    Key = (int)PlayerAttrKey.HeadPhoto,
-                    ValueType = (int)PlayerAttrType.Int32,
-                    Int32Value = 1402
-                },
-                new PlayerAttr
-                {
-                    Key = (int)PlayerAttrKey.HeadFrame,
-                    ValueType = (int)PlayerAttrType.Int32,
-                    Int32Value = 80060009
-                },
-                new PlayerAttr
-                {
-                    Key = (int)PlayerAttrKey.Sex,
-                    ValueType = (int)PlayerAttrType.Int32,
-                    Int32Value = 1
-                }
-            },
+            Birthday = player.BirthDay,
+            Attributes = { player.Attributes },
             RoleShowList =
             {
                 new RoleShowEntry
@@ -76,6 +43,47 @@ internal class PlayerInfoController : Controller
         };
 
         await Session.Push(MessageId.BasicInfoNotify, basicInfo);
+    }
+
+    [NetEvent(MessageId.ChangeHeadPhotoRequest)]
+    public RpcResult OnChangeHeadPhotoRequest(ChangeHeadPhotoRequest request, ModelManager modelManager)
+    {
+        modelManager.Player.SetAttribute(PlayerAttrKey.HeadPhoto, request.HeadPhotoId);
+
+        return Response(MessageId.ChangeHeadPhotoResponse, new ChangeHeadPhotoResponse
+        {
+            HeadPhotoId = request.HeadPhotoId
+        });
+    }
+
+    [NetEvent(MessageId.BirthdayInitRequest)]
+    public RpcResult OnBirthdayInitRequest(BirthdayInitRequest request, ModelManager modelManager)
+    {
+        modelManager.Player.BirthDay = request.Birthday;
+
+        return Response(MessageId.BirthdayInitResponse, new BirthdayInitResponse());
+    }
+
+    [NetEvent(MessageId.ModifySignatureRequest)]
+    public RpcResult OnModifySignatureRequest(ModifySignatureRequest request, ModelManager modelManager)
+    {
+        modelManager.Player.SetAttribute(PlayerAttrKey.Sign, request.Signature);
+
+        return Response(MessageId.ModifySignatureResponse, new ModifySignatureResponse
+        {
+            Signature = request.Signature
+        });
+    }
+
+    [NetEvent(MessageId.ModifyNameRequest)]
+    public RpcResult OnModifyNameRequest(ModifyNameRequest request, ModelManager modelManager)
+    {
+        modelManager.Player.SetAttribute(PlayerAttrKey.Name, request.Name);
+
+        return Response(MessageId.ModifyNameResponse, new ModifyNameResponse
+        {
+            Name = request.Name
+        });
     }
 
     [NetEvent(MessageId.PlayerBasicInfoGetRequest)]

@@ -1,7 +1,9 @@
 {
   "StartingValues": {
     "Name": "ReversedRooms",
-    "Level": 8,
+    "PlayerLevel": 8,
+    "HeadPhoto": 1402,
+    "HeadFrame": 80060009,
     "Characters": [ 1402, 1302, 1203 ],
     "Position": {
       "X": -35823,
