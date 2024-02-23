@@ -1,4 +1,5 @@
 ﻿using GameServer.Controllers.Attributes;
+using GameServer.GetServerBot;
 using GameServer.Network;
 using GameServer.Network.Messages;
 using Protocol;
@@ -10,13 +11,15 @@ internal class FriendSystemController : Controller
     {
         // FriendController.
     }
+    public readonly GameServer.GetServerBot.ServerBot.ServerFriend bot = GameServer.GetServerBot.ServerBot.GetServerBot()!;
+
 
     [NetEvent(MessageId.FriendAllRequest)]
     public RpcResult OnFriendAllRequest() => Response(MessageId.FriendAllResponse, new FriendAllResponse
     {
         FriendInfoList = 
         {
-            CreateDummyFriendInfo(1338, "Server Bot", "Server Bot", 1402)
+            CreateDummyFriendInfo(1338, $"{bot.BotConfig.Name}", "discord.gg/reversedrooms", 1402)
         }
     });
 

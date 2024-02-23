@@ -75,17 +75,18 @@ internal class PlayerInfoController : Controller
     [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
     public RpcResult OnPlayerBasicInfoGetRequest()
     {
+        var bot = GameServer.GetServerBot.ServerBot.GetServerBot()!;
         return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse
         {
             Info = new PlayerDetails
             {
-                Name = "Server",
-                Signature = "Server Bot",
-                HeadId = 1402,
-                PlayerId = 10000,
-                IsOnline = true,
-                LastOfflineTime = -1,
-                Level = 99
+                Name = $"{bot.BotConfig.Name}",
+                Signature = $"{bot.BotConfig.Signature}",
+                HeadId = bot.BotConfig.HeadId,
+                PlayerId = bot.BotConfig.PlayerId,
+                IsOnline = bot.BotConfig.IsOnline,
+                LastOfflineTime = bot.BotConfig.LastOfflineTime,
+                Level = bot.BotConfig.Level
             }
         });
     }

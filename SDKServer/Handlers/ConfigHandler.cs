@@ -45,7 +45,7 @@ internal static class ConfigHandler
             LoginServers = [
                 new LoginServerEntry
                 {
-                    Id = "1074",
+                    Id = "1000",
                     Name = $"{config.Http.Name}",
                     Ip = $"{config.Http.Ip}"
                 }

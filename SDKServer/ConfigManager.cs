@@ -21,12 +21,12 @@ namespace SDKServer.GetConfig
         public class UdpConfig
         {
             public string Ip { get; set; } = "";
-            public string Port { get; set; } = "";
+            public int Port { get; set; } 
         }
 
-        public static Config? GetConfig()
+        public static Config GetConfig()
         {
-            Config? config ;
+            Config config ;
             try
             {
                 var configJson = File.ReadAllText("data/config.json");
@@ -45,7 +45,7 @@ namespace SDKServer.GetConfig
                     Udp = new UdpConfig
                     {
                         Ip = "127.0.0.1",
-                        Port = "1337"
+                        Port = 1337
                     }
                 };
             }

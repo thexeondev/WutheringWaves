@@ -10,5 +10,14 @@
   },
   "Features": {
     "TeleportByMapMark": true
+  },
+  "BotConfig": {
+    "Name": "Gktwo",
+    "Signature": "Server Bot",
+    "HeadId": 1402,
+    "PlayerId": 1338,
+    "IsOnline": true,
+    "LastOfflineTime": -1,
+    "Level": 99
   }
 }
