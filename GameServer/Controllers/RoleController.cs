@@ -54,6 +54,39 @@ internal class RoleController : Controller
     [NetEvent(MessageId.RoleFavorListRequest)]
     public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
 
+    [NetEvent(MessageId.ResonantChainUnlockRequest)]
+    public RpcResult OnResonantChainUnlockRequest(ResonantChainUnlockRequest request, ModelManager modelManager, ConfigManager configManager)
+    {
+        roleInfo _roleInfo = modelManager.Roles.Roles.Find(r => r.RoleId == request.RoleId)!;
+
+        if (_roleInfo != null)
+        {
+            RoleInfoConfig roleConfig = configManager.GetConfig<RoleInfoConfig>(request.RoleId)!;
+
+            if (roleConfig != null)
+            {
+                int _resonantChainGroupId = roleConfig.ResonantChainGroupId;
+
+                // Todo: add buff by _resonantChainGroupId
+
+                int _curr = _roleInfo.ResonantChainGroupIndex;
+                int _next = Math.Min(_curr + 1, 6);
+                _roleInfo.ResonantChainGroupIndex = _next;
+
+                return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
+                {
+                    RoleId = request.RoleId,
+                    ResonantChainGroupIndex = _next
+                });
+            }
+        }
+
+        return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
+        {
+            RoleId = request.RoleId,
+        });
+    }
+
     private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {
         List<ArrayIntInt> baseProp = [];
