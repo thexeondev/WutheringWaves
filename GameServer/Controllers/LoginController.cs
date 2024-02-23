@@ -18,7 +18,7 @@ internal class LoginController : Controller
 
         // Debug
         await eventSystem.Emit(GameEventType.DebugUnlockAllRoles);
-        await eventSystem.Emit(GameEventType.DebugUnlockAllWeapons);
+        await eventSystem.Emit(GameEventType.DebugUnlockAllItems);
 
         return Response(MessageId.LoginResponse, new LoginResponse
         {

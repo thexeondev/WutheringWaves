@@ -17,7 +17,10 @@ internal class InventoryController : Controller
     }
 
     [NetEvent(MessageId.NormalItemRequest)]
-    public RpcResult OnNormalItemRequest() => Response(MessageId.NormalItemResponse, new NormalItemResponse());
+    public RpcResult OnNormalItemRequest(ModelManager modelManager) => Response(MessageId.NormalItemResponse, new NormalItemResponse
+    {
+        NormalItemList = { modelManager.Inventory.ItemList }
+    });
 
     [NetEvent(MessageId.WeaponItemRequest)]
     public RpcResult OnWeaponItemRequest(ModelManager modelManager) => Response(MessageId.WeaponItemResponse, new WeaponItemResponse
@@ -125,12 +128,17 @@ internal class InventoryController : Controller
         });
     }
 
-    [GameEvent(GameEventType.DebugUnlockAllWeapons)]
+    [GameEvent(GameEventType.DebugUnlockAllItems)]
     public void DebugUnlockAllWeapons(ConfigManager configManager, ModelManager modelManager)
     {
         foreach (WeaponConfig weaponConf in configManager.Enumerate<WeaponConfig>())
         {
             modelManager.Inventory.AddNewWeapon(weaponConf.ItemId);
+        }
+
+        foreach (ItemInfoConfig itemInfo in configManager.Enumerate<ItemInfoConfig>())
+        {
+            modelManager.Inventory.AddItem(itemInfo.Id, itemInfo.MaxStackableNum);
         }
     }
 }

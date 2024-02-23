@@ -11,5 +11,5 @@ internal enum GameEventType
 
     // Debug
     DebugUnlockAllRoles,
-    DebugUnlockAllWeapons
+    DebugUnlockAllItems
 }

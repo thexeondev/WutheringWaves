@@ -1,6 +1,9 @@
-﻿{
+{
   "StartingValues": {
     "Name": "Gktwo",
+    "PlayerLevel": 60,
+    "HeadPhoto": 1402,
+    "HeadFrame": 80060009,
     "Characters": [ 1402, 1302, 1203 ],
     "Position": {
       "X": -35823,
@@ -15,7 +18,7 @@
     "Name": "Gktwo",
     "Signature": "Server Bot",
     "HeadId": 1402,
-    "PlayerId": 1338,
+    "PlayerId": 10000,
     "IsOnline": true,
     "LastOfflineTime": -1,
     "Level": 99
