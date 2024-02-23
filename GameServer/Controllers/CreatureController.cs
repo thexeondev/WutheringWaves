@@ -266,6 +266,7 @@ internal class CreatureController : Controller
             if (_gameplayFeatures.UnlimitedEnergy)
             {
                 EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
+                attr.SetAttribute(EAttributeType.EnergyMax, 0);
                 attr.SetAttribute(EAttributeType.SpecialEnergy1Max, 0);
                 attr.SetAttribute(EAttributeType.SpecialEnergy2Max, 0);
                 attr.SetAttribute(EAttributeType.SpecialEnergy3Max, 0);

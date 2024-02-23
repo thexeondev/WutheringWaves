@@ -4,6 +4,8 @@ namespace GameServer.Systems.Entity.Component;
 internal class EntityConcomitantsComponent : EntityComponentBase
 {
     public List<long> CustomEntityIds { get; }
+    public long PhantomRoleEntityId { get; set; }
+    public long VisionEntityId { get; set; }
 
     public EntityConcomitantsComponent()
     {
@@ -19,6 +21,10 @@ internal class EntityConcomitantsComponent : EntityComponentBase
             EntityComponentPb pb = new()
             {
                 ConcomitantsComponentPb = new()
+                {
+                    PhantomRoleEid = PhantomRoleEntityId,
+                    VisionEntityId = VisionEntityId
+                }
             };
 
             pb.ConcomitantsComponentPb.CustomEntityIds.AddRange(CustomEntityIds);
