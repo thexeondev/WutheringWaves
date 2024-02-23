@@ -33,6 +33,16 @@ internal class CombatManager
         _creatureController = creatureController;
     }
 
+    [CombatRequest(CombatRequestData.MessageOneofCase.CreateBulletRequest)]
+    public CombatResponseData OnCreateBulletRequest(CombatRequestContext context)
+    {
+        return new CombatResponseData
+        {
+            CombatCommon = context.Request.CombatCommon,
+            CreateBulletResponse = new()
+        };
+    }
+
     [CombatRequest(CombatRequestData.MessageOneofCase.DamageExecuteRequest)]
     public async Task<CombatResponseData> OnDamageExecuteRequest(CombatRequestContext context)
     {

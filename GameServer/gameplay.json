@@ -12,6 +12,7 @@
     }
   },
   "Features": {
-    "TeleportByMapMark": true
+    "TeleportByMapMark": true,
+    "UnlimitedEnergy": true
   }
 }
