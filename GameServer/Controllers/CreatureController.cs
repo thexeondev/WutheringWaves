@@ -130,6 +130,12 @@ internal class CreatureController : Controller
         await UpdateAiHate();
     }
 
+    [GameEvent(GameEventType.PlayerPositionChanged)]
+    public void OnPlayerPositionChanged()
+    {
+        _modelManager.Player.Position.MergeFrom(GetPlayerEntity()!.Pos);
+    }
+
     [GameEvent(GameEventType.VisionSkillChanged)]
     public async Task OnVisionSkillChanged()
     {
@@ -173,6 +179,9 @@ internal class CreatureController : Controller
 
         _modelManager.Creature.PlayerEntityId = newEntity.Id;
         newEntity.IsCurrentRole = true;
+
+        newEntity.Pos.MergeFrom(prevEntity.Pos);
+        newEntity.Rot.MergeFrom(prevEntity.Rot);
 
         await UpdateAiHate();
     }
