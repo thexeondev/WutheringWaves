@@ -12,7 +12,8 @@
     }
   },
   "Features": {
-    "TeleportByMapMark": true
+    "TeleportByMapMark": true,
+    "UnlimitedEnergy": true
   },
   "BotConfig": {
     "Name": "Gktwo",

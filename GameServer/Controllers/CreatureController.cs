@@ -4,9 +4,11 @@ using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Network.Messages;
+using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Entity.Component;
 using GameServer.Systems.Event;
+using Microsoft.Extensions.Options;
 using Protocol;
 
 namespace GameServer.Controllers;
@@ -17,12 +19,15 @@ internal class CreatureController : Controller
     private readonly ModelManager _modelManager;
     private readonly ConfigManager _configManager;
 
-    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager) : base(session)
+    private readonly GameplayFeatureSettings _gameplayFeatures;
+
+    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager, IOptions<GameplayFeatureSettings> gameplayFeatures) : base(session)
     {
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _modelManager = modelManager;
         _configManager = configManager;
+        _gameplayFeatures = gameplayFeatures.Value;
     }
 
     public async Task JoinScene(int instanceId)
@@ -257,6 +262,16 @@ internal class CreatureController : Controller
             entity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(roleId)?.Id ?? 0;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
+
+            if (_gameplayFeatures.UnlimitedEnergy)
+            {
+                EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
+                attr.SetAttribute(EAttributeType.EnergyMax, 0);
+                attr.SetAttribute(EAttributeType.SpecialEnergy1Max, 0);
+                attr.SetAttribute(EAttributeType.SpecialEnergy2Max, 0);
+                attr.SetAttribute(EAttributeType.SpecialEnergy3Max, 0);
+                attr.SetAttribute(EAttributeType.SpecialEnergy4Max, 0);
+            }
         }
     }
 
