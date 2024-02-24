@@ -15,6 +15,8 @@ internal abstract class EntityBase
 
     public EntityState State { get; protected set; }
 
+    public bool IsConcomitant => ComponentSystem.TryGet<EntitySummonerComponent>(out _);
+
     public EntityBase(long id)
     {
         Id = id;

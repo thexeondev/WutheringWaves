@@ -288,8 +288,9 @@ internal class CreatureController : Controller
             PlayerEntity concomitant = _entityFactory.CreatePlayer(roleId, 0);
             _entitySystem.Create(concomitant);
 
-            EntityConcomitantsComponent concomitants = entity.ComponentSystem.Get<EntityConcomitantsComponent>();
+            EntityConcomitantsComponent concomitants = entity.ComponentSystem.Create<EntityConcomitantsComponent>();
             concomitants.CustomEntityIds.Clear();
+            concomitants.VisionEntityId = concomitant.Id;
             concomitants.CustomEntityIds.Add(concomitant.Id);
 
             EntitySummonerComponent summoner = concomitant.ComponentSystem.Create<EntitySummonerComponent>();
@@ -297,6 +298,7 @@ internal class CreatureController : Controller
             summoner.SummonConfigId = summonConfigId;
             summoner.SummonType = ESummonType.ConcomitantCustom;
             summoner.PlayerId = _modelManager.Player.Id;
+
             concomitant.InitProps(_configManager.GetConfig<BasePropertyConfig>(roleId)!);
         }
     }

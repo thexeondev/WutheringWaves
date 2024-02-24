@@ -37,10 +37,6 @@ internal class PlayerEntity : EntityBase
     {
         base.OnCreate();
 
-        // Should be created immediately
-        EntityConcomitantsComponent concomitantsComponent = ComponentSystem.Create<EntityConcomitantsComponent>();
-        concomitantsComponent.CustomEntityIds.Add(Id);
-
         EntityVisionSkillComponent visionSkillComponent = ComponentSystem.Create<EntityVisionSkillComponent>();
         visionSkillComponent.SetExploreTool(1001);
 
@@ -82,7 +78,7 @@ internal class PlayerEntity : EntityBase
     public override EEntityType Type => EEntityType.Player;
     public override EntityConfigType ConfigType => EntityConfigType.Character;
 
-    public override bool IsVisible => IsCurrentRole;
+    public override bool IsVisible => IsCurrentRole || IsConcomitant;
 
     public override EntityPb Pb
     {
