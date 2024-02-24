@@ -1,5 +1,6 @@
 ﻿using Core.Config;
 using GameServer.Systems.Entity.Component;
+using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Systems.Entity;
@@ -17,7 +18,9 @@ internal abstract class EntityBase
 
     public bool IsConcomitant => ComponentSystem.TryGet<EntitySummonerComponent>(out _);
 
-    public EntityBase(long id)
+    protected IGameActionListener ActionListener { get; }
+
+    public EntityBase(long id, IGameActionListener listener)
     {
         Id = id;
 
@@ -25,6 +28,7 @@ internal abstract class EntityBase
         Rot = new Rotator();
 
         ComponentSystem = new EntityComponentSystem();
+        ActionListener = listener;
     }
 
     public virtual void OnCreate()
@@ -38,6 +42,24 @@ internal abstract class EntityBase
     public virtual void Activate()
     {
         // Activate.
+    }
+
+    public void ChangeEquipment(int weaponId)
+    {
+        if (ComponentSystem.TryGet(out EntityEquipComponent? equipComponent))
+        {
+            equipComponent.WeaponId = weaponId;
+            _ = ActionListener.OnEntityEquipmentChanged(Id, equipComponent.Pb.EquipComponent);
+        }
+    }
+
+    public void ChangeGameplayAttributes(IEnumerable<GameplayAttributeData> attributes)
+    {
+        if (ComponentSystem.TryGet(out EntityAttributeComponent? attrComponent))
+        {
+            attrComponent.SetAll(attributes);
+            _ = ActionListener.OnEntityAttributesChanged(Id, attrComponent.Pb.AttributeComponent.GameAttributes);
+        }
     }
 
     public virtual LivingStatus LivingStatus => LivingStatus.Alive;

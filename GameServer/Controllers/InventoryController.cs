@@ -38,7 +38,7 @@ internal class InventoryController : Controller
     public RpcResult OnItemExchangeInfoRequest() => Response(MessageId.ItemExchangeInfoResponse, new ItemExchangeInfoResponse());
 
     [NetEvent(MessageId.EquipTakeOnRequest)]
-    public async Task<RpcResult> OnEquipTakeOnRequest(EquipTakeOnRequest request, ModelManager modelManager, CreatureController creatureController, ConfigManager configManager)
+    public RpcResult OnEquipTakeOnRequest(EquipTakeOnRequest request, ModelManager modelManager, CreatureController creatureController, RoleController roleController, ConfigManager configManager)
     {
         WeaponItem? weapon = modelManager.Inventory.GetWeaponById(request.Data.EquipIncId);
         if (weapon == null) return Response(MessageId.EquipTakeOnResponse, new EquipTakeOnResponse
@@ -60,39 +60,12 @@ internal class InventoryController : Controller
 
         // Set new weapon
         weapon.RoleId = role.RoleId;
-        role.ApplyWeaponProperties(weaponConf);
+        roleController.ApplyWeaponPropertiesToRole(role.RoleId, weaponConf);
 
-        // Update role prop data on client
-        await Session.Push(MessageId.PbRolePropsNotify, new PbRolePropsNotify
-        {
-            RoleId = role.RoleId,
-            BaseProp = { role.BaseProp },
-            AddProp = { role.AddProp }
-        });
-
+        // Update entity (if this role is currently active)
         PlayerEntity? entity = creatureController.GetPlayerEntityByRoleId(request.Data.RoleId);
-        if (entity != null)
-        {
-            // Update entity equipment
-            EntityEquipComponent equipComponent = entity.ComponentSystem.Get<EntityEquipComponent>();
-            equipComponent.WeaponId = weapon.Id;
-
-            await Session.Push(MessageId.EntityEquipChangeNotify, new EntityEquipChangeNotify
-            {
-                EntityId = entity.Id,
-                EquipComponent = equipComponent.Pb.EquipComponent
-            });
-
-            // Update entity gameplay attributes
-            EntityAttributeComponent attrComponent = entity.ComponentSystem.Get<EntityAttributeComponent>();
-            attrComponent.SetAll(role.GetAttributeList());
-
-            await Session.Push(MessageId.AttributeChangedNotify, new AttributeChangedNotify
-            {
-                Id = entity.Id,
-                Attributes = { attrComponent.Pb.AttributeComponent.GameAttributes }
-            });
-        }
+        entity?.ChangeEquipment(weapon.Id);
+        entity?.ChangeGameplayAttributes(role.GetAttributeList());
 
         // Response
         EquipTakeOnResponse response = new()

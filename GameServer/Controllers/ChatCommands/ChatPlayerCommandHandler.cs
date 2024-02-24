@@ -1,5 +1,4 @@
-﻿using Core.Config;
-using GameServer.Controllers.Attributes;
+﻿using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Models.Chat;
 using GameServer.Network;

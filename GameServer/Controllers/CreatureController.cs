@@ -1,3 +1,4 @@
+using System.Security.Principal;
 using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Extensions.Logic;
@@ -8,6 +9,7 @@ using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Entity.Component;
 using GameServer.Systems.Event;
+using GameServer.Systems.Notify;
 using Microsoft.Extensions.Options;
 using Protocol;
 
@@ -18,15 +20,17 @@ internal class CreatureController : Controller
     private readonly EntityFactory _entityFactory;
     private readonly ModelManager _modelManager;
     private readonly ConfigManager _configManager;
+    private readonly IGameActionListener _listener;
 
     private readonly GameplayFeatureSettings _gameplayFeatures;
 
-    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager, IOptions<GameplayFeatureSettings> gameplayFeatures) : base(session)
+    public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager, IOptions<GameplayFeatureSettings> gameplayFeatures, IGameActionListener listener) : base(session)
     {
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _modelManager = modelManager;
         _configManager = configManager;
+        _listener = listener;
         _gameplayFeatures = gameplayFeatures.Value;
     }
 
@@ -36,15 +40,7 @@ internal class CreatureController : Controller
         CreateTeamPlayerEntities();
         CreateWorldEntities();
 
-        await Session.Push(MessageId.JoinSceneNotify, new JoinSceneNotify
-        {
-            MaxEntityId = 10000000,
-            TransitionOption = new TransitionOptionPb
-            {
-                TransitionType = (int)TransitionType.Empty
-            },
-            SceneInfo = CreateSceneInfo()
-        });
+        await _listener.OnJoinedScene(CreateSceneInfo(), TransitionType.Empty);
     }
 
     [NetEvent(MessageId.EntityActiveRequest)]
@@ -85,47 +81,11 @@ internal class CreatureController : Controller
     [GameEvent(GameEventType.FormationUpdated)]
     public async Task OnFormationUpdated()
     {
-        // Remove old entities
-
-        IEnumerable<PlayerEntity> oldEntities = GetPlayerEntities().ToArray();
-        foreach (PlayerEntity oldEntity in oldEntities)
-        {
-            _entitySystem.Destroy(oldEntity);
-        }
-
-        await Session.Push(MessageId.EntityRemoveNotify, new EntityRemoveNotify
-        {
-            IsRemove = true,
-            RemoveInfos =
-            {
-                oldEntities.Select(entity => new EntityRemoveInfo
-                {
-                    EntityId = entity.Id,
-                    Type = (int)entity.Type
-                })
-            }
-        });
-
-        // Spawn new entities
-
+        _entitySystem.Destroy(GetPlayerEntities().ToArray());
         CreateTeamPlayerEntities();
 
-        IEnumerable<PlayerEntity> newEntities = GetPlayerEntities();
-        await Session.Push(MessageId.EntityAddNotify, new EntityAddNotify
-        {
-            IsAdd = true,
-            EntityPbs =
-            {
-                newEntities.Select(entity => entity.Pb)
-            }
-        });
-
-        _modelManager.Creature.PlayerEntityId = newEntities.First().Id;
-        await Session.Push(MessageId.UpdatePlayerAllFightRoleNotify, new UpdatePlayerAllFightRoleNotify
-        {
-            PlayerId = _modelManager.Player.Id,
-            FightRoleInfos = { GetFightRoleInfos() }
-        });
+        _modelManager.Creature.PlayerEntityId = GetPlayerEntities().First().Id;
+        await _listener.OnPlayerFightRoleInfoUpdated(_modelManager.Player.Id, GetFightRoleInfos());
 
         await UpdateAiHate();
     }
@@ -256,6 +216,8 @@ internal class CreatureController : Controller
 
     private void CreateTeamPlayerEntities()
     {
+        PlayerEntity[] playerEntities = new PlayerEntity[_modelManager.Formation.RoleIds.Length];
+
         for (int i = 0; i < _modelManager.Formation.RoleIds.Length; i++)
         {
             int roleId = _modelManager.Formation.RoleIds[i];
@@ -263,8 +225,7 @@ internal class CreatureController : Controller
             PlayerEntity entity = _entityFactory.CreatePlayer(roleId, _modelManager.Player.Id);
             entity.Pos = _modelManager.Player.Position.Clone();
             entity.IsCurrentRole = i == 0;
-
-            _entitySystem.Create(entity);
+            
             entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
 
             CreateConcomitants(entity);
@@ -281,7 +242,11 @@ internal class CreatureController : Controller
                 attr.SetAttribute(EAttributeType.SpecialEnergy3Max, 0);
                 attr.SetAttribute(EAttributeType.SpecialEnergy4Max, 0);
             }
+
+            playerEntities[i] = entity;
         }
+
+        _entitySystem.Add(playerEntities);
     }
 
     private void CreateConcomitants(PlayerEntity entity)
@@ -295,7 +260,6 @@ internal class CreatureController : Controller
         if (roleId != -1)
         {
             PlayerEntity concomitant = _entityFactory.CreatePlayer(roleId, 0);
-            _entitySystem.Create(concomitant);
 
             EntityConcomitantsComponent concomitants = entity.ComponentSystem.Create<EntityConcomitantsComponent>();
             concomitants.CustomEntityIds.Clear();
@@ -309,6 +273,7 @@ internal class CreatureController : Controller
             summoner.PlayerId = _modelManager.Player.Id;
 
             concomitant.InitProps(_configManager.GetConfig<BasePropertyConfig>(roleId)!);
+            _entitySystem.Add([concomitant]);
         }
     }
 
@@ -325,7 +290,7 @@ internal class CreatureController : Controller
             Z = playerPos.Z
         };
 
-        _entitySystem.Create(monster);
+        _entitySystem.Add([monster]);
         monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
     }
 }

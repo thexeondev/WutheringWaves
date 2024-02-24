@@ -1,10 +1,11 @@
 ﻿using GameServer.Systems.Entity.Component;
+using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Systems.Entity;
 internal class PlayerEntity : EntityBase
 {
-    public PlayerEntity(long id, int configId, int playerId) : base(id)
+    public PlayerEntity(long id, int configId, int playerId, IGameActionListener listener) : base(id, listener)
     {
         ConfigId = configId;
         PlayerId = playerId;

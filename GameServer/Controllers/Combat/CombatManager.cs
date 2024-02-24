@@ -82,7 +82,7 @@ internal class CombatManager
     }
 
     [CombatRequest(CombatRequestData.MessageOneofCase.DamageExecuteRequest)]
-    public async Task<CombatResponseData> OnDamageExecuteRequest(CombatRequestContext context)
+    public CombatResponseData OnDamageExecuteRequest(CombatRequestContext context)
     {
         DamageExecuteRequest request = context.Request.DamageExecuteRequest;
 
@@ -105,19 +105,7 @@ internal class CombatManager
 
         if (request.DamageId <= 0 && entity.Type != EEntityType.Player) // Player death not implemented
         {
-            _entitySystem.Destroy(entity);
-            await _session.Push(MessageId.EntityRemoveNotify, new EntityRemoveNotify
-            {
-                IsRemove = true,
-                RemoveInfos =
-                {
-                    new EntityRemoveInfo
-                    {
-                        EntityId = entity.Id,
-                        Type = (int)ERemoveEntityType.RemoveTypeNormal
-                    }
-                }
-            });
+            _entitySystem.Destroy([entity]);
         }
 
         return new CombatResponseData

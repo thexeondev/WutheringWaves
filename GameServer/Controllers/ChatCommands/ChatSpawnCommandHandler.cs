@@ -4,7 +4,6 @@ using GameServer.Models;
 using GameServer.Models.Chat;
 using GameServer.Network;
 using GameServer.Systems.Entity;
-using Protocol;
 
 namespace GameServer.Controllers.ChatCommands;
 
@@ -50,14 +49,8 @@ internal class ChatSpawnCommandHandler
             Z = z * 100
         };
 
-        _entitySystem.Create(monster);
         monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!); // TODO: monster property config
-
-        await _session.Push(MessageId.EntityAddNotify, new EntityAddNotify
-        {
-            IsAdd = true,
-            EntityPbs = { monster.Pb }
-        });
+        _entitySystem.Add([monster]);
 
         await _creatureController.UpdateAiHate();
 

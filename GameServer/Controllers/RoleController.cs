@@ -4,25 +4,38 @@ using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Event;
+using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Controllers;
 internal class RoleController : Controller
 {
-    public RoleController(PlayerSession session) : base(session)
+    private readonly ModelManager _modelManager;
+    private readonly IGameActionListener _listener;
+
+    public RoleController(PlayerSession session, ModelManager modelManager, IGameActionListener listener) : base(session)
     {
-        // RoleController.
+        _modelManager = modelManager;
+        _listener = listener;
+    }
+
+    public void ApplyWeaponPropertiesToRole(int roleId, WeaponConfig weaponConfiguration)
+    {
+        roleInfo? role = _modelManager.Roles.GetRoleById(roleId) ?? throw new ArgumentException($"Role with id {roleId} doesn't exist");
+
+        role.ApplyWeaponProperties(weaponConfiguration);
+        _ = _listener.OnRolePropertiesUpdated(roleId, role.BaseProp, role.AddProp);
     }
 
     [GameEvent(GameEventType.DebugUnlockAllRoles)]
-    public void UnlockAllRoles(ConfigManager configManager, ModelManager modelManager)
+    public void UnlockAllRoles(ConfigManager configManager)
     {
         foreach (RoleInfoConfig roleConfig in configManager.Enumerate<RoleInfoConfig>())
         {
-            roleInfo role = modelManager.Roles.Create(roleConfig.Id);
+            roleInfo role = _modelManager.Roles.Create(roleConfig.Id);
             role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
 
-            WeaponItem weapon = modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
+            WeaponItem weapon = _modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
             weapon.RoleId = role.RoleId;
 
             role.ApplyWeaponProperties(configManager.GetConfig<WeaponConfig>(weapon.Id)!);
