@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Protocol;
+﻿using Protocol;
 
 namespace GameServer.Models.Chat;
 internal class ChatRoom

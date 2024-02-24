@@ -1,5 +1,4 @@
-﻿using GameServer.Systems.Event;
-using GameServer.Systems.Notify;
+﻿using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Systems.Entity;

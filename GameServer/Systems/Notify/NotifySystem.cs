@@ -1,5 +1,4 @@
-﻿using System.Data;
-using GameServer.Models;
+﻿using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Entity;
 using Protocol;

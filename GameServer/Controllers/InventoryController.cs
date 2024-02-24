@@ -4,7 +4,6 @@ using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Entity;
-using GameServer.Systems.Entity.Component;
 using GameServer.Systems.Event;
 using Protocol;
 
