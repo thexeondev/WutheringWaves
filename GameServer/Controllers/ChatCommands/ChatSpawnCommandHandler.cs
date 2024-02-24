@@ -34,9 +34,9 @@ internal class ChatSpawnCommandHandler
     {
         if (args.Length != 4 ||
             !(int.TryParse(args[0], out int levelEntityId) &&
-            int.TryParse(args[1], out int x) &&
-            int.TryParse(args[2], out int y) &&
-            int.TryParse(args[3], out int z)))
+            float.TryParse(args[1], out float x) &&
+            float.TryParse(args[2], out float y) &&
+            float.TryParse(args[3], out float z)))
         {
             _helperRoom.AddMessage(1338, 0, "Usage: /spawn monster [id] [x] [y] [z]");
             return;
@@ -45,9 +45,9 @@ internal class ChatSpawnCommandHandler
         MonsterEntity monster = _entityFactory.CreateMonster(levelEntityId);
         monster.Pos = new()
         {
-            X = x,
-            Y = y,
-            Z = z
+            X = x * 100,
+            Y = y * 100,
+            Z = z * 100
         };
 
         _entitySystem.Create(monster);
