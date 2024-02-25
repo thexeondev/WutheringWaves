@@ -31,7 +31,10 @@ internal class ChatSpawnCommandHandler
     [ChatCommandDesc("/spawn monster [id] ([x] [y] [z] | here) - spawns monster with specified id and coordinates")]
     public void OnSpawnMonsterCommand(string[] args)
     {
-        if (args.Length == 2 && int.TryParse(args[0], out int levelEntityId1) && args[1] == "here")
+        if (args.Length == 2 &&
+            int.TryParse(args[0], out int levelEntityId1) &&
+            args[1].Equals("here", StringComparison.OrdinalIgnoreCase)
+        )
         {
             PlayerEntity? entity = _creatureController.GetPlayerEntity();
             if (entity == null) return;
