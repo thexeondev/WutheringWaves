@@ -5,11 +5,14 @@ namespace GameServer.Systems.Entity;
 internal class EntitySystem
 {
     private readonly List<EntityBase> _entities;
+    private readonly List<int> _dynamicEntityIds;
+
     private readonly IGameActionListener _listener;
 
     public EntitySystem(IGameActionListener listener)
     {
         _entities = [];
+        _dynamicEntityIds = [];
         _listener = listener;
     }
 
@@ -26,15 +29,26 @@ internal class EntitySystem
                 throw new InvalidOperationException($"EntitySystem::Create - entity with id {entity.Id} already exists");
 
             _entities.Add(entity);
+
+            if (entity.DynamicId != 0)
+                _dynamicEntityIds.Add(entity.DynamicId);
         }
 
         _ = _listener.OnEntitiesAdded(entities);
     }
 
+    public bool HasDynamicEntity(int dynamicId)
+    {
+        return _dynamicEntityIds.Contains(dynamicId);
+    }
+
     public void Destroy(IEnumerable<EntityBase> entities)
     {
         foreach (EntityBase entity in entities)
+        {
             _ = _entities.Remove(entity);
+            _ = _dynamicEntityIds.Remove(entity.DynamicId);
+        }
 
         _ = _listener.OnEntitiesRemoved(entities);
     }

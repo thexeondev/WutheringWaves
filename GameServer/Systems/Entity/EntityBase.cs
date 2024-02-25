@@ -13,6 +13,7 @@ internal abstract class EntityBase
     public Rotator Rot { get; set; }
 
     public bool Active { get; set; }
+    public int DynamicId { get; protected set; }
 
     public EntityState State { get; protected set; }
 

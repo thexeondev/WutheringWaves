@@ -8,6 +8,7 @@ internal class MonsterEntity : EntityBase
     public MonsterEntity(long id, int configId, IGameActionListener listener) : base(id, listener)
     {
         ConfigId = configId;
+        DynamicId = configId;
     }
 
     public int ConfigId { get; }
@@ -33,17 +34,20 @@ internal class MonsterEntity : EntityBase
         fsm.Fsms.Add(new DFsm
         {
             FsmId = 10007, // Main State Machine
-            CurrentState = 10013, // Battle Branching
-            Status = 1, // ??
-            Flag = (int)EFsmStateFlag.Confirmed
+            CurrentState = 10013 // Battle Branching
         });
 
         fsm.Fsms.Add(new DFsm
         {
             FsmId = 10007, // Main State Machine
-            CurrentState = 10015, // Moving Combat
-            Status = 1, // ??
-            Flag = (int)EFsmStateFlag.Confirmed
+            CurrentState = 10015 // Moving Combat
+        });
+
+        // Some monsters need weapon
+        fsm.Fsms.Add(new DFsm
+        {
+            FsmId = 100,
+            CurrentState = 9 // [9 - Empty hand, 10 - Crowbar, 11 - flamethrower, 12 - chainsaw, 13 - electric blade, 14 - sniper rifle]
         });
     }
 
