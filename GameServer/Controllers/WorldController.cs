@@ -1,6 +1,5 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.Network;
-using GameServer.Network.Messages;
 using GameServer.Systems.Event;
 using Protocol;
 

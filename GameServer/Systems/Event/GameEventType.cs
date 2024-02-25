@@ -6,6 +6,7 @@ internal enum GameEventType
     PushDataDone,
 
     // Actions
+    PlayerPositionChanged,
     FormationUpdated,
     VisionSkillChanged,
 

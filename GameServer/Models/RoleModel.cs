@@ -1,5 +1,4 @@
-﻿using Core.Config;
-using Protocol;
+﻿using Protocol;
 
 namespace GameServer.Models;
 internal class RoleModel

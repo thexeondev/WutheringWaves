@@ -1,10 +1,11 @@
 ﻿using GameServer.Systems.Entity.Component;
+using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Systems.Entity;
 internal class MonsterEntity : EntityBase
 {
-    public MonsterEntity(long id, int configId) : base(id)
+    public MonsterEntity(long id, int configId, IGameActionListener listener) : base(id, listener)
     {
         ConfigId = configId;
     }

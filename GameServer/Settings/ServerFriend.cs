@@ -22,9 +22,9 @@ namespace GameServer.GetServerBot
             public int Level { get; set; }
         }
 
-        public static ServerFriend GetServerBot()
+        public static ServerFriend? GetServerBot()
         {
-            ServerFriend Server;
+            ServerFriend? Server;
             try
             {
                 var configJson = File.ReadAllText("gameplay.json");

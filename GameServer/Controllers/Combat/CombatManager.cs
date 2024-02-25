@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Cryptography;
 using GameServer.Controllers.Attributes;
 using GameServer.Network;
 using GameServer.Systems.Entity;
@@ -33,6 +32,45 @@ internal class CombatManager
         _creatureController = creatureController;
     }
 
+    [CombatRequest(CombatRequestData.MessageOneofCase.RTimeStopRequest)]
+    public CombatResponseData OnRTimeStopRequest(CombatRequestContext context) => new()
+    {
+        CombatCommon = context.Request.CombatCommon,
+        RTimeStopResponse = new()
+    };
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.ActivateBuffRequest)]
+    public CombatResponseData OnActivateBuffRequest(CombatRequestContext context) => new()
+    {
+        CombatCommon = context.Request.CombatCommon,
+        ActivateBuffResponse = new()
+    };
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.UseSkillRequest)]
+    public CombatResponseData OnUseSkillRequest(CombatRequestContext context) => new()
+    {
+        CombatCommon = context.Request.CombatCommon,
+        UseSkillResponse = new()
+        {
+            SkillSingleId = context.Request.UseSkillRequest.SkillSingleId,
+            UseSkillInfo = context.Request.UseSkillRequest.UseSkillInfo
+        }
+    };
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.ApplyGameplayEffectRequest)]
+    public CombatResponseData OnApplyGameplayEffectRequest(CombatRequestContext context) => new()
+    {
+        CombatCommon = context.Request.CombatCommon,
+        ApplyGameplayEffectResponse = new ApplyGameplayEffectResponse()
+    };
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.RemoveGameplayEffectRequest)]
+    public CombatResponseData OnRemoveGameplayEffectRequest(CombatRequestContext context) => new()
+    {
+        CombatCommon = context.Request.CombatCommon,
+        RemoveGameplayEffectResponse = new RemoveGameplayEffectResponse()
+    };
+
     [CombatRequest(CombatRequestData.MessageOneofCase.CreateBulletRequest)]
     public CombatResponseData OnCreateBulletRequest(CombatRequestContext context)
     {
@@ -44,7 +82,7 @@ internal class CombatManager
     }
 
     [CombatRequest(CombatRequestData.MessageOneofCase.DamageExecuteRequest)]
-    public async Task<CombatResponseData> OnDamageExecuteRequest(CombatRequestContext context)
+    public CombatResponseData OnDamageExecuteRequest(CombatRequestContext context)
     {
         DamageExecuteRequest request = context.Request.DamageExecuteRequest;
 
@@ -67,19 +105,7 @@ internal class CombatManager
 
         if (request.DamageId <= 0 && entity.Type != EEntityType.Player) // Player death not implemented
         {
-            _entitySystem.Destroy(entity);
-            await _session.Push(MessageId.EntityRemoveNotify, new EntityRemoveNotify
-            {
-                IsRemove = true,
-                RemoveInfos =
-                {
-                    new EntityRemoveInfo
-                    {
-                        EntityId = entity.Id,
-                        Type = (int)ERemoveEntityType.RemoveTypeNormal
-                    }
-                }
-            });
+            _entitySystem.Destroy([entity]);
         }
 
         return new CombatResponseData
@@ -209,12 +235,18 @@ internal class CombatManager
         if (entity.ComponentSystem.TryGet(out EntityFsmComponent? fsmComponent))
         {
             DFsm? dfsm = fsmComponent.Fsms.FirstOrDefault(fsm => fsm.FsmId == request.FsmId);
-            dfsm ??= new()
+
+            if (dfsm == null)
             {
-                FsmId = request.FsmId,
-                Status = 1,
-                Flag = (int)EFsmStateFlag.Confirmed
-            };
+                dfsm = new DFsm
+                {
+                    FsmId = request.FsmId,
+                    Status = 1,
+                    Flag = (int)EFsmStateFlag.Confirmed
+                };
+
+                fsmComponent.Fsms.Add(dfsm);
+            }
 
             dfsm.CurrentState = request.State;
             context.Notifies.Add(new CombatNotifyData

@@ -13,6 +13,7 @@ using GameServer.Network.Rpc;
 using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Event;
+using GameServer.Systems.Notify;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +40,8 @@ internal static class Program
                         .AddScoped<MessageManager>().AddSingleton<EventHandlerFactory>()
                         .AddScoped<RpcManager>().AddScoped<IRpcEndPoint, RpcSessionEndPoint>()
                         .AddSingleton<SessionManager>()
-                        .AddScoped<EventSystem>().AddScoped<EntitySystem>().AddScoped<EntityFactory>()
+                        .AddScoped<EventSystem>().AddScoped<EntitySystem>().AddScoped<IGameActionListener, NotifySystem>()
+                        .AddScoped<EntityFactory>()
                         .AddScoped<ModelManager>().AddScoped<ControllerManager>()
                         .AddScoped<CombatManager>().AddScoped<ChatCommandManager>()
                         .AddHostedService<WWGameServer>();

@@ -19,7 +19,7 @@ internal class EntitySummonerComponent : EntityComponentBase
             Type = (int)SummonType,
             SummonerId = SummonerId,
             PlayerId = PlayerId,
-            SummonSkillId = SummonSkillId
+            SummonSkillId = SummonSkillId,
         }
     };
 }

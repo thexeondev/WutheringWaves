@@ -1,7 +1,6 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.GetServerBot;
 using GameServer.Network;
-using GameServer.Network.Messages;
 using Protocol;
 
 namespace GameServer.Controllers;

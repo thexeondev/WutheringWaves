@@ -1,10 +1,11 @@
 ﻿using GameServer.Systems.Entity.Component;
+using GameServer.Systems.Notify;
 using Protocol;
 
 namespace GameServer.Systems.Entity;
 internal class PlayerEntity : EntityBase
 {
-    public PlayerEntity(long id, int configId, int playerId) : base(id)
+    public PlayerEntity(long id, int configId, int playerId, IGameActionListener listener) : base(id, listener)
     {
         ConfigId = configId;
         PlayerId = playerId;
@@ -36,10 +37,6 @@ internal class PlayerEntity : EntityBase
     public override void OnCreate()
     {
         base.OnCreate();
-
-        // Should be created immediately
-        EntityConcomitantsComponent concomitantsComponent = ComponentSystem.Create<EntityConcomitantsComponent>();
-        concomitantsComponent.CustomEntityIds.Add(Id);
 
         EntityVisionSkillComponent visionSkillComponent = ComponentSystem.Create<EntityVisionSkillComponent>();
         visionSkillComponent.SetExploreTool(1001);
@@ -82,7 +79,7 @@ internal class PlayerEntity : EntityBase
     public override EEntityType Type => EEntityType.Player;
     public override EntityConfigType ConfigType => EntityConfigType.Character;
 
-    public override bool IsVisible => IsCurrentRole;
+    public override bool IsVisible => IsCurrentRole || IsConcomitant;
 
     public override EntityPb Pb
     {
