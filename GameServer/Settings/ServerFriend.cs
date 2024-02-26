@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace GameServer.GetServerBot
+namespace GameServer.Settings
 {
     public class ServerBot
 

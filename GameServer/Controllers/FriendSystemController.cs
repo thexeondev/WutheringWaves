@@ -1,6 +1,6 @@
 ﻿using GameServer.Controllers.Attributes;
-using GameServer.GetServerBot;
 using GameServer.Network;
+using GameServer.Settings;
 using Protocol;
 
 namespace GameServer.Controllers;
@@ -10,7 +10,7 @@ internal class FriendSystemController : Controller
     {
         // FriendController.
     }
-    public readonly GameServer.GetServerBot.ServerBot.ServerFriend bot = GameServer.GetServerBot.ServerBot.GetServerBot()!;
+    public readonly ServerBot.ServerFriend bot = ServerBot.GetServerBot()!;
 
 
     [NetEvent(MessageId.FriendAllRequest)]

@@ -1,6 +1,7 @@
 ﻿using GameServer.Controllers.Attributes;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Settings;
 using GameServer.Systems.Event;
 using Protocol;
 
@@ -89,7 +90,7 @@ internal class PlayerInfoController : Controller
     [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
     public RpcResult OnPlayerBasicInfoGetRequest()
     {
-        var bot = GameServer.GetServerBot.ServerBot.GetServerBot()!;
+        var bot = ServerBot.GetServerBot()!;
         return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse
         {
             Info = new PlayerDetails

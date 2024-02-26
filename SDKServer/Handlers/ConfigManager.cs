@@ -24,9 +24,9 @@ namespace SDKServer.GetConfig
             public int Port { get; set; } 
         }
 
-        public static Config GetConfig()
+        public static Config? GetConfig()
         {
-            Config config ;
+            Config? config ;
             try
             {
                 var configJson = File.ReadAllText("data/config.json");
