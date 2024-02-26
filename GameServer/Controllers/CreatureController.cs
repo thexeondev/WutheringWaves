@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Extensions.Logic;
 using GameServer.Models;
@@ -14,6 +14,9 @@ using Protocol;
 namespace GameServer.Controllers;
 internal class CreatureController : Controller
 {
+    private const float DynamicSpawnRadius = 5000;
+    private const float DynamicSpawnPositionDelta = 2500;
+    
     private readonly EntitySystem _entitySystem;
     private readonly EntityFactory _entityFactory;
     private readonly ModelManager _modelManager;
@@ -21,6 +24,7 @@ internal class CreatureController : Controller
     private readonly IGameActionListener _listener;
 
     private readonly GameplayFeatureSettings _gameplayFeatures;
+    private readonly Vector _lastDynamicSpawnPos;
 
     public CreatureController(PlayerSession session, EntitySystem entitySystem, EntityFactory entityFactory, ModelManager modelManager, ConfigManager configManager, IOptions<GameplayFeatureSettings> gameplayFeatures, IGameActionListener listener) : base(session)
     {
@@ -30,6 +34,8 @@ internal class CreatureController : Controller
         _configManager = configManager;
         _listener = listener;
         _gameplayFeatures = gameplayFeatures.Value;
+
+        _lastDynamicSpawnPos = new();
     }
 
     public async Task JoinScene(int instanceId)
@@ -92,6 +98,14 @@ internal class CreatureController : Controller
     public void OnPlayerPositionChanged()
     {
         _modelManager.Player.Position.MergeFrom(GetPlayerEntity()!.Pos);
+
+        if (_lastDynamicSpawnPos.GetDistance(_modelManager.Player.Position) >= DynamicSpawnPositionDelta)
+        {
+            _lastDynamicSpawnPos.MergeFrom(_modelManager.Player.Position);
+
+            ClearInactiveEntities();
+            SpawnDynamicEntities();
+        }
     }
 
     [GameEvent(GameEventType.VisionSkillChanged)]
@@ -275,20 +289,45 @@ internal class CreatureController : Controller
         }
     }
 
-    //private void CreateWorldEntities()
-    //{
-    //    Vector playerPos = _modelManager.Player.Position;
+    private void CreateWorldEntities()
+    {
+        _lastDynamicSpawnPos.MergeFrom(_modelManager.Player.Position.Clone());
+        SpawnDynamicEntities();
+    }
 
-    //    // Test monster
-    //    MonsterEntity monster = _entityFactory.CreateMonster(106003002); // Turtle.
-    //    monster.Pos = new()
-    //    {
-    //        X = playerPos.X + 250,
-    //        Y = playerPos.Y + 250,
-    //        Z = playerPos.Z
-    //    };
+    private void ClearInactiveEntities()
+    {
+        _entitySystem.Destroy(_entitySystem.EnumerateEntities()
+            .Where(e => e is MonsterEntity && e.DynamicId != 0 &&
+            e.Pos.GetDistance(_modelManager.Player.Position) > DynamicSpawnRadius).ToArray());
+    }
 
-    //    _entitySystem.Add([monster]);
-    //    monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
-    //}
+    private void SpawnDynamicEntities()
+    {
+        Vector playerPos = _modelManager.Player.Position;
+
+        // Currently only monsters
+        IEnumerable<LevelEntityConfig> entitiesToSpawn = _configManager.Enumerate<LevelEntityConfig>()
+        .Where(config => config.MapId == 8 && Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius && Math.Abs(config.Transform[0].Y / 100 - playerPos.Y) < DynamicSpawnRadius &&
+        config.BlueprintType.StartsWith("Monster"));
+
+        List<MonsterEntity> spawnMonsters = [];
+        foreach (LevelEntityConfig levelEntity in entitiesToSpawn)
+        {
+            if (_entitySystem.HasDynamicEntity(levelEntity.EntityId)) continue;
+
+            MonsterEntity monster = _entityFactory.CreateMonster(levelEntity.EntityId);
+            monster.Pos = new()
+            {
+                X = levelEntity.Transform[0].X / 100,
+                Y = levelEntity.Transform[0].Y / 100,
+                Z = levelEntity.Transform[0].Z / 100
+            };
+
+            monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
+            spawnMonsters.Add(monster);
+        }
+
+        _entitySystem.Add(spawnMonsters);
+    }
 }

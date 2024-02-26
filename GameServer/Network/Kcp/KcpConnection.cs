@@ -8,6 +8,7 @@ internal class KcpConnection : IConnection
 {
     private readonly byte[] _recvBuffer;
     private readonly KcpConversation _conv;
+    private readonly ManualResetEvent _sendEvent;
     private uint _upStreamSeqNo;
     private uint _downStreamSeqNo;
 
@@ -15,6 +16,7 @@ internal class KcpConnection : IConnection
     {
         _conv = conv;
         _recvBuffer = GC.AllocateUninitializedArray<byte>(8192);
+        _sendEvent = new ManualResetEvent(true);
     }
 
     public bool Active => !_conv.TransportClosed;
@@ -51,7 +53,16 @@ internal class KcpConnection : IConnection
         MessageManager.EncodeMessage(memory[BaseMessage.LengthFieldSize..], message);
 
         if (_conv == null) throw new InvalidOperationException("Trying to send message when conv is null");
+
+        if (!_sendEvent.WaitOne(0))
+        {
+            await Task.Yield();
+            _ = _sendEvent.WaitOne();
+        }
+
+        _sendEvent.Reset();
         await _conv.SendAsync(memoryOwner.Memory[..networkSize]);
+        _sendEvent.Set();
     }
 
     private uint NextUpStreamSeqNo()
