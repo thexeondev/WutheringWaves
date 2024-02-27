@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Extensions.Logic;
 using GameServer.Models;
@@ -42,7 +42,7 @@ internal class CreatureController : Controller
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
         CreateTeamPlayerEntities();
-        //CreateWorldEntities();
+        CreateWorldEntities();//生成世界实体
 
         await _listener.OnJoinedScene(CreateSceneInfo(), TransitionType.Empty);
     }
@@ -98,6 +98,9 @@ internal class CreatureController : Controller
     public void OnPlayerPositionChanged()
     {
         _modelManager.Player.Position.MergeFrom(GetPlayerEntity()!.Pos);
+        DBManager.UpdateDB("StartingValues.Position.X", _modelManager.Player.Position.X);
+        DBManager.UpdateDB("StartingValues.Position.Y", _modelManager.Player.Position.Y);
+        DBManager.UpdateDB("StartingValues.Position.Z", _modelManager.Player.Position.Z);
 
         if (_lastDynamicSpawnPos.GetDistance(_modelManager.Player.Position) >= DynamicSpawnPositionDelta)
         {

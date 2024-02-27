@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <BaseOutputPath>..\bin\SdkServer\</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

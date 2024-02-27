@@ -1,15 +1,13 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace GameServer.Settings
-{
-    public class ServerBot
+namespace GameServer.Settings;
 
+    public class ServerBot
     {
         public class ServerFriend
         {
             public Bot BotConfig { get; set; } = new Bot();
-
         }
         public class Bot
         {
@@ -21,13 +19,12 @@ namespace GameServer.Settings
             public long LastOfflineTime { get; set; }
             public int Level { get; set; }
         }
-
         public static ServerFriend? GetServerBot()
         {
             ServerFriend? Server;
             try
             {
-                var configJson = File.ReadAllText("gameplay.json");
+                var configJson = File.ReadAllText("data/gameplay.json");
                 Server = JsonSerializer.Deserialize<ServerFriend>(configJson);
             }
             catch
@@ -52,4 +49,4 @@ namespace GameServer.Settings
         }
 
     }
-}
+

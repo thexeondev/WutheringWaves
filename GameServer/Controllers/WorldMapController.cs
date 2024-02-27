@@ -27,9 +27,10 @@ internal class WorldMapController : Controller
     });
 
     [NetEvent(MessageId.MapMarkRequest)]
-    public async Task<RpcResult> OnMapMarkRequest(MapMarkRequest request, IOptions<GameplayFeatureSettings> gameplayFeatures, CreatureController creatureController)
+    public async Task<RpcResult> OnMapMarkRequest(MapMarkRequest request, CreatureController creatureController)
     {
-        if (gameplayFeatures.Value.TeleportByMapMark)
+        bool toggle = (bool)DBManager.GetMember("Features.TeleportByMapMark")!;
+        if (toggle)
         {
             PlayerEntity? entity = creatureController.GetPlayerEntity();
 

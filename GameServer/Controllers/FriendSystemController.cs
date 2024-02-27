@@ -18,20 +18,20 @@ internal class FriendSystemController : Controller
     {
         FriendInfoList = 
         {
-            CreateDummyFriendInfo(1338, $"{bot.BotConfig.Name}", "discord.gg/reversedrooms", 1402)
+            CreateDummyFriendInfo(bot.BotConfig.PlayerId, $"{bot.BotConfig.Name}", $"{bot.BotConfig.Signature}", bot.BotConfig.Level,bot.BotConfig.HeadId , bot.BotConfig.IsOnline)
         }
     });
 
-    private static FriendInfo CreateDummyFriendInfo(int id, string name, string signature, int headIconId) => new()
+    private static FriendInfo CreateDummyFriendInfo(int id, string name, string signature, int level,int headIconId,bool isOnline) => new()
     {
         Info = new()
         {
             PlayerId = id,
             Name = name,
             Signature = signature,
-            Level = 5,
+            Level = level,
             HeadId = headIconId,
-            IsOnline = true,
+            IsOnline = isOnline,
             LastOfflineTime = -1
         }
     };

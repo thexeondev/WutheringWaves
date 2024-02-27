@@ -1,32 +1,32 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace SDKServer.GetConfig
+namespace SDKServer.Handlers
 {
     public class ConfigManager
     {
         public class Config
         {
-            public HttpConfig Http { get; set; } = new HttpConfig();
-            public UdpConfig Udp { get; set; } = new UdpConfig();
+            public SDKServerConfig SDKServer { get; set; } = new SDKServerConfig();
+            public GameServerConfig GameServer { get; set; } = new GameServerConfig();
         }
 
-        public class HttpConfig
+        public class SDKServerConfig
         {
-            public string Ip { get; set; } = "";
+            public string Host { get; set; } = "";
             public string Name { get; set; } = "";
             public string Port { get; set; } = "";
         }
 
-        public class UdpConfig
+        public class GameServerConfig
         {
-            public string Ip { get; set; } = "";
-            public int Port { get; set; } 
+            public string Host { get; set; } = "";
+            public int Port { get; set; }
         }
 
         public static Config? GetConfig()
         {
-            Config? config ;
+            Config? config;
             try
             {
                 var configJson = File.ReadAllText("data/config.json");
@@ -36,15 +36,15 @@ namespace SDKServer.GetConfig
             {
                 config = new Config
                 {
-                    Http = new HttpConfig
+                    SDKServer = new SDKServerConfig
                     {
-                        Ip = "127.0.0.1",
+                        Host = "127.0.0.1",
                         Port = "5200",
                         Name = "gktwo"
                     },
-                    Udp = new UdpConfig
+                    GameServer = new GameServerConfig
                     {
-                        Ip = "127.0.0.1",
+                        Host = "127.0.0.1",
                         Port = 1337
                     }
                 };

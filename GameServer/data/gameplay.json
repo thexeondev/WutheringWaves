@@ -1,14 +1,21 @@
-{
+﻿{
   "StartingValues": {
+    "PlayerId": 10001,
     "Name": "Gktwo",
-    "PlayerLevel": 60,
+    "PlayerLevel": 80,
     "HeadPhoto": 1402,
     "HeadFrame": 80060009,
-    "Characters": [ 1402, 1302, 1203 ],
+    "Characters": [
+      1402,
+      1302,
+      1203
+    ],
+    "CurWorldLevel": 1,
+    "Signature": "测试db保存",
     "Position": {
-      "X": -45000,
-      "Y": 67800,
-      "Z": 2600
+      "X": -45000.0,
+      "Y": 67800.0,
+      "Z": 2638.6821
     }
   },
   "Features": {
@@ -16,12 +23,16 @@
     "UnlimitedEnergy": true
   },
   "BotConfig": {
-    "Name": "Gktwo",
+    "Name": "Server Bot",
     "Signature": "Server Bot",
     "HeadId": 1402,
     "PlayerId": 10000,
     "IsOnline": true,
     "LastOfflineTime": -1,
     "Level": 99
+  },
+  "GachaUrl": {
+    "Host": "127.0.0.1",
+    "Port": "5500"
   }
 }

@@ -21,7 +21,7 @@ internal class ChatSpawnCommandHandler
 
     public ChatSpawnCommandHandler(ModelManager modelManager, EntitySystem entitySystem, EntityFactory entityFactory, PlayerSession session, ConfigManager configManager, CreatureController creatureController)
     {
-        _helperRoom = modelManager.Chat.GetChatRoom(1338);
+        _helperRoom = modelManager.Chat.GetBotChatRoom();
         _entitySystem = entitySystem;
         _entityFactory = entityFactory;
         _session = session;
@@ -35,14 +35,14 @@ internal class ChatSpawnCommandHandler
     {
         if (args.Length < 1 || !int.TryParse(args[0], out int levelEntityId))
         {
-            _helperRoom.AddMessage(1338, 0, "Usage: /spawn monster [id] [x] [y] [z]");
+            _helperRoom.AddCommandReply( 0, "Usage: /spawn monster [id] [x] [y] [z]");
             return;
         }
 
         MonsterEntity monster = _entityFactory.CreateMonster(levelEntityId);
         if (monster == null)
         {
-            _helperRoom.AddMessage(1338, 0, $"Failed to create monster with id {levelEntityId}");
+            _helperRoom.AddCommandReply( 0, $"Failed to create monster with id {levelEntityId}");
             return;
         }
         if (args.Length >= 4 && int.TryParse(args[1], out int x) && int.TryParse(args[2], out int y) && int.TryParse(args[3], out int z))
@@ -53,6 +53,7 @@ internal class ChatSpawnCommandHandler
         }
         else
         {
+
             var playerEntity = _creatureController.GetPlayerEntity();
             if (playerEntity != null)
             {
@@ -62,7 +63,7 @@ internal class ChatSpawnCommandHandler
             }
             else
             {
-                _helperRoom.AddMessage(1338, 0, "Failed to get player entity");
+                _helperRoom.AddCommandReply( 0, "Failed to get player entity");
                 return;
             }
         }
@@ -72,7 +73,7 @@ internal class ChatSpawnCommandHandler
 
         await _creatureController.UpdateAiHate();
 
-        _helperRoom.AddMessage(1338, 0, $"Successfully spawned monster with id {levelEntityId} at ({monster.Pos.X}, {monster.Pos.Y}, {monster.Pos.Z})");
+        _helperRoom.AddCommandReply( 0, $"Successfully spawned monster with id {levelEntityId} at ({monster.Pos.X}, {monster.Pos.Y}, {monster.Pos.Z})");
     }
 }
 

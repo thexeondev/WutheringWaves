@@ -26,14 +26,25 @@ internal static class Program
     private static async Task Main(string[] args)
     {
         Console.Title = "Wuthering Waves | Game Server";
-        Console.WriteLine(" __      __        __  .__                 .__                  __      __                            \r\n/  \\    /  \\__ ___/  |_|  |__   ___________|__| ____    ____   /  \\    /  \\_____ ___  __ ____   ______\r\n\\   \\/\\/   /  |  \\   __\\  |  \\_/ __ \\_  __ \\  |/    \\  / ___\\  \\   \\/\\/   /\\__  \\\\  \\/ // __ \\ /  ___/\r\n \\        /|  |  /|  | |   Y  \\  ___/|  | \\/  |   |  \\/ /_/  >  \\        /  / __ \\\\   /\\  ___/ \\___ \\ \r\n  \\__/\\  / |____/ |__| |___|  /\\___  >__|  |__|___|  /\\___  /    \\__/\\  /  (____  /\\_/  \\___  >____  >\r\n       \\/                   \\/     \\/              \\//_____/          \\/        \\/          \\/     \\/ \r\n\r\n\t\t\t\t\t\t\t\t\t\t\t\tGame Server\n");
-        
+        Console.WriteLine(@"
+ __      __        __  .__                 .__                  __      __                            
+/  \    /  \__ ___/  |_|  |__   ___________|__| ____    ____   /  \    /  \_____ ___  __ ____   ______
+\   \/\/   /  |  \   __\  |  \_/ __ \_  __ \  |/    \  / ___\  \   \/\/   /\__  \\  \/ // __ \ /  ___/
+ \        /|  |  /|  | |   Y  \  ___/|  | \/  |   |  \/ /_/  >  \        /  / __ \\   /\  ___/ \___ \ 
+  \__/\  / |____/ |__| |___|  /\___  >__|  |__|___|  /\___  /    \__/\  /  (____  /\_/  \___  >____  >
+       \/                   \/     \/              \//_____/          \/        \/          \/     \/ 
+
+                                                                                            Game Server");
+
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("Note: This is an open source and free software, please check it out https://discord.gg/reversedrooms");
+        Console.ResetColor();
         HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
         builder.Logging.AddConsole();
 
         builder.SetupConfiguration();
+        GameServer.Extensions.ServiceCollectionExtensions.AddControllers(builder.Services.UseLocalResources());
         builder.Services.UseLocalResources()
-                        .AddControllers()
                         .AddCommands()
                         .AddSingleton<ConfigManager>()
                         .AddSingleton<KcpGateway>().AddScoped<PlayerSession>()
@@ -62,7 +73,7 @@ internal static class Program
 
     private static void SetupConfiguration(this HostApplicationBuilder builder)
     {
-        builder.Configuration.AddJsonFile("gameplay.json");
+        builder.Configuration.AddJsonFile("data/gameplay.json");
         builder.Services.Configure<GatewaySettings>(builder.Configuration.GetRequiredSection("Gateway"));
         builder.Services.Configure<PlayerStartingValues>(builder.Configuration.GetRequiredSection("StartingValues"));//playerInfo
         builder.Services.Configure<GameplayFeatureSettings>(builder.Configuration.GetRequiredSection("Features"));

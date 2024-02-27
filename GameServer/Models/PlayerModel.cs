@@ -8,10 +8,10 @@ internal class PlayerModel
 
     public List<PlayerAttr> Attributes { get; } = [];
 
-    public int Id { get; private set; }
-    public int BirthDay { get; set; }
-    public int[] Characters { get; private set; }
-    public Vector Position { get; private set; }
+    public int Id { get; protected set; }
+    public int Birthday { get;  set; }
+    public int[] Characters { get;  set; }
+    public Vector Position { get;  set; }
 
     public string Name => GetStringAttribute(PlayerAttrKey.Name);
 
@@ -88,15 +88,19 @@ internal class PlayerModel
     {
         PlayerModel playerModel = new()
         {
-            Id = 10001,
+            Id = startingValues.PlayerId,
             Characters = startingValues.Characters,
-            Position = startingValues.Position.Clone()
+            Position = startingValues.Position.Clone(),
+            Birthday = startingValues.Birthday
         };
 
         playerModel.SetAttribute(PlayerAttrKey.Name, startingValues.Name);
         playerModel.SetAttribute(PlayerAttrKey.Level, startingValues.PlayerLevel);
         playerModel.SetAttribute(PlayerAttrKey.HeadPhoto, startingValues.HeadPhoto);
         playerModel.SetAttribute(PlayerAttrKey.HeadFrame, startingValues.HeadFrame);
+        playerModel.SetAttribute(PlayerAttrKey.CurWorldLevel, startingValues.CurWorldLeve);
+        playerModel.SetAttribute(PlayerAttrKey.OriginWorldLevel, startingValues.CurWorldLeve-1);
+        playerModel.SetAttribute(PlayerAttrKey.Sign, startingValues.Signature);
 
         return playerModel;
     }

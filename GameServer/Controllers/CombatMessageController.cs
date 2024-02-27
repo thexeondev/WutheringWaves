@@ -2,6 +2,7 @@
 using GameServer.Controllers.Combat;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Event;
 using Microsoft.Extensions.Logging;
@@ -64,8 +65,19 @@ internal class CombatMessageController : Controller
                 }
             }
         }
-
-        await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
+        //if ((bool)DBManager.GetMember("Features.MultipleHits")!)
+        //{
+        //    int times = (int)DBManager.GetMember("Features.MultipleHits.Times")!;
+        //    for (int i = 0; i < times; i++)
+        //    {
+        //        await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
+        //    }
+        //}
+        //else
+        //{
+            await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
+       // }
+        
         return Response(MessageId.CombatSendPackResponse, new CombatSendPackResponse());
     }
 }
