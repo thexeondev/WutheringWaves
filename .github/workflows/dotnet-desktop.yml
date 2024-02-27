@@ -30,13 +30,12 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
 
-    - name: Archive production artifacts
-      run: |
-        7z a WWserver.zip ./bin/*
+    - name: Rename bin to wwserver
+      run: mv bin wwserver
       shell: pwsh
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: WWserver
-        path: WWserver.zip
+        name: wwserver
+        path: wwserver/
