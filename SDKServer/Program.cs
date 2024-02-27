@@ -23,7 +23,7 @@ internal static class Program
         Console.ResetColor();
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
         var config = ConfigManager.GetConfig()!;
-        builder.WebHost.UseUrls($"http://{config.SDKServer.Host}:{config.SDKServer.Port}");
+        builder.WebHost.UseUrls($"http://*:{config.SDKServer.Port}");
         builder.Logging.AddSimpleConsole();
 
         WebApplication app = builder.Build();

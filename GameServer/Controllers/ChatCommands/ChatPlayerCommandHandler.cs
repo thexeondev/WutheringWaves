@@ -28,7 +28,10 @@ internal class ChatPlayerCommandHandler
         PlayerEntity? entity = _creatureController.GetPlayerEntity();
         if (entity == null) return;
 
-        _helperRoom.AddCommandReply(0, $"Your current position: ({entity.Pos.X / 100}, {entity.Pos.Y / 100}, {entity.Pos.Z / 100})");
+        var x = (float)Math.Round(entity.Pos.X / 100, 2);
+        var y = (float)Math.Round(entity.Pos.Y / 100, 2);
+        var z = (float)Math.Round(entity.Pos.Z / 100, 2);
+        _helperRoom.AddCommandReply(0, $"Your current position: ({x}, {y}, {z})");
     }
 
     [ChatCommand("tp")]
