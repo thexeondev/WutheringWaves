@@ -1,7 +1,7 @@
 ﻿{
   "SDKServer": {
-    "Host": "192.168.0.110",
-    "Name": "gktwo",
+    "Host": "127.0.0.1",
+    "Name": "sdk",
     "Port": "5500"
   },
   "GameServer": {

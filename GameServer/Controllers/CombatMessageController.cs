@@ -61,22 +61,14 @@ internal class CombatMessageController : Controller
                     combatPackNotify.Data.Add(new CombatReceiveData
                     {
                         CombatResponseData = responseData
+                        
                     });
                 }
             }
         }
-        //if ((bool)DBManager.GetMember("Features.MultipleHits")!)
-        //{
-        //    int times = (int)DBManager.GetMember("Features.MultipleHits.Times")!;
-        //    for (int i = 0; i < times; i++)
-        //    {
-        //        await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
-        //    }
-        //}
-        //else
-        //{
+
             await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
-       // }
+
         
         return Response(MessageId.CombatSendPackResponse, new CombatSendPackResponse());
     }

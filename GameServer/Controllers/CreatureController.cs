@@ -10,6 +10,7 @@ using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
 using Microsoft.Extensions.Options;
 using Protocol;
+using System.Collections.Generic;
 
 namespace GameServer.Controllers;
 internal class CreatureController : Controller
@@ -229,7 +230,7 @@ internal class CreatureController : Controller
         });
     }
 
-    private void CreateTeamPlayerEntities()
+    public void CreateTeamPlayerEntities()
     {
         PlayerEntity[] playerEntities = new PlayerEntity[_modelManager.Formation.RoleIds.Length];
 
@@ -248,7 +249,7 @@ internal class CreatureController : Controller
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
 
-            if (_gameplayFeatures.UnlimitedEnergy)
+            if (/*_gameplayFeatures.UnlimitedEnergy ||*/ (bool)DBManager.GetMember("Features.UnlimitedEnergy")!)
             {
                 EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
                 attr.SetAttribute(EAttributeType.EnergyMax, 0);
@@ -258,13 +259,19 @@ internal class CreatureController : Controller
                 attr.SetAttribute(EAttributeType.SpecialEnergy4Max, 0);
             }
 
+            if (/*_gameplayFeatures.UnlimitedCD ||*/ (bool)DBManager.GetMember("Features.UnlimitedCD")!)
+            {
+                EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
+                attr.SetAttribute(EAttributeType.CdReduse, 0);
+            }
+
             playerEntities[i] = entity;
         }
 
         _entitySystem.Add(playerEntities);
     }
 
-    private void CreateConcomitants(PlayerEntity entity)
+    public void CreateConcomitants(PlayerEntity entity)
     {
         (int roleId, int summonConfigId) = entity.ConfigId switch
         {
@@ -311,26 +318,55 @@ internal class CreatureController : Controller
 
         // Currently only monsters
         IEnumerable<LevelEntityConfig> entitiesToSpawn = _configManager.Enumerate<LevelEntityConfig>()
-        .Where(config => config.MapId == 8 && Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius && Math.Abs(config.Transform[0].Y / 100 - playerPos.Y) < DynamicSpawnRadius &&
-        config.BlueprintType.StartsWith("Monster"));
+            .Where(config => config.MapId == 8 &&
+                             Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius &&
+                             Math.Abs(config.Transform[0].Y / 100 - playerPos.Y) < DynamicSpawnRadius &&
+                             (config.BlueprintType.StartsWith("Monster") ||
+                              config.BlueprintType.StartsWith("NPC") ||
+                              config.BlueprintType.StartsWith("SimpleNPC") ||
+                              config.BlueprintType.StartsWith("Animal")));
 
-        List<MonsterEntity> spawnMonsters = [];
+        List<EntityBase> spawnEntities = new List<EntityBase>();
         foreach (LevelEntityConfig levelEntity in entitiesToSpawn)
         {
             if (_entitySystem.HasDynamicEntity(levelEntity.EntityId)) continue;
 
-            MonsterEntity monster = _entityFactory.CreateMonster(levelEntity.EntityId);
-            monster.Pos = new()
+            EntityBase entity;
+
+            // 根据实体类型创建不同类型的实体
+            if (levelEntity.BlueprintType.StartsWith("Monster"))
+            {
+                entity = _entityFactory.CreateMonster(levelEntity.EntityId);
+                entity.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
+            }
+            else if (levelEntity.BlueprintType.StartsWith("NPC") || levelEntity.BlueprintType.StartsWith("SimpleNPC"))
+            {
+                entity = _entityFactory.CreateNpc(levelEntity.EntityId);
+            }
+            else if (levelEntity.BlueprintType.StartsWith("Animal"))
+            {
+                entity = _entityFactory.CreateAnimal(levelEntity.EntityId);
+            }
+            else
+            {
+                // 处理其他类型的实体，或者抛出异常
+                // ...
+                continue;
+            }
+
+            // 设置实体位置
+            entity.Pos = new Vector
             {
                 X = levelEntity.Transform[0].X / 100,
                 Y = levelEntity.Transform[0].Y / 100,
                 Z = levelEntity.Transform[0].Z / 100
             };
 
-            monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
-            spawnMonsters.Add(monster);
+
+            spawnEntities.Add(entity);
         }
 
-        _entitySystem.Add(spawnMonsters);
+        // 将生成的实体添加到系统中
+        _entitySystem.Add(spawnEntities);
     }
 }

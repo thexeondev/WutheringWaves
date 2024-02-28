@@ -35,7 +35,7 @@ internal class ChatPlayerCommandHandler
     }
 
     [ChatCommand("tp")]
-    [ChatCommandDesc("/player tp [x] [y] [z] - performing fast travel to specified position")]
+    [ChatCommandDesc("/player tp [mapId] [x] [y] [z] - performing fast travel to specified position")]
     public async Task OnPlayerTeleportCommand(string[] args)
     {
         if (args.Length != 4 || !float.TryParse(args[1], out float x)
@@ -50,6 +50,7 @@ internal class ChatPlayerCommandHandler
 
         if (entity != null)
         {
+           // await _creatureController.JoinScene(map);
             await _session.Push(MessageId.TeleportNotify, new TeleportNotify
             {
                 PosX = x * 100,

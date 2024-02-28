@@ -7,6 +7,7 @@ using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
 using Protocol;
 
+
 namespace GameServer.Controllers;
 internal class RoleController : Controller
 {
@@ -64,6 +65,44 @@ internal class RoleController : Controller
         });
     }
 
+
+
+    [NetEvent(MessageId.RoleLevelUpViewRequest)]
+    public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request, CreatureController creatureController*/)
+    {
+        //var level = creatureController.GetPlayerEntityByRoleId(request.RoleId). ;
+        //request.ItemList;
+        //request.MaxItemId;
+        return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
+        {        
+            Code = 0,
+            Level = 1,
+            Exp = 99,
+            AddExp = 99
+        });
+
+    }
+
+
+    [NetEvent(MessageId.PbUpLevelSkillRequest)]
+    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request) //=> Response(MessageId.PbUpLevelSkillRequest, new PbUpLevelSkillRequest());
+    {
+        //request.SkillId;
+        return Response(MessageId.PbUpLevelSkillResponse, new PbUpLevelSkillResponse
+        {
+        //    code_ = other.code_;
+        //roleId_ = other.roleId_;
+        //skillInfo_ = other.skillInfo_ != null ? other.skillInfo_.Clone() : null;
+        Code = 0,
+        RoleId = request.RoleId,
+        SkillInfo = new ArrayIntInt
+        {
+            Key = 1,
+            Value = 1
+        }
+        });
+    }
+
     [NetEvent(MessageId.RoleFavorListRequest)]
     public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
 
@@ -71,26 +110,26 @@ internal class RoleController : Controller
     public RpcResult OnResonantChainUnlockRequest(ResonantChainUnlockRequest request, ModelManager modelManager, ConfigManager configManager)
     {
         roleInfo? role = modelManager.Roles.Roles.Find(r => r.RoleId == request.RoleId)!;
-    
+
         if (role != null)
         {
             RoleInfoConfig roleConfig = configManager.GetConfig<RoleInfoConfig>(request.RoleId)!;
-    
+
             int resonantChainGroupId = roleConfig.ResonantChainGroupId;
-    
+
             // Todo: add buff by _resonantChainGroupId
-    
+
             int curr = role.ResonantChainGroupIndex;
             int next = Math.Min(curr + 1, 6);
             role.ResonantChainGroupIndex = next;
-    
+
             return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
             {
                 RoleId = request.RoleId,
                 ResonantChainGroupIndex = next
             });
         }
-    
+
         return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
         {
             ErrCode = (int)ErrorCode.ErrRoleResonNotActive

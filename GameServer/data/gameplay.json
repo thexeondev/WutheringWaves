@@ -11,7 +11,7 @@
       1203
     ],
     "CurWorldLevel": 1,
-    "Signature": "测试db保存",
+    "Signature": "测试json保存",
     "Position": {
       "X": -45000.0,
       "Y": 67800.0,
@@ -20,7 +20,8 @@
   },
   "Features": {
     "TeleportByMapMark": true,
-    "UnlimitedEnergy": true
+    "UnlimitedEnergy": true,
+    "UnlimitedCD": true
   },
   "BotConfig": {
     "Name": "Server Bot",
