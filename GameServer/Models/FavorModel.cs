@@ -52,7 +52,7 @@ internal class FavorModel
         RoleFavor favor = new()
         {
             Exp = 0,
-            Level = 6, //idk this max?
+            Level = 1,
             RoleId = roleid,
             GoodsIds = { words },
             StoryIds = { story },
