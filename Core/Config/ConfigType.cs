@@ -6,5 +6,8 @@ public enum ConfigType
     BaseProperty,
     LevelEntity,
     Blueprint,
-    ItemInfo
+    ItemInfo,
+    FavorGoods,
+    FavorStory,
+    FavorWord
 }

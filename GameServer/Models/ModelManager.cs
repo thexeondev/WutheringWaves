@@ -36,4 +36,5 @@ internal class ModelManager
     public FormationModel Formation { get; } = new();
     public InventoryModel Inventory { get; } = new();
     public ChatModel Chat { get; } = new();
+    public FavorModel Favor { get; } = new();
 }

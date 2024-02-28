@@ -16,6 +16,9 @@
     <None Remove="data\config\blueprint\blueprintconfig.json" />
     <None Remove="data\config\item\iteminfo.json" />
     <None Remove="data\config\property\baseproperty.json" />
+    <None Remove="data\config\role\favorgoods.json" />
+    <None Remove="data\config\role\favorstory.json" />
+    <None Remove="data\config\role\favorword.json" />
     <None Remove="data\config\weapon\weaponconf.json" />
   </ItemGroup>
 
