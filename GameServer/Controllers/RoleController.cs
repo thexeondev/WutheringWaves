@@ -13,11 +13,13 @@ internal class RoleController : Controller
 {
     private readonly ModelManager _modelManager;
     private readonly IGameActionListener _listener;
+    private readonly ConfigManager _configManager;
 
-    public RoleController(PlayerSession session, ModelManager modelManager, IGameActionListener listener) : base(session)
+    public RoleController(PlayerSession session, ModelManager modelManager, IGameActionListener listener, ConfigManager configManager) : base(session)
     {
         _modelManager = modelManager;
         _listener = listener;
+        _configManager = configManager;
     }
 
     public void ApplyWeaponPropertiesToRole(int roleId, WeaponConfig weaponConfiguration)
@@ -103,7 +105,44 @@ internal class RoleController : Controller
     }
 
     [NetEvent(MessageId.RoleFavorListRequest)]
-    public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
+    public RpcResult OnRoleFavorListRequest() //{ItemType Word = 0, Story = 1, Goods = 2}
+    {
+        _modelManager.Favor.FavorList.Clear();
+        foreach (RoleInfoConfig roleConfig in _configManager.Enumerate<RoleInfoConfig>())
+        {
+            if (roleConfig.RoleType == 1)
+            {
+                foreach (FavorWordConfig favorWord in _configManager.Enumerate<FavorWordConfig>())
+                {
+                    if (favorWord.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorWord.Id, 0);
+                    }
+                }
+                foreach (FavorStoryConfig favorStory in _configManager.Enumerate<FavorStoryConfig>())
+                {
+                    if (favorStory.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorStory.Id, 1);
+                    }
+                }
+                foreach (FavorGoodsConfig favorGoods in _configManager.Enumerate<FavorGoodsConfig>())
+                {
+                    if (favorGoods.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorGoods.Id, 2);
+                    }
+                }
+                _modelManager.Favor.AddFavorRole(roleConfig.Id, _modelManager.Favor.FavorWords, _modelManager.Favor.FavorStory, _modelManager.Favor.FavorGoods);
+                _modelManager.Favor.cleanFavor();
+            }
+            _modelManager.Favor.cleanFavor(); //the code is shit because there is a problem with parsing information in a json file, I do not know how to optimize it. #tapochka
+        }
+        return Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse
+        {
+            FavorList = { _modelManager.Favor.FavorList }
+        }) ;
+    }
 
     [NetEvent(MessageId.ResonantChainUnlockRequest)]
     public RpcResult OnResonantChainUnlockRequest(ResonantChainUnlockRequest request, ModelManager modelManager, ConfigManager configManager)
