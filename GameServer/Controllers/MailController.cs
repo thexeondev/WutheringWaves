@@ -93,7 +93,7 @@ public RpcResult OnMailGetAttachmentRequest(MailGetAttachmentRequest request)
     //  request.MailIds[];
     if (count != 0)
     {
-        MapField<string, int> mailmap = new MapField<string, int>();
+        MapField<string, int> mailmap = new();
         for (int i = 0; i < count; i++)
         {
             mailmap.Add(request.MailIds[i], i);
