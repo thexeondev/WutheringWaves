@@ -50,7 +50,7 @@ internal class ChatPlayerCommandHandler
 
         if (entity != null)
         {
-           // await _creatureController.JoinScene(map);
+           // switchmap()
             await _session.Push(MessageId.TeleportNotify, new TeleportNotify
             {
                 PosX = x * 100,

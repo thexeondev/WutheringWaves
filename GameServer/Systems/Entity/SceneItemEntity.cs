@@ -20,11 +20,11 @@ internal class SceneItemEntity : EntityBase
     {
         base.OnCreate();
 
-        //EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
-        //attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
-        //attributeComponent.SetAttribute(EAttributeType.Life, 100);
+        EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
+        attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
+        attributeComponent.SetAttribute(EAttributeType.Life, 100);
 
-        State = EntityState.Born;
+        State = EntityState.Default;
     }
 
     public override EntityPb Pb

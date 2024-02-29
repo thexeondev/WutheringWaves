@@ -316,7 +316,7 @@ internal class CreatureController : Controller
     {
         Vector playerPos = _modelManager.Player.Position;
 
-        // Currently only monsters
+        
         IEnumerable<LevelEntityConfig> entitiesToSpawn = _configManager.Enumerate<LevelEntityConfig>()
             .Where(config => config.MapId == 8 &&
                              Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius &&
@@ -326,7 +326,7 @@ internal class CreatureController : Controller
                               config.BlueprintType.StartsWith("SimpleNPC") ||
                               config.BlueprintType.StartsWith("Animal")));
 
-        List<EntityBase> spawnEntities = new List<EntityBase>();
+        List<EntityBase> spawnEntities = [];
         foreach (LevelEntityConfig levelEntity in entitiesToSpawn)
         {
             if (_entitySystem.HasDynamicEntity(levelEntity.EntityId)) continue;

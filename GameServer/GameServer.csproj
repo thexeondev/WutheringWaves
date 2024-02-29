@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\Achievement\**" />
+    <EmbeddedResource Remove="Controllers\Achievement\**" />
+    <None Remove="Controllers\Achievement\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
 

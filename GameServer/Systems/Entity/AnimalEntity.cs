@@ -26,18 +26,12 @@ internal class AnimalEntity : EntityBase
         attributeComponent.SetAttribute(EAttributeType.Life, 100);
 
 
-        State = EntityState.Born;
+       State = EntityState.Born;
 
         EntityMonsterAiComponent aiComponent = ComponentSystem.Create<EntityMonsterAiComponent>();
         aiComponent.AiTeamInitId = 100;
 
         EntityFsmComponent fsm = ComponentSystem.Create<EntityFsmComponent>();
-
-        fsm.Fsms.Add(new DFsm
-        {
-            FsmId = 10007, // Main State Machine
-            CurrentState = 10013 // Battle Branching
-        });
 
         fsm.Fsms.Add(new DFsm
         {

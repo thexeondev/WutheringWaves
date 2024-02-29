@@ -36,7 +36,7 @@ internal class ChatSpawnCommandHandler
     }
 
     [ChatCommand("entity")]
-    [ChatCommandDesc("/spawn entity [type] [id] [x] [y] [z] - spawns entity(monster,npc,animal) with specified id and coordinates")]
+    [ChatCommandDesc("/spawn entity [type] [id] [x] [y] [z] - spawns entity(monster,npc,animal,role) with specified id and coordinates")]
     public async Task OnSpawnEntityCommand(string[] args)
     {
         if (args.Length < 1 || !int.TryParse(args[1], out int levelEntityId) || args[0] == "")
@@ -70,9 +70,6 @@ internal class ChatSpawnCommandHandler
             case "role":
                 {
                     PlayerEntity pentity = _entityFactory.CreatePlayer(levelEntityId,10001);
-                    pentity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(RoleInfoExtensions.GetAttributeList(_modelManager.Roles.GetRoleById(levelEntityId)!));
-                    _creatureController.CreateConcomitants(pentity);
-                    pentity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(levelEntityId)?.Id ?? 0;
                     entity = pentity;
                 }
                 break;

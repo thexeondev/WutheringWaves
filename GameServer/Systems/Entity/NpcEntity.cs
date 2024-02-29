@@ -21,11 +21,22 @@ internal class NpcEntity : EntityBase
     {
         base.OnCreate();
 
-        //EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
-        //attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
-        //attributeComponent.SetAttribute(EAttributeType.Life, 100);
+        EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
+        attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
+        attributeComponent.SetAttribute(EAttributeType.Life, 100);
 
-        State = EntityState.Born;
+        State = EntityState.Default;
+
+        EntityNpcComponent npcComponent = ComponentSystem.Create<EntityNpcComponent>();
+
+        EntityFsmComponent fsm = ComponentSystem.Create<EntityFsmComponent>();
+
+
+        fsm.Fsms.Add(new DFsm
+        {
+            FsmId = 10007, // Main State Machine
+            CurrentState = 10015 // Moving Combat
+        });
     }
 
     public override EntityPb Pb

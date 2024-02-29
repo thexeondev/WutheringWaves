@@ -97,8 +97,7 @@ internal class RoleController : Controller
         RoleId = request.RoleId,
         SkillInfo = new ArrayIntInt
         {
-            Key = 1,
-            Value = 1
+
         }
         });
     }
