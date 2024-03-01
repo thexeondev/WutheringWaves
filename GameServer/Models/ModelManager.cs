@@ -37,4 +37,6 @@ internal class ModelManager
     public InventoryModel Inventory { get; } = new();
     public ChatModel Chat { get; } = new();
     public FavorModel Favor { get; } = new();
+    public ActivityModel Activity { get; } = new();
+    public AchievementModel Achievement { get; } = new();
 }

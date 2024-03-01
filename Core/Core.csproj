@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <Folder Include="data\config\level_entity\" />
+    <Folder Include="data\config\activity\" />
   </ItemGroup>
 
 </Project>

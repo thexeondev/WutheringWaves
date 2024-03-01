@@ -92,14 +92,10 @@ internal class RoleController : Controller
         //request.SkillId;
         return Response(MessageId.PbUpLevelSkillResponse, new PbUpLevelSkillResponse
         {
-        //    code_ = other.code_;
-        //roleId_ = other.roleId_;
-        //skillInfo_ = other.skillInfo_ != null ? other.skillInfo_.Clone() : null;
         Code = 0,
         RoleId = request.RoleId,
         SkillInfo = new ArrayIntInt
         {
-
         }
         });
     }
@@ -134,9 +130,9 @@ internal class RoleController : Controller
                     }
                 }
                 _modelManager.Favor.AddFavorRole(roleConfig.Id, _modelManager.Favor.FavorWords, _modelManager.Favor.FavorStory, _modelManager.Favor.FavorGoods);
-                _modelManager.Favor.cleanFavor();
+                _modelManager.Favor.CleanFavor();
             }
-            _modelManager.Favor.cleanFavor(); //the code is shit because there is a problem with parsing information in a json file, I do not know how to optimize it. #tapochka
+            _modelManager.Favor.CleanFavor(); //the code is shit because there is a problem with parsing information in a json file, I do not know how to optimize it. #tapochka
         }
         return Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse
         {

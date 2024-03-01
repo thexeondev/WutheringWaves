@@ -9,5 +9,9 @@ public enum ConfigType
     ItemInfo,
     FavorGoods,
     FavorStory,
-    FavorWord
+    FavorWord,
+    Activity,
+    Achievement,
+    AchievementGroup,
+
 }

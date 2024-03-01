@@ -92,7 +92,7 @@ internal class ShopController : Controller
 
         return Response(MessageId.PayItemResponse, new PayItemResponse
         {
-            ReceiptId = "123456",
+            ReceiptId = "Reversed Room",
             ErrorCode = (int)ErrorCode.Success
     });
     }
@@ -103,7 +103,7 @@ internal class ShopController : Controller
         return Response(MessageId.PayInfoResponse, new PayInfoResponse
         {
             //Infos
-            Version = "1.0.0",
+            Version = "Reversed Room",
             ErrorCode = (int)ErrorCode.Success
         });
     }

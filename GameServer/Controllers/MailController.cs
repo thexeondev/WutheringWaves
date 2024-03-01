@@ -49,18 +49,6 @@ internal class MailController : Controller
 
             },
             Reason = (int)MailAddReason.Gm
-            //      MAIL_ADD_REASON_GM = 0;
-            //MAIL_ADD_REASON_BAG_FULL = 1;
-            //MAIL_ADD_REASON_PUBLIC = 2;
-            //MAIL_ADD_REASON_OFFLINE_EVENT_ADD = 3;
-            //MAIL_ADD_REASON_QUEST_NPC_ACTION = 4;
-            //MAIL_ADD_REASON_DAILY_QUEST_REWARD = 5;
-            //MAIL_ADD_REASON_REPORT_PLAYER = 6;
-            //MAIL_ADD_REASON_MONTH_CARD_REMIND = 7;
-            //MAIL_ADD_REASON_BATTLE_PASS_SETTLE = 8;
-            //MAIL_ADD_REASON_PAY_REBATE = 9;
-            //MAIL_ADD_REASON_REMOVE_TEMPORARY_TELEPORT_BY_SCENE_DATA_LAYER_CHANGE = 10;
-            //MAIL_ADD_REASON_CD_KEY = 11;
 
         };
 
@@ -83,17 +71,17 @@ public RpcResult OnMailReadRequest(MailReadRequest request)
 }
 
 [NetEvent(MessageId.MailDeleteRequest)]
-public RpcResult OnMailDeleteRequest(MailDeleteRequest request) => Response(MessageId.MailDeleteResponse, new MailDeleteResponse());
+public RpcResult OnMailDeleteRequest(/*MailDeleteRequest request*/) => Response(MessageId.MailDeleteResponse, new MailDeleteResponse());
 
 
 [NetEvent(MessageId.MailGetAttachmentRequest)]
 public RpcResult OnMailGetAttachmentRequest(MailGetAttachmentRequest request)
 {
-    int count = request.MailIds.Count();
+    int count = request.MailIds.Count;
     //  request.MailIds[];
     if (count != 0)
     {
-        MapField<string, int> mailmap = new();
+        MapField<string, int> mailmap = [];
         for (int i = 0; i < count; i++)
         {
             mailmap.Add(request.MailIds[i], i);

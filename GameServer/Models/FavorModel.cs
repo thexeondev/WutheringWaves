@@ -36,10 +36,10 @@ internal class FavorModel
             default:
                 break;
         }
-        FavorWords.Add(item);
+        
         return item;
     }
-    public void cleanFavor()
+    public void CleanFavor()
     {
         FavorWords.Clear();
         FavorStory.Clear();

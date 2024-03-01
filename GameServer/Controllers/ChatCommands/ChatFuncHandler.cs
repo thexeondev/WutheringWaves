@@ -3,6 +3,8 @@ using GameServer.Models;
 using GameServer.Models.Chat;
 using GameServer.Network;
 using GameServer.Settings;
+using GameServer.Systems.Event;
+using Protocol;
 namespace GameServer.Controllers.ChatCommands;
 
 [ChatCommandCategory("func")]
@@ -138,5 +140,17 @@ internal class ChatFuncCommandHandler
     //    }
     //}
 
+    //[GameEvent(GameEventType.EnterGame)]
+    //public async Task OnEnterGame()
+    //{
+    //    Notify notify = new();
+    //    {
+
+    //    }
+
+
+
+    //    await _session.Push(MessageId., notify);
+    //}
 
 }
