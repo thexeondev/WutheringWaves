@@ -18,7 +18,7 @@ internal class MonthCardController : Controller
     }
 
     [GameEvent(GameEventType.EnterGame)]
-    public async Task OnEnterGame()
+    public async Task OnMonthCardDailyReward()
     {
         await Session.Push(MessageId.MonthCardDailyRewardNotify, new MonthCardDailyRewardNotify
         {

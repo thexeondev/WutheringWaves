@@ -13,5 +13,14 @@ public enum ConfigType
     Activity,
     Achievement,
     AchievementGroup,
+    BattlePass,
+    BattlePassTask,
+    BattlePassReward,
+    Quest,
+    QuestData,
+    Liveness,//daily_activity
+    Livenesstask,
+    Payshop,
+    Payshopgood,
 
 }

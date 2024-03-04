@@ -43,7 +43,7 @@ internal class CreatureController : Controller
     {
         _modelManager.Creature.SetSceneLoadingData(instanceId);
         CreateTeamPlayerEntities();
-        CreateWorldEntities();//生成世界实体
+        CreateWorldEntities();
 
         await _listener.OnJoinedScene(CreateSceneInfo(), TransitionType.Empty);
     }
@@ -333,7 +333,7 @@ internal class CreatureController : Controller
 
             EntityBase entity;
 
-            // 根据实体类型创建不同类型的实体
+            
             if (levelEntity.BlueprintType.StartsWith("Monster"))
             {
                 entity = _entityFactory.CreateMonster(levelEntity.EntityId);
@@ -348,13 +348,10 @@ internal class CreatureController : Controller
                 entity = _entityFactory.CreateAnimal(levelEntity.EntityId);
             }
             else
-            {
-                // 处理其他类型的实体，或者抛出异常
-                // ...
+            {              
                 continue;
             }
-
-            // 设置实体位置
+          
             entity.Pos = new Vector
             {
                 X = levelEntity.Transform[0].X / 100,
@@ -362,11 +359,9 @@ internal class CreatureController : Controller
                 Z = levelEntity.Transform[0].Z / 100
             };
 
-
             spawnEntities.Add(entity);
         }
-
-        // 将生成的实体添加到系统中
+    
         _entitySystem.Add(spawnEntities);
     }
 }

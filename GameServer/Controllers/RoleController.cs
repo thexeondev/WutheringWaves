@@ -72,7 +72,7 @@ internal class RoleController : Controller
     [NetEvent(MessageId.RoleLevelUpViewRequest)]
     public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request, CreatureController creatureController*/)
     {
-        //var level = creatureController.GetPlayerEntityByRoleId(request.RoleId). ;
+        
         //request.ItemList;
         //request.MaxItemId;
         return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
@@ -87,7 +87,7 @@ internal class RoleController : Controller
 
 
     [NetEvent(MessageId.PbUpLevelSkillRequest)]
-    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request) //=> Response(MessageId.PbUpLevelSkillRequest, new PbUpLevelSkillRequest());
+    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request) 
     {
         //request.SkillId;
         return Response(MessageId.PbUpLevelSkillResponse, new PbUpLevelSkillResponse
@@ -99,6 +99,20 @@ internal class RoleController : Controller
         }
         });
     }
+
+    [NetEvent(MessageId.RoleSkillViewRequest)]
+    public RpcResult OnRoleSkillViewRequest(/*RoleSkillViewRequest request*/)
+    {
+        //roleId_ = other.roleId_;
+        //skillId_ = other.skillId_;
+        return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+        {
+        Code = 0,
+        IsConditionFinish = true,
+
+        });
+    }
+
 
     [NetEvent(MessageId.RoleFavorListRequest)]
     public RpcResult OnRoleFavorListRequest() //{ItemType Word = 0, Story = 1, Goods = 2}

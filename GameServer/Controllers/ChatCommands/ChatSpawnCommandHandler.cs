@@ -69,16 +69,18 @@ internal class ChatSpawnCommandHandler
                 break;
             case "role":
                 {
-                    PlayerEntity pentity = _entityFactory.CreatePlayer(levelEntityId,10001);
+                    PlayerEntity pentity = _entityFactory.CreatePlayer(levelEntityId, 10001);
+                    _creatureController.CreateConcomitants(pentity);
+                    pentity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(levelEntityId)?.Id ?? 0;
                     entity = pentity;
                 }
                 break;
-            //case "item":
-            //    {
-            //        SceneItemEntity sentity = _entityFactory.CreateSceneItem(levelEntityId);
-            //        entity = sentity;
-            //    }
-            //    break;
+            case "item":
+                {
+                    SceneItemEntity sentity = _entityFactory.CreateSceneItem(levelEntityId);
+                    entity = sentity;
+                }
+                break;
             default:
                 {
                     _helperRoom.AddCommandReply(0, "Usage: /spawn entity [type] [id] [x] [y] [z]");

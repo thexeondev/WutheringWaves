@@ -8,6 +8,7 @@ internal class SceneItemEntity : EntityBase
     public SceneItemEntity(long id, int configId, IGameActionListener listener) : base(id, listener)
     {
         ConfigId = configId;
+        DynamicId = configId;
 
     }
 
@@ -19,12 +20,12 @@ internal class SceneItemEntity : EntityBase
     public override void OnCreate()
     {
         base.OnCreate();
+       
+        //EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
+        //attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
+        //attributeComponent.SetAttribute(EAttributeType.Life, 100);
 
-        EntityAttributeComponent attributeComponent = ComponentSystem.Create<EntityAttributeComponent>();
-        attributeComponent.SetAttribute(EAttributeType.LifeMax, 100);
-        attributeComponent.SetAttribute(EAttributeType.Life, 100);
-
-        State = EntityState.Default;
+        State = EntityState.Born;
     }
 
     public override EntityPb Pb

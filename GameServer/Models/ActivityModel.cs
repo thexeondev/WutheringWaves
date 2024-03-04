@@ -1,5 +1,4 @@
-﻿using Core.Config;
-using Protocol;
+﻿using Protocol;
 
 namespace GameServer.Models;
 
@@ -8,7 +7,10 @@ internal class ActivityModel
     public List<ActivityData> ActivityDataList { get; } = [];
     
 
-
+    public void ClearActivity()
+    {
+        ActivityDataList.Clear();
+    }
 
     public ActivityData AddActivity(int ActivityId, int Type, List<int> PreQuests) 
     {

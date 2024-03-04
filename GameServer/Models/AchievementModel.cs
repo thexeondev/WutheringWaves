@@ -22,8 +22,6 @@ internal class AchievementModel
     }
 
 
-
-
     public AchievementEntry AddAchievementEntry(int Achievementid,bool IsReceive, AchievementProgress progress)
     {
         AchievementEntry entry = new()

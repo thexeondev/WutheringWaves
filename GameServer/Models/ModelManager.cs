@@ -39,4 +39,10 @@ internal class ModelManager
     public FavorModel Favor { get; } = new();
     public ActivityModel Activity { get; } = new();
     public AchievementModel Achievement { get; } = new();
+    public BattlePassModel BattlePass { get; } = new();
+    public QuestModel Quest { get; } = new();
+    public LivenessModel Liveness { get; } = new();
+    public PayShopModel PayShop { get; } = new();
+
+
 }

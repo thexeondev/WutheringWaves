@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "Id": 1402,
     "QualityId": 4,
@@ -56,7 +56,7 @@
     "ObtainedShowDescription": "",
     "NumLimit": 1,
     "ShowInBag": true,
-    "WeaponScale": [15, 15, 15],
+    "WeaponScale": [1, 1, 1],
     "Intervene": false,
     "CharacterVoice": "RoleInfo_1402_CharacterVoice",
     "TrialRole": 100301,
