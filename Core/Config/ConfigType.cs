@@ -22,5 +22,6 @@ public enum ConfigType
     Livenesstask,
     Payshop,
     Payshopgood,
+    monsterhandbook,//illustrated
 
 }

@@ -23,21 +23,21 @@ internal class ActivityController : Controller
     public async Task<RpcResult> OnActivityRequest()
     {
         List<ActivityData> data = new List<ActivityData>();
-        SignActivity sign = new SignActivity { SignStateList = { 1, 1, 1, 1, 1, 1, 1 }, KeepTime = 99999999999 };
-        ActivityData activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100100001, IsFirstOpen = true, IsUnlock = true, Type = 2, SignActivity = sign };
+        SignActivity sign = new SignActivity { SignStateList = { 1, 1, 1, 1, 1, 1, 1 }, KeepTime = Int32.MaxValue };
+        ActivityData activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = Int32.MaxValue, Id = 100100001, IsFirstOpen = true, IsUnlock = true, Type = 2, SignActivity = sign };
         data.Add(activityData);
 
-        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 120000001, IsFirstOpen = true, IsUnlock = true, Type = 200, CompletePreQuests = { 310000043 } };
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = Int32.MaxValue, Id = 120000001, IsFirstOpen = true, IsUnlock = true, Type = 200, CompletePreQuests = { 310000043 } };
         data.Add(activityData);
 
-        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100300001, IsFirstOpen = true, IsUnlock = true, Type = 3, CompletePreQuests = { 310000041 } };
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = Int32.MaxValue, Id = 100300001, IsFirstOpen = true, IsUnlock = true, Type = 3, CompletePreQuests = { 310000041 } };
 
         data.Add(activityData);
-        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100, IsFirstOpen = true, IsUnlock = true, Type = 0 };
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = Int32.MaxValue, Id = 100, IsFirstOpen = true, IsUnlock = true, Type = 0 };
         data.Add(activityData);
 
-        WorldNewJourneyActivity worldEnd = new WorldNewJourneyActivity { WorldNewJourneyEndTime = 9999999999999 };
-        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100500001, IsFirstOpen = true, IsUnlock = true, Type = 5, WorldNewJourneyActivity = worldEnd };
+        WorldNewJourneyActivity worldEnd = new WorldNewJourneyActivity { WorldNewJourneyEndTime = Int32.MaxValue };
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = Int32.MaxValue, Id = 100500001, IsFirstOpen = true, IsUnlock = true, Type = 5, WorldNewJourneyActivity = worldEnd };
         data.Add(activityData);
 
         await Session.Push(MessageId.InstPlayDataNotify, new InstPlayDataNotify { Id = 995 });
