@@ -34,13 +34,26 @@ internal class PlayerInfoController : Controller
             },
             CurCardId = 80060000,
             CardUnlockList =
-            {
-                new CardShowEntry
-                {
-                    CardId = 80060000,
-                    IsRead = true
-                }
-            }
+        {
+            new CardShowEntry { CardId = 80060000, IsRead = true },
+            new CardShowEntry { CardId = 80060001, IsRead = true },
+            new CardShowEntry { CardId = 80060002, IsRead = true },
+            new CardShowEntry { CardId = 80060003, IsRead = true },
+            new CardShowEntry { CardId = 80060004, IsRead = true },
+            new CardShowEntry { CardId = 80060005, IsRead = true },
+            new CardShowEntry { CardId = 80060006, IsRead = true },
+            new CardShowEntry { CardId = 80060007, IsRead = true },
+            new CardShowEntry { CardId = 80060008, IsRead = true },
+            new CardShowEntry { CardId = 80060009, IsRead = true },
+            new CardShowEntry { CardId = 80060010, IsRead = true },
+            new CardShowEntry { CardId = 80060011, IsRead = true },
+            new CardShowEntry { CardId = 80060012, IsRead = true },
+            new CardShowEntry { CardId = 80060013, IsRead = true },
+            new CardShowEntry { CardId = 80060014, IsRead = true },
+            new CardShowEntry { CardId = 80060015, IsRead = true },
+            new CardShowEntry { CardId = 80060016, IsRead = true },
+            new CardShowEntry { CardId = 80069001, IsRead = true }
+        }
         };
 
         await Session.Push(MessageId.BasicInfoNotify, basicInfo);

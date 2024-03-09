@@ -328,4 +328,19 @@ internal class RoleController : Controller
 
         return baseProp;
     }
+
+
+    [NetEvent(MessageId.SitChairRequest)]
+    public RpcResult OnSitChairRequest(SitChairRequest request)
+    {
+        return Response(MessageId.SitChairResponse, new SitChairResponse
+        {
+            ErrorCode = 0,
+        });
+    }
+
+
+
+
+
 }

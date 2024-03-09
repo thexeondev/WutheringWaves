@@ -13,8 +13,6 @@ internal class QuestController : Controller
     private readonly ModelManager _modelManager;
     private readonly ConfigManager _configManager;
 
-
-    //private QuestData  QuestData { get;set} = new();
     public QuestController(PlayerSession session, ConfigManager configManager, ModelManager modelManager) : base(session)
     {
         _modelManager = modelManager;
@@ -23,7 +21,7 @@ internal class QuestController : Controller
 
     }
 
-    [GameEvent(GameEventType.EnterGame)]
+   // [GameEvent(GameEventType.EnterGame)]
     public async Task OnQuestListNotify()
     {
         _modelManager.Quest.ClearQuest();
@@ -38,26 +36,44 @@ internal class QuestController : Controller
         }
         await Session.Push(MessageId.QuestListNotify, notify);
     }
-
-    [GameEvent(GameEventType.EnterGame)]
+    //[GameEvent(GameEventType.EnterGame)]
+    public async Task OnQuestShowListNotify()
+    {
+        QuestShowListNotify notify = new();
+        {
+            notify.QuestId.Add(_modelManager.Quest.QuestIdList);
+        }
+        await Session.Push(MessageId.QuestShowListNotify, notify);
+    }
+   // [GameEvent(GameEventType.EnterGame)]
     public async Task OnQuestReadyListNotify()
     {
-        _modelManager.Quest.QuestIdList.Clear();
-        foreach (QuestConfig questconfig in _configManager.Enumerate<QuestConfig>())
-        {
-            _modelManager.Quest.AddQuestids(questconfig.Id);
-        }
-
         QuestReadyListNotify notify = new();
         {
             notify.QuestId.Add(_modelManager.Quest.QuestIdList);
         }
         await Session.Push(MessageId.QuestReadyListNotify, notify);
     }
+    //[GameEvent(GameEventType.EnterGame)]
+    public async Task OnQuestRedDotNotify()
+    {
+        QuestRedDotNotify notify = new();
+        {
+            notify.QuestId.Add(_modelManager.Quest.QuestIdList);
+        }
+        await Session.Push(MessageId.QuestRedDotNotify, notify);
+    }
 
+    public async Task OnQuestStateUpdateNotify(int questid , QuestState state)
+    {
+        QuestStateUpdateNotify notify = new();
+        {
+            notify.QuestId = questid;
+            notify.State = (int)state;
+        }
+        await Session.Push(MessageId.QuestStateUpdateNotify, notify);
+    }
 
-    //[NetEvent(MessageId.LivenessRequest)]
-    //public RpcResult OnLivenessRequest() => Response(MessageId.LivenessResponse, new LivenessResponse());
 
     [NetEvent(MessageId.QuestRedDotRequest)]
     public RpcResult OnQuestRedDotRequest(/*QuestRedDotRequest request*/) //=> Response(MessageId.QuestRedDotResponse, new QuestRedDotResponse());

@@ -3,6 +3,7 @@ using GameServer.Models;
 using GameServer.Models.Chat;
 using GameServer.Network;
 using GameServer.Settings;
+using GameServer.Systems.Entity;
 using GameServer.Systems.Event;
 using Protocol;
 namespace GameServer.Controllers.ChatCommands;
@@ -104,8 +105,5 @@ internal class ChatFuncCommandHandler
             _helperRoom.AddCommandReply(0, $"Usage: /func unlimitedcd [on/off]");
         }
     }
-
-
-
 
 }

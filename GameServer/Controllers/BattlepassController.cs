@@ -40,7 +40,7 @@ internal class BattlepassController : Controller
         _modelManager.BattlePass.ClearBattlePassTask();
         foreach (BattlePassTaskConfig battlepasstaskconfig in _configManager.Enumerate<BattlePassTaskConfig>())
         {
-            _modelManager.BattlePass.AddBattlePassTask(battlepasstaskconfig.TaskId, /*current*/70, /*target*/70,/*isfinished*/ true, /*istaken*/true);
+            _modelManager.BattlePass.AddBattlePassTask(battlepasstaskconfig.TaskId, /*current*/70, /*target*/70,/*isfinished*/ true, /*istaken*/false);
         }
         BattlePassTaskUpdateNotify notify = new()
         {
@@ -53,14 +53,11 @@ internal class BattlepassController : Controller
     [GameEvent(GameEventType.EnterGame)]
     public async Task BattlePassPaid()
     {
-        BattlePassPaidNotify notify = new()
+        await Session.Push(MessageId.BattlePassPaidNotify, new BattlePassPaidNotify
         {
             PayStatus = (int)BattlePassPayStatus.Advanced
-        };
-        await Session.Push(MessageId.BattlePassPaidNotify, notify);
+        });
     }
-
-
     [NetEvent(MessageId.BattlePassRequest)]
     public RpcResult OnBattlePassRequest(/*BattlePassRequest request*/)
     {
@@ -82,16 +79,29 @@ internal class BattlepassController : Controller
             {
                 InTimeRange = true,
                 Id = 1,
-                Level = 70,
-                Exp = 43000,
+                Level = 50,
+                Exp = 30000,
                 WeeklyTotalExp = 10000,
                 PayStatus = (int)BattlePassPayStatus.Advanced,
-                TakenRewards ={ _modelManager.BattlePass.PbBattlePassRewardList0, _modelManager.BattlePass.PbBattlePassRewardList1 },
+                TakenRewards = { _modelManager.BattlePass.PbBattlePassRewardList0, _modelManager.BattlePass.PbBattlePassRewardList1 },
                 BeginTime = 0,
                 EndTime = Int32.MaxValue,
-                RecurringRewards ={ _modelManager.BattlePass.PbBattlePassRecurringRewardList0, _modelManager.BattlePass.PbBattlePassRecurringRewardList1 },
-                HadEnter = true,               
+                RecurringRewards = { _modelManager.BattlePass.PbBattlePassRecurringRewardList0, _modelManager.BattlePass.PbBattlePassRecurringRewardList1 },
+                HadEnter = true,
             }
+        });
+    }
+
+    [NetEvent(MessageId.BattlePassTaskRequest)]
+    public RpcResult OnBattlePassTaskRequest(/*BattlePassTaskRequest request*/)
+    {
+
+        return Response(MessageId.BattlePassTaskResponse, new BattlePassTaskResponse
+        {
+            DayEnd = 0,
+            WeekEnd = 0,
+            ErrorCode = (int)ErrorCode.Success,
+            Tasks = { _modelManager.BattlePass.PbBattlePassTaskList }           
         });
     }
 

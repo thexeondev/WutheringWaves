@@ -21,16 +21,16 @@ public class QuestConfig : IConfig
 
 }
 
-//[ConfigCollection("questdata/questdata.json")]
-//public class QuestDataConfig : IConfig
-//{
-//    public ConfigType Type => ConfigType.QuestData;
-//    public int Identifier => Id;
+[ConfigCollection("questdata/questdata.json")]
+public class QuestDataConfig : IConfig
+{
+    public ConfigType Type => ConfigType.QuestData;
+    public int Identifier => QuestId;
 
-//    public int  { get; set; }
+    public int QuestId { get; set; }
 
 
-//}
+}
 
 
 

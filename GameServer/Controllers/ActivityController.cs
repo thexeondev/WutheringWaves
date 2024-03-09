@@ -12,58 +12,56 @@ internal class ActivityController : Controller
 {
     private readonly ModelManager _modelManager;
     private readonly ConfigManager _configManager;
-
-
-    //private ActivityData  ActivityData { get;set} = new();
     public ActivityController(PlayerSession session, ConfigManager configManager, ModelManager modelManager) : base(session)
     {
+        // ActivityController.
         _modelManager = modelManager;
         _configManager = configManager;
-
-        //    ActivityDisableNotify = 11705,
-        //ActivityFirstReadRequest = 11702,
-        //ActivityFirstReadResponse = 11703,
-        //ActivityRequest = 11700,
-        //ActivityResponse = 11701,
-        //ActivityUpdateNotify = 11704,
     }
-
-    [GameEvent(GameEventType.EnterGame)]
-    public async Task ActivityUpdate()
-    {
-        foreach (ActivityConfig activityConfig in _configManager.Enumerate<ActivityConfig>())
-        {
-            _modelManager.Activity.AddActivity(activityConfig.Id, activityConfig.ActivityType, activityConfig.PreShowGuideQuest);
-        }
-
-        ActivityUpdateNotify notify = new();
-        {
-            notify.Activities.Add(_modelManager.Activity.ActivityDataList);
-        }
-        await Session.Push(MessageId.ActivityUpdateNotify, notify);
-    }
-
 
     [NetEvent(MessageId.ActivityRequest)]
-    public RpcResult OnActivityRequest(/*ActivityRequest request*/)
+    public async Task<RpcResult> OnActivityRequest()
     {
+        List<ActivityData> data = new List<ActivityData>();
+        SignActivity sign = new SignActivity { SignStateList = { 1, 1, 1, 1, 1, 1, 1 }, KeepTime = 99999999999 };
+        ActivityData activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100100001, IsFirstOpen = true, IsUnlock = true, Type = 2, SignActivity = sign };
+        data.Add(activityData);
 
-        ActivityResponse response = new();
-        {
-            response.ErrorCode = 0;
-            response.Activities.Add(_modelManager.Activity.ActivityDataList);
-        }
-        return Response(MessageId.ActivityResponse, response);
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 120000001, IsFirstOpen = true, IsUnlock = true, Type = 200, CompletePreQuests = { 310000043 } };
+        data.Add(activityData);
+
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100300001, IsFirstOpen = true, IsUnlock = true, Type = 3, CompletePreQuests = { 310000041 } };
+
+        data.Add(activityData);
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100, IsFirstOpen = true, IsUnlock = true, Type = 0 };
+        data.Add(activityData);
+
+        WorldNewJourneyActivity worldEnd = new WorldNewJourneyActivity { WorldNewJourneyEndTime = 9999999999999 };
+        activityData = new ActivityData { BeginOpenTime = 0, BeginShowTime = 0, EndShowTime = 99999999999, Id = 100500001, IsFirstOpen = true, IsUnlock = true, Type = 5, WorldNewJourneyActivity = worldEnd };
+        data.Add(activityData);
+
+        await Session.Push(MessageId.InstPlayDataNotify, new InstPlayDataNotify { Id = 995 });
+
+        await Session.Push(MessageId.AddUnlockedGuideNotify, new AddUnlockedGuideNotify { UnlockedGuideIds = { 310000043, 310000041, 139000003 } });
+
+        await Session.Push(MessageId.QuestReadyListNotify, new QuestReadyListNotify { QuestId = { 310000043, 310000041, 139000003, 10010001 } });
+        await Session.Push(MessageId.QuestListNotify, new QuestListNotify { Quests = { new QuestInfo { QuestId = 10010001, Status = 1 }, new QuestInfo { QuestId = 139000003, Status = 1 }, new QuestInfo { QuestId = 310000043, Status = 1 }, new QuestInfo { QuestId = 310000041, Status = 1 } } });
+        await Session.Push(MessageId.QuestShowListNotify, new QuestShowListNotify { QuestId = { 310000043, 310000041, 139000003, 10010001 } });
+
+        return Response(MessageId.ActivityResponse, new ActivityResponse { Activities = { data } });
+
     }
-    //LivenessCountUpdateNotify = 11906,
-    //LivenessRefreshNotify = 11895,
-    //LivenessRequest = 11892,
-    //LivenessResponse = 11893,
-    //LivenessTakeRequest = 11898,
-    //LivenessTakeResponse = 11899,
-    //LivenessTaskTakeRequest = 11896,
-    //LivenessTaskTakeResponse = 11897,
-    //LivenessUpdateNotify = 11894,
+
+    [NetEvent(MessageId.TowerGuideActivityInfoRequest)]
+    public RpcResult OnTowerGuideActivityInfoRequest() => Response(MessageId.TowerGuideActivityInfoResponse, new TowerGuideActivityInfoResponse { TowerGuideId = { 1, 2 } });
+
+    [NetEvent(MessageId.AdviceRequest)]
+    public RpcResult OnAdviceRequest() => Response(MessageId.AdviceResponse, new AdviceResponse { Advices = { new PbAdvice { AreaId = 704, Id = -1, Contents = { new PbAdviceContent { Id = 1, Type = 1, Word = 1 } }, UpVote = 1 } } });
+
+
+    [NetEvent(MessageId.ParkourChallengeRequest)]
+    public RpcResult OnParkourChallengeRequest() => Response(MessageId.ParkourChallengeResponse, new ParkourChallengeResponse { OpenIds = { 1 }, Challenges = { new ParkourChallenge { ChallengeId = 1, MinDuration = 1, TakenScores = { 0 }, MaxScore = 0 } } });
+
     [GameEvent(GameEventType.EnterGame)]
     public async Task LivenessRefreshNotify()
     {
@@ -77,41 +75,22 @@ internal class ActivityController : Controller
             notify.LivenessInfo = new()
             {
                 LivenessCount = 200,
-                DayEnd = (Int64)86400000,
+                DayEnd = 86401,
                 RewardedLiveness = { 50002, 50003, 50004, 50005, 50006 },
                 Tasks = { _modelManager.Liveness.LivenessTaskList }
             };
         }
         await Session.Push(MessageId.LivenessRefreshNotify, notify);
     }
-
-    //public async Task LivenessCountUpdateNotify()
-    //{
-
-    //    LivenessCountUpdateNotify notify = new();
-    //    {
-    //        notify.LivenessCount = 100;
-    //    }
-    //    await Session.Push(MessageId.LivenessCountUpdateNotify, notify);
-    //}
-    //[NetEvent(MessageId.LivenessRequest)]
-    //public RpcResult OnLivenessRequest(/*LivenessRequest request*/) => Response(MessageId.LivenessResponse, new LivenessResponse());
-
-
     [NetEvent(MessageId.LivenessTakeRequest)]
     public RpcResult OnLivenessTakeRequest(/*ActivityRequest request*/)
     {
-
-
-        return Response(MessageId.LivenessTakeResponse, new LivenessTakeResponse 
-        { 
+        return Response(MessageId.LivenessTakeResponse, new LivenessTakeResponse
+        {
             ErrorCode = 0,
             Ids = { },
-            ItemMap = { },      
+            ItemMap = { },
         });
     }
 
-
-
 }
-
