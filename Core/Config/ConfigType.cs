@@ -23,5 +23,6 @@ public enum ConfigType
     Payshop,
     Payshopgood,
     monsterhandbook,//illustrated
+    rolepropertygrowth
 
 }

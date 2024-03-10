@@ -67,3 +67,18 @@ public class RoleInfoConfig : IConfig
     public int RoleGuide { get; set; }
     public int RedDotDisableRule { get; set; }
 }
+
+[ConfigCollection("property/rolepropertygrowth.json")]
+public class RolePropertyGrowthConfig : IConfig
+{
+    public ConfigType Type => ConfigType.rolepropertygrowth;
+
+    public int Identifier => Id;
+    public int Id { get; set; }
+    public int Level { get; set; }
+    public int BreachLevel { get; set; }
+    public int LifeMaxRatio { get; set; }
+    public int AtkRatio { get; set; }
+    public int DefRatio { get; set; }
+
+}

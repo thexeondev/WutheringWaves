@@ -69,6 +69,20 @@ internal class PlayerInfoController : Controller
             HeadPhotoId = request.HeadPhotoId
         });
     }
+    [NetEvent(MessageId.ChangeCardRequest)]
+    public async Task<RpcResult> OnChangeCardRequest(ChangeCardRequest request, ModelManager modelManager)
+    {
+        modelManager.Player.SetAttribute(PlayerAttrKey.HeadFrame, request.CardId);
+        DBManager.UpdateDB("StartingValues.HeadFrame", request.CardId);
+        await Session.Push(MessageId.UnlockHeadFrameNotify, new UnlockHeadFrameNotify
+        {
+            HeadFrameId = request.CardId
+        });
+        return Response(MessageId.ChangeCardResponse, new ChangeCardResponse
+        {
+          ErrorCode = 0,
+        });
+    }
 
     [NetEvent(MessageId.BirthdayInitRequest)]
     public RpcResult OnBirthdayInitRequest(BirthdayInitRequest request, ModelManager modelManager)
@@ -101,7 +115,7 @@ internal class PlayerInfoController : Controller
         });
     }
 
-    [NetEvent(MessageId.PlayerBasicInfoGetRequest)]//TODO: 这个到底是啥，好像不是玩家的信息啊，改了也没反应
+    [NetEvent(MessageId.PlayerBasicInfoGetRequest)]
     public RpcResult OnPlayerBasicInfoGetRequest()
     {
         return Response(MessageId.PlayerBasicInfoGetResponse, new PlayerBasicInfoGetResponse

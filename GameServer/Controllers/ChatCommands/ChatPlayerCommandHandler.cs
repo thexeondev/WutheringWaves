@@ -1,9 +1,14 @@
 ﻿using GameServer.Controllers.Attributes;
+using GameServer.Extensions.Logic;
 using GameServer.Models;
 using GameServer.Models.Chat;
 using GameServer.Network;
 using GameServer.Systems.Entity;
+using GameServer.Systems.Entity.Component;
 using Protocol;
+using GameServer.Controllers;
+using System.Data;
+using GameServer.Systems.Notify;
 
 namespace GameServer.Controllers.ChatCommands;
 
@@ -13,12 +18,20 @@ internal class ChatPlayerCommandHandler
     private readonly ChatRoom _helperRoom;
     private readonly PlayerSession _session;
     private readonly CreatureController _creatureController;
+    private readonly ModelManager _modelManager;
+    private readonly RoleController _roleManager;
+    private readonly IGameActionListener _listener;
+    private readonly EntitySystem _entitySystem;
 
-    public ChatPlayerCommandHandler(ModelManager modelManager, PlayerSession session, CreatureController creatureController)
+    public ChatPlayerCommandHandler(ModelManager modelManager, PlayerSession session, CreatureController creatureController, RoleController roleManager, IGameActionListener listener, EntitySystem entitySystem)
     {
         _helperRoom = modelManager.Chat.GetBotChatRoom();
         _session = session;
         _creatureController = creatureController;
+        _modelManager = modelManager;
+        _roleManager = roleManager;
+        _listener = listener;
+        _entitySystem = entitySystem;
     }
 
     [ChatCommand("getpos")]
@@ -68,55 +81,69 @@ internal class ChatPlayerCommandHandler
 
         _helperRoom.AddCommandReply(0, $"Successfully performed fast travel to ({map},{x}, {y}, {z})");
     }
-    //通过命令修改当前角色的属性数值，属性参考baseproperty.json中的属性，数值改成[value]的值，并且刷新角色使属性生效
-    //[ChatCommand("property")]
-    //[ChatCommandDesc("/player property [property] [value] - Modify the current character property ")]
+    //Modify the current role's level  and refresh the role to make its attributes effective
+    [ChatCommand("rolelv")]
+    [ChatCommandDesc("/player rolelv  [Lv] - Modify the current role Lv (1~90)")]
 
-    //public void OnPlayerPropertyCommand(string[] args)
-    //{
-    //    if (args.Length != 2)
-    //    {
-    //        _helperRoom.AddCommandReply(0, $"Usage: /player property [property] [value]");
-    //        return;
-    //    }
-    //    if (!int.TryParse(args[1], out int value))
-    //    {
-    //        _helperRoom.AddCommandReply(0, "Invalid value");
-    //        return;
-    //    }
-        //PlayerEntity? entity = _creatureController.GetPlayerEntity();
-        //if (property == null) return;
-        //switch (args[0])
-        //{
-        //    case "Lv":
-        //        property.Lv = value;
-        //        break;
-        //    case "Hp":
-        //        property.Life = value;
-        //        property.LifeMax = value;
-        //        break;
-        //    case "Atk":
-        //        property.Atk = value;
-        //        break;
-        //    case "Def":
-        //        property.Def = value;
-        //        break;
-        //    case "Cd":
-        //        property.CdReduse = value;
-        //        break;
-        //    case "SpeedRatio":
-        //        property.SpeedRatio = value;
-        //        break;
-        //    case "AutoAttackSpeed":
-        //        property.AutoAttackSpeed = value;
-        //        break;
-        //    default:
-        //        _helperRoom.AddCommandReply(0, "Error: Invalid property");
-        //        return;
-        //}
-        //entity.RefreshProperties();
-    //    _helperRoom.AddCommandReply(0, $"Successfully modified property {args[0]} to {value}");
-    //}
+    public void OnCurrentRolelv(string[] args)
+    {
+        if (args.Length != 1)
+        {
+            _helperRoom.AddCommandReply(0, $"Usage: /player rolelv  [Lv] (1~90)");
+            return;
+        }
+        if (!int.TryParse(args[0], out int value))
+        {
+            _helperRoom.AddCommandReply(0, "Invalid value");
+            return;
+        }
+        else if (value < 1 || value > 90)
+        {
+            _helperRoom.AddCommandReply(0, "Invalid value");
+            return;
+        }
+
+        PlayerEntity? entity = _creatureController.GetPlayerEntity();
+        if (entity == null)
+        {
+            _helperRoom.AddCommandReply(0, "[Debug]: can't find role entity");
+            return;
+        }
+
+        EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
+        attr.SetAttribute(EAttributeType.Lv, value);
+
+        roleInfo? role = _modelManager.Roles.GetRoleById(entity.ConfigId);
+        if (role == null)
+        {
+            _helperRoom.AddCommandReply(0, "[Debug]: can't find role info");
+            return;
+        }
+       
+        role.Level = value;
+        if(value<=20)
+            role.Breakthrough = 0;
+        else if(value>20 &&value<=40)
+            role.Breakthrough = 1;
+        else if(value>40 && value<=50)
+            role.Breakthrough = 2;
+        else if(value>50 && value<=60)
+            role.Breakthrough = 3;
+        else if(value>60 && value<=70)
+            role.Breakthrough = 4;
+        else if(value>70 && value<=80)
+            role.Breakthrough = 5;
+        else if(value>80 && value<=90)
+            role.Breakthrough = 6;
+
+        _roleManager.ApplyLvGrowthProperties(role);
+
+        _listener.OnRolePropertiesUpdated(entity.ConfigId, role.BaseProp, role.AddProp);
+        entity?.ChangeGameplayAttributes(role.GetAttributeList());
+
+
+        _helperRoom.AddCommandReply(0, $"Successfully modified role: {entity.ConfigId}  LV to {value}");
+    }
 
 
 }
