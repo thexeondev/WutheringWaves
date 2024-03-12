@@ -22,8 +22,8 @@ internal partial class ChatController : Controller
     {
         if (!_modelManager.Chat.AllChatRooms.Any())
         {
-            ChatRoom chatRoom = _modelManager.Chat.GetChatRoom(1338); // Reversed Helper
-            chatRoom.AddMessage(1338, (int)ChatContentType.Text, BuildWelcomeMessage());
+            ChatRoom chatRoom = _modelManager.Chat.GetBotChatRoom(); // Reversed Helper
+            chatRoom.AddCommandReply((int)ChatContentType.Text, BuildWelcomeMessage());
         }
 
         await PushPrivateChatHistory();
@@ -33,12 +33,12 @@ internal partial class ChatController : Controller
     [NetEvent(MessageId.PrivateChatRequest)]
     public async Task<RpcResult> OnPrivateChatRequest(PrivateChatRequest request, ChatCommandManager chatCommandManager)
     {
-        ChatRoom chatRoom = _modelManager.Chat.GetChatRoom(1338);
+        ChatRoom chatRoom = _modelManager.Chat.GetBotChatRoom();
 
         chatRoom.AddMessage(_modelManager.Player.Id, request.ChatContentType, request.Content);
         if (!request.Content.StartsWith('/'))
         {
-            chatRoom.AddMessage(1338, 0, "huh?");
+            chatRoom.AddCommandReply(0, "huh?");
         }
         else
         {
@@ -76,7 +76,7 @@ internal partial class ChatController : Controller
     private static string BuildWelcomeMessage()
     {
         StringBuilder builder = new();
-        builder.AppendLine("Welcome to ReversedRooms WutheringWaves private server!\nTo get support, join:\ndiscord.gg/reversedrooms");
+        builder.AppendLine("Welcome to WutheringWaves private server!");
         builder.AppendLine("List of all commands:");
 
         foreach (string description in ChatCommandManager.CommandDescriptions)

@@ -6,7 +6,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>icon.ico</ApplicationIcon>
+    <BaseOutputPath>..\bin\GameServer\</BaseOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Achievement\**" />
+    <EmbeddedResource Remove="Controllers\Achievement\**" />
+    <None Remove="Controllers\Achievement\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="icon.ico" />
@@ -14,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +34,7 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="gameplay.json">
+    <None Update="data\gameplay.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

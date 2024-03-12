@@ -2,6 +2,8 @@
 
 namespace Core.Config;
 
+
+
 [ConfigCollection("role/roleinfo.json")]
 public class RoleInfoConfig : IConfig
 {
@@ -66,4 +68,62 @@ public class RoleInfoConfig : IConfig
     public bool IsAim { get; set; }
     public int RoleGuide { get; set; }
     public int RedDotDisableRule { get; set; }
+}
+
+[ConfigCollection("skill/skill.json")]
+public class RoleSkillConfig : IConfig
+{
+    public ConfigType Type => ConfigType.roleskill;
+    public int Identifier => Id;
+
+    public int Id { get; set; }
+    public int SkillGroupId { get; set; }
+    public int SkillType { get; set; }
+    public string SkillName { get; set; } = string.Empty;
+    public int SkillLevelGroupId { get; set; }
+    public int SkillLevelType { get;set; }
+    public int LeftSkillEffect { get; set; }
+    public int MaxSkillLevel { get; set; }
+    public List<int> SkillInfoList { get; set; } = [];
+    public List<string> BuffList { get; set; } = [];
+    public List<string> DamageList { get; set; } = [];
+    public int SortIndex { get; set; }
+    public List<int> SkillTagList { get; set; } = [];
+    public List<string> SkillDetailNum { get; set; } = [];
+
+
+
+}
+
+[ConfigCollection("skill/skilldescription.json")]
+public class RoleSkilldescConfig : IConfig
+{
+    public ConfigType Type => ConfigType.roleskillscription;
+    public int Identifier => Id;
+
+    public int Id { get; set; }
+    public int SkillLevelGroupId { get; set; }
+    public SkillDetailNum[] SkillDetailNum { get; set; } = [] ;
+    public string Description { get; set; } = string.Empty;
+
+}
+public class SkillDetailNum
+{
+    public List<string> ArrayString { get; set; } = [];
+}
+[ConfigCollection("skillTree/skilltree.json")]
+public class RoleSkillTreeConfig : IConfig
+{
+    public ConfigType Type => ConfigType.Roleskilltree;
+    public int Identifier => Id;
+ 
+    public int Id { get; set; }
+    public int NodeIndex { get; set; }
+    public int NodeGroup { get; set; }
+    public List<int> ParentNodes { get; set; } = [];
+    public int NodeType { get; set; }
+    public int Coordinate { get; set; }
+    public List<int> Condition { get; set; } = [];
+    public int SkillId { get; set; }
+
 }

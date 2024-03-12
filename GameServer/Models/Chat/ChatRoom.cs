@@ -1,4 +1,5 @@
-﻿using Protocol;
+﻿using GameServer.Settings;
+using Protocol;
 
 namespace GameServer.Models.Chat;
 internal class ChatRoom
@@ -26,6 +27,17 @@ internal class ChatRoom
             MsgId = NextMessageId().ToString()
         });
     }
-
+    public readonly ServerBot.ServerFriend bot = ServerBot.GetServerBot()!;
+    public void AddCommandReply( int contentType, string content)//Command Role Reply
+    {
+        
+    _messages.Add(new ChatContentProto
+        {
+            SenderUid = bot.BotConfig.PlayerId,
+            ChatContentType = contentType,
+            Content = content,
+            MsgId = NextMessageId().ToString()
+        });
+    }
     private int NextMessageId() => Interlocked.Increment(ref _msgIdCounter);
 }

@@ -16,6 +16,11 @@ internal class PlayerEntity : EntityBase
 
     public bool IsCurrentRole { get; set; }
 
+    public int Level
+    {
+        get => ComponentSystem.Get<EntityAttributeComponent>().GetAttribute(EAttributeType.Lv);
+        set => ComponentSystem.Get<EntityAttributeComponent>().SetAttribute(EAttributeType.Lv, value);
+    }
     public int WeaponId
     {
         get => ComponentSystem.Get<EntityEquipComponent>().WeaponId;

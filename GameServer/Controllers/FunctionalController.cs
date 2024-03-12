@@ -14,7 +14,7 @@ internal class FunctionalController : Controller
     }
 
     [GameEvent(GameEventType.EnterGame)]
-    public async Task OnEnterGame()
+    public async Task OnFuncOpenNotify()
     {
         FuncOpenNotify notify = new();
 
@@ -29,4 +29,40 @@ internal class FunctionalController : Controller
 
         await Session.Push(MessageId.FuncOpenNotify, notify);
     }
+
+   // [GameEvent(GameEventType.EnterGame)]
+    public async Task OnFuncOpenUpdateNotify()
+    {
+        FuncOpenUpdateNotify notify = new();
+
+        foreach (int id in s_functions)
+        {
+            notify.Func.Add(new Function
+            {
+                Id = id,
+                Flag = 2
+            });
+        }
+
+        await Session.Push(MessageId.FuncOpenUpdateNotify, notify);
+    }
+    [NetEvent(MessageId.FuncShowRequest)]
+    public RpcResult OnFuncShowRequest(FuncShowRequest request)
+    {
+        int error;
+        if (request.FuncId.Count == 0)
+            error = (int)ErrorCode.ErrFuncNotExist;
+        else
+            error = (int)ErrorCode.Success;
+
+        FuncShowResponse response = new()
+        {
+            ErrorCode = error
+        };
+        return Response(MessageId.FuncShowResponse, response);
+    }
+
+
+
+
 }

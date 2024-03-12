@@ -1,0 +1,41 @@
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+  
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore WutheringWaves.sln
+
+    - name: Build
+      run: dotnet build WutheringWaves.sln --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: Rename bin to wwserver
+      run: mv bin wwserver
+      shell: pwsh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: wwserver
+        path: wwserver/

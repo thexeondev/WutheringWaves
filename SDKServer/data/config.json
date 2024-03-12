@@ -1,0 +1,11 @@
+﻿{
+  "SDKServer": {
+    "Host": "127.0.0.1",
+    "Name": "sdk",
+    "Port": "5500"
+  },
+  "GameServer": {
+    "Host": "127.0.0.1",
+    "Port": 1337
+  }
+}

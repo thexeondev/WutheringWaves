@@ -1,4 +1,5 @@
 ﻿using GameServer.Models.Chat;
+using GameServer.Settings;
 
 namespace GameServer.Models;
 internal class ChatModel
@@ -20,6 +21,17 @@ internal class ChatModel
         {
             chatRoom = new ChatRoom(id);
             _rooms[id] = chatRoom;
+        }
+
+        return chatRoom;
+    }
+    private readonly ServerBot.ServerFriend bot = ServerBot.GetServerBot()!;
+    public ChatRoom GetBotChatRoom()
+    {
+        if (!_rooms.TryGetValue(bot.BotConfig.PlayerId, out ChatRoom? chatRoom))
+        {
+            chatRoom = new ChatRoom(bot.BotConfig.PlayerId);
+            _rooms[bot.BotConfig.PlayerId] = chatRoom;
         }
 
         return chatRoom;

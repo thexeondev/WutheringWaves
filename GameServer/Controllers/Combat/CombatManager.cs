@@ -1,12 +1,14 @@
 ﻿using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Metadata;
 using GameServer.Controllers.Attributes;
 using GameServer.Network;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Entity.Component;
 using Microsoft.Extensions.Logging;
 using Protocol;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace GameServer.Controllers.Combat;
 internal class CombatManager
@@ -74,11 +76,33 @@ internal class CombatManager
     [CombatRequest(CombatRequestData.MessageOneofCase.CreateBulletRequest)]
     public CombatResponseData OnCreateBulletRequest(CombatRequestContext context)
     {
-        return new CombatResponseData
+        CreateBulletRequest request = context.Request.CreateBulletRequest;
+        var TargetId = _entitySystem.Get<EntityBase>(request.TargetId);
+        if (TargetId == null)
         {
-            CombatCommon = context.Request.CombatCommon,
-            CreateBulletResponse = new()
-        };
+            return new CombatResponseData
+            {
+                RequestId = context.Request.RequestId,
+                CombatCommon = context.Request.CombatCommon,
+                CreateBulletResponse = new()
+                {
+                    ErrorCode = (int)ErrorCode.ErrCombatCreateBulletTargetNotExisted
+                }
+            };
+        }
+        else
+        {
+            return new CombatResponseData
+            {
+                RequestId = context.Request.RequestId,
+                CombatCommon = context.Request.CombatCommon,
+                CreateBulletResponse = new()
+                {
+                    ErrorCode = (int)ErrorCode.Success
+                }
+            };
+        }
+
     }
 
     [CombatRequest(CombatRequestData.MessageOneofCase.DamageExecuteRequest)]
@@ -133,6 +157,35 @@ internal class CombatManager
             HitResponse = new()
             {
                 HitInfo = context.Request.HitRequest.HitInfo
+            }
+        };
+    }
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.SkillRequest)]
+    public CombatResponseData OnSkillRequest(CombatRequestContext context)
+    {
+        return new CombatResponseData
+        {
+            RequestId = context.Request.RequestId,
+            CombatCommon = context.Request.CombatCommon,
+            SkillResponse = new()
+            {
+                // ErrorCode = (int)ErrorCode
+            }
+        };
+    }
+
+    [CombatRequest(CombatRequestData.MessageOneofCase.EndSkillRequest)]
+    public CombatResponseData OnEndSkillRequest(CombatRequestContext context)
+    {
+        return new CombatResponseData
+        {
+            RequestId = context.Request.RequestId,
+            CombatCommon = context.Request.CombatCommon,
+            EndSkillResponse = new()
+            {
+                UseSkillInfo = context.Request.EndSkillRequest.UseSkillInfo,
+                SkillSingleId = context.Request.EndSkillRequest.SkillSingleId
             }
         };
     }
