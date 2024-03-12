@@ -1,7 +1,7 @@
 ﻿{
   "StartingValues": {
-    "PlayerId": 10001,
-    "Name": "Gktwo",
+    "PlayerId": 1337,
+    "Name": "ReversedRoom",
     "PlayerLevel": 80,
     "HeadPhoto": 1402,
     "HeadFrame": 80060009,
@@ -11,7 +11,7 @@
       1203
     ],
     "CurWorldLevel": 1,
-    "Signature": "测试json保存",
+    "Signature": "ReversedRoom",
     "Position": {
       "X": -45000.0,
       "Y": 67800.0,
@@ -27,7 +27,7 @@
     "Name": "Server Bot",
     "Signature": "Server Bot",
     "HeadId": 1402,
-    "PlayerId": 10000,
+    "PlayerId": 1338,
     "IsOnline": true,
     "LastOfflineTime": -1,
     "Level": 99

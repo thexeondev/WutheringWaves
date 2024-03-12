@@ -54,15 +54,18 @@ public class DBManager
 
 
 
-    public static JToken? GetMember(string member)
+    public static JToken? GetMember(string jsonFilePath, string memberPath)
     {
-        string jsonFilePath = "data/gameplay.json";
+        if (!File.Exists(jsonFilePath))
+        {
+            throw new FileNotFoundException($"The file {jsonFilePath} does not exist.");
+        }
+
         string json = File.ReadAllText(jsonFilePath);
         JObject jsonObj = JObject.Parse(json);
-        JToken? token = jsonObj.SelectToken(member);
+        JToken? token = jsonObj.SelectToken(memberPath);
         return token;
     }
-
 
 
 }

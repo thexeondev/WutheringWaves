@@ -68,7 +68,7 @@ internal class ChatSpawnCommandHandler
                 }
                 break;
             case "role":
-                {
+                {//TODO
                     PlayerEntity pentity = _entityFactory.CreatePlayer(levelEntityId, 10001);
                     _creatureController.CreateConcomitants(pentity);
                     pentity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(levelEntityId)?.Id ?? 0;
@@ -76,7 +76,7 @@ internal class ChatSpawnCommandHandler
                 }
                 break;
             case "item":
-                {
+                {//TODO
                     SceneItemEntity sentity = _entityFactory.CreateSceneItem(levelEntityId);
                     entity = sentity;
                 }

@@ -2,6 +2,8 @@
 
 namespace Core.Config;
 
+
+
 [ConfigCollection("role/roleinfo.json")]
 public class RoleInfoConfig : IConfig
 {
@@ -68,17 +70,44 @@ public class RoleInfoConfig : IConfig
     public int RedDotDisableRule { get; set; }
 }
 
-[ConfigCollection("property/rolepropertygrowth.json")]
-public class RolePropertyGrowthConfig : IConfig
+[ConfigCollection("skill/skill.json")]
+public class RoleSkillConfig : IConfig
 {
-    public ConfigType Type => ConfigType.rolepropertygrowth;
-
+    public ConfigType Type => ConfigType.roleskill;
     public int Identifier => Id;
-    public int Id { get; set; }
-    public int Level { get; set; }
-    public int BreachLevel { get; set; }
-    public int LifeMaxRatio { get; set; }
-    public int AtkRatio { get; set; }
-    public int DefRatio { get; set; }
 
+    public int Id { get; set; }
+    public int SkillGroupId { get; set; }
+    public int SkillType { get; set; }
+    public string SkillName { get; set; } = string.Empty;
+    public int SkillLevelGroupId { get; set; }
+    public int SkillLevelType { get;set; }
+    public int LeftSkillEffect { get; set; }
+    public int MaxSkillLevel { get; set; }
+    public List<int> SkillInfoList { get; set; } = [];
+    public List<string> BuffList { get; set; } = [];
+    public List<string> DamageList { get; set; } = [];
+    public int SortIndex { get; set; }
+    public List<int> SkillTagList { get; set; } = [];
+    public List<string> SkillDetailNum { get; set; } = [];
+
+
+
+}
+
+[ConfigCollection("skill/skilldescription.json")]
+public class RoleSkilldescConfig : IConfig
+{
+    public ConfigType Type => ConfigType.roleskillscription;
+    public int Identifier => Id;
+
+    public int Id { get; set; }
+    public int SkillLevelGroupId { get; set; }
+    public SkillDetailNum[] SkillDetailNum { get; set; } = [] ;
+    public string Description { get; set; } = string.Empty;
+
+}
+public class SkillDetailNum
+{
+    public List<string> ArrayString { get; set; } = [];
 }

@@ -10,7 +10,10 @@ internal class RoleModel
         roleInfo info = new()
         {
             RoleId = id,
-            Level = 1,
+            Level = 90,
+            Breakthrough= 6,
+            ResonantChainGroupIndex =6,
+
         };
 
         Roles.Add(info);

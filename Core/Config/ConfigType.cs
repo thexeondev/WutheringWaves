@@ -22,7 +22,10 @@ public enum ConfigType
     Livenesstask,
     Payshop,
     Payshopgood,
-    monsterhandbook,//illustrated
-    rolepropertygrowth
+    monsterhandbook,//illustrated?
+    rolepropertygrowth,
+    monsterpropertygrowth,
+    roleskill,
+    roleskillscription,
 
 }

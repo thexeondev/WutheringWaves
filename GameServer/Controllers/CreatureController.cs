@@ -10,7 +10,8 @@ using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
 using Microsoft.Extensions.Options;
 using Protocol;
-using System.Collections.Generic;
+
+
 
 namespace GameServer.Controllers;
 internal class CreatureController : Controller
@@ -226,7 +227,7 @@ internal class CreatureController : Controller
             MaxHp = playerEntity.HealthMax,
             IsControl = playerEntity.Id == _modelManager.Creature.PlayerEntityId,
             RoleId = playerEntity.ConfigId,
-            RoleLevel = 1,
+            RoleLevel = playerEntity.Level,
         });
     }
 
@@ -240,16 +241,14 @@ internal class CreatureController : Controller
 
             PlayerEntity entity = _entityFactory.CreatePlayer(roleId, _modelManager.Player.Id);
             entity.Pos = _modelManager.Player.Position.Clone();
-            entity.IsCurrentRole = i == 0;
-            
+            entity.IsCurrentRole = i == 0;          
             entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
-
             CreateConcomitants(entity);
             entity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(roleId)?.Id ?? 0;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
 
-            if (/*_gameplayFeatures.UnlimitedEnergy ||*/ (bool)DBManager.GetMember("Features.UnlimitedEnergy")!)
+            if (_gameplayFeatures.UnlimitedEnergy )
             {
                 EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
                 attr.SetAttribute(EAttributeType.EnergyMax, 0);
@@ -259,7 +258,7 @@ internal class CreatureController : Controller
                 attr.SetAttribute(EAttributeType.SpecialEnergy4Max, 0);
             }
 
-            if (/*_gameplayFeatures.UnlimitedCD ||*/ (bool)DBManager.GetMember("Features.UnlimitedCD")!)
+            if (_gameplayFeatures.UnlimitedCD )
             {
                 EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
                 attr.SetAttribute(EAttributeType.CdReduse, 0);

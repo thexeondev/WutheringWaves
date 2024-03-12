@@ -43,6 +43,7 @@ internal class ModelManager
     public QuestModel Quest { get; } = new();
     public LivenessModel Liveness { get; } = new();
     public PayShopModel PayShop { get; } = new();
+    public PropertyModel PropertyModel { get; } = new();
 
 
 }

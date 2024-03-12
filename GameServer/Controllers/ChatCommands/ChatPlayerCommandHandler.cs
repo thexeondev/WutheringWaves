@@ -7,8 +7,8 @@ using GameServer.Systems.Entity;
 using GameServer.Systems.Entity.Component;
 using Protocol;
 using GameServer.Controllers;
-using System.Data;
 using GameServer.Systems.Notify;
+using Core.Config;
 
 namespace GameServer.Controllers.ChatCommands;
 
@@ -22,8 +22,9 @@ internal class ChatPlayerCommandHandler
     private readonly RoleController _roleManager;
     private readonly IGameActionListener _listener;
     private readonly EntitySystem _entitySystem;
+    private readonly ConfigManager _configManager;
 
-    public ChatPlayerCommandHandler(ModelManager modelManager, PlayerSession session, CreatureController creatureController, RoleController roleManager, IGameActionListener listener, EntitySystem entitySystem)
+    public ChatPlayerCommandHandler(ModelManager modelManager, PlayerSession session, CreatureController creatureController, RoleController roleManager, IGameActionListener listener, EntitySystem entitySystem, ConfigManager configManager)
     {
         _helperRoom = modelManager.Chat.GetBotChatRoom();
         _session = session;
@@ -32,6 +33,7 @@ internal class ChatPlayerCommandHandler
         _roleManager = roleManager;
         _listener = listener;
         _entitySystem = entitySystem;
+        _configManager = configManager;
     }
 
     [ChatCommand("getpos")]
@@ -81,10 +83,10 @@ internal class ChatPlayerCommandHandler
 
         _helperRoom.AddCommandReply(0, $"Successfully performed fast travel to ({map},{x}, {y}, {z})");
     }
+
     //Modify the current role's level  and refresh the role to make its attributes effective
     [ChatCommand("rolelv")]
     [ChatCommandDesc("/player rolelv  [Lv] - Modify the current role Lv (1~90)")]
-
     public void OnCurrentRolelv(string[] args)
     {
         if (args.Length != 1)
@@ -110,38 +112,43 @@ internal class ChatPlayerCommandHandler
             return;
         }
 
-        EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
-        attr.SetAttribute(EAttributeType.Lv, value);
 
         roleInfo? role = _modelManager.Roles.GetRoleById(entity.ConfigId);
+
         if (role == null)
         {
             _helperRoom.AddCommandReply(0, "[Debug]: can't find role info");
             return;
         }
-       
+        role.BaseProp.Clear();
+        role.BaseProp.AddRange(RoleController.CreateBasePropList(_configManager.GetConfig<BasePropertyConfig>(entity.ConfigId)));
         role.Level = value;
-        if(value<=20)
+        if (value <= 20)
             role.Breakthrough = 0;
-        else if(value>20 &&value<=40)
+        else if (value > 20 && value <= 40)
             role.Breakthrough = 1;
-        else if(value>40 && value<=50)
+        else if (value > 40 && value <= 50)
             role.Breakthrough = 2;
-        else if(value>50 && value<=60)
+        else if (value > 50 && value <= 60)
             role.Breakthrough = 3;
-        else if(value>60 && value<=70)
+        else if (value > 60 && value <= 70)
             role.Breakthrough = 4;
-        else if(value>70 && value<=80)
+        else if (value > 70 && value <= 80)
             role.Breakthrough = 5;
-        else if(value>80 && value<=90)
+        else if (value > 80 && value <= 90)
             role.Breakthrough = 6;
+        else
+        {
+            _helperRoom.AddCommandReply(0, "Invalid value");
+            return;
+        }
 
         _roleManager.ApplyLvGrowthProperties(role);
 
         _listener.OnRolePropertiesUpdated(entity.ConfigId, role.BaseProp, role.AddProp);
         entity?.ChangeGameplayAttributes(role.GetAttributeList());
 
-
+        if(entity!=null)
         _helperRoom.AddCommandReply(0, $"Successfully modified role: {entity.ConfigId}  LV to {value}");
     }
 

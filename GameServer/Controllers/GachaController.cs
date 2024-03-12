@@ -16,8 +16,8 @@ internal class GachaController : Controller
     private int weaponPoolId = 200001;
     private int basePoolId = 31;
     private int itemIncrId;
-    private readonly string gachaurlHost = (string)DBManager.GetMember("GachaUrl.Host")!;
-    private readonly string gachaurlPort = (string)DBManager.GetMember("GachaUrl.Port")!;
+    private readonly string gachaurlHost = (string)DBManager.GetMember("data/gameplay.json", "GachaUrl.Host")!;
+    private readonly string gachaurlPort = (string)DBManager.GetMember("data/gameplay.json", "GachaUrl.Port")!;
 
     [NetEvent(MessageId.GachaUsePoolRequest)]
     public RpcResult OnGachaUsePoolRequest(GachaUsePoolRequest request)

@@ -10,6 +10,7 @@ using Protocol;
 
 
 
+
 namespace GameServer.Controllers;
 internal class RoleController : Controller
 {
@@ -34,12 +35,12 @@ internal class RoleController : Controller
 
     [GameEvent(GameEventType.DebugUnlockAllRoles)]
     public void UnlockAllRoles(ConfigManager configManager)
-    {
+    {//now lv90 and breakthrough 6
         foreach (RoleInfoConfig roleConfig in configManager.Enumerate<RoleInfoConfig>())
         {
             roleInfo role = _modelManager.Roles.Create(roleConfig.Id);
             role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
-
+            ApplyLvGrowthProperties(role);
             WeaponItem weapon = _modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
             weapon.RoleId = role.RoleId;
 
@@ -74,45 +75,52 @@ internal class RoleController : Controller
     [NetEvent(MessageId.RoleLevelUpViewRequest)]
     public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request, CreatureController creatureController*/)
     {
-        
+
         //request.ItemList;
         //request.MaxItemId;
         return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
-        {        
-            //Code = 0,
-            //Level = 1,
-            //Exp = 99,
-            //AddExp = 99
+        {
+            Code = 0,
+            Level = 90,
+            Exp = 99,
+            AddExp = 99,
+            LevelExpInfo = { new ArrayIntInt { } },
+            FinalProp = { new ArrayIntDouble { } },
+            CostList = { new ArrayIntInt { } },
+            OverflowList = { new ArrayIntInt { } },
+            ItemList = { new ArrayIntInt { } },
+
         });
 
     }
 
 
-    //[NetEvent(MessageId.PbUpLevelRoleRequest)]
-    //public async Task<RpcResult> OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request)
-    //{
-    //    //roleId_ = other.roleId_;
-    //    //itemList_ = other.itemList_.Clone();
+    [NetEvent(MessageId.PbUpLevelRoleRequest)]
+    public RpcResult/*async Task<RpcResult>*/ OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request)
+    {
+        //    //roleId_ = other.roleId_;
+        //    //itemList_ = other.itemList_.Clone();
 
 
-    //    await  /*levelup*/ ;
-    //    return Response(MessageId.PbUpLevelRoleResponse, new PbUpLevelRoleResponse
-    //    {
-    //        Code = 0,
-    //        RoleId = request.RoleId,
-    //        Level = 9,
-    //        Exp = 99,
-    //        ItemMap = { }
-    //});
-    //}
+        //    await  /*levelup*/ ;
+        return Response(MessageId.PbUpLevelRoleResponse, new PbUpLevelRoleResponse
+        {
+            Code = 0,
+            RoleId = request.RoleId,
+            Level = 9,
+            Exp = 99,
+            ItemMap = { }
+        });
+    }
 
-    public  void ApplyLvGrowthProperties( roleInfo role)
+    public void ApplyLvGrowthProperties(roleInfo role)
     {
         int level = role.Level;
         int breach = role.Breakthrough;
         float LifemaxRatio = 1.0f;
         float AtkRatio = 1.0f;
         float DefRatio = 1.0f;
+
 
         List<ArrayIntInt> baselist = [.. role.BaseProp];
         if (baselist.Count > 0)
@@ -128,13 +136,13 @@ internal class RoleController : Controller
             }
             ArrayIntInt lv = baselist[(int)EAttributeType.Lv - 1];
             lv.Value = level;
-            ArrayIntInt lifemax = baselist[(int)EAttributeType.LifeMax-1];
+            ArrayIntInt lifemax = baselist[(int)EAttributeType.LifeMax - 1];
             lifemax.Value = (int)(lifemax.Value * LifemaxRatio);
             ArrayIntInt life = baselist[(int)EAttributeType.Life - 1];
             life.Value = lifemax.Value;
-            ArrayIntInt atk = baselist[(int)EAttributeType.Atk-1];
+            ArrayIntInt atk = baselist[(int)EAttributeType.Atk - 1];
             atk.Value = (int)(atk.Value * AtkRatio);
-            ArrayIntInt def = baselist[(int)EAttributeType.Def-1];
+            ArrayIntInt def = baselist[(int)EAttributeType.Def - 1];
             def.Value = (int)(def.Value * DefRatio);
         }
 
@@ -143,30 +151,75 @@ internal class RoleController : Controller
     }
 
     [NetEvent(MessageId.PbUpLevelSkillRequest)]
-    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request) 
+    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request)
     {
         //request.SkillId;
         return Response(MessageId.PbUpLevelSkillResponse, new PbUpLevelSkillResponse
         {
-        Code = 0,
-        RoleId = request.RoleId,
-        SkillInfo = new ArrayIntInt
+            Code = 0,
+            RoleId = request.RoleId,
+            SkillInfo = new ArrayIntInt
+            {
+            }
+        });
+    }
+    [NetEvent(MessageId.RoleSkillLevelUpViewRequest)]
+    public RpcResult OnRoleSkillLevelUpViewRequest(RoleSkillLevelUpViewRequest request)
+    {
+        //roleId_ = other.roleId_;
+        //skillId_ = other.skillId_;
+        return Response(MessageId.PbUpLevelSkillResponse, new RoleSkillLevelUpViewResponse
         {
-        }
+            Code = 0,
+            SkillEffectList = { new SkillEffect { Level = 1, EffectDescList = { new OneSkillEffect { Id = 1, Desc = { "" } } } } },
+            CostList = { new ArrayIntInt { } }
+
         });
     }
 
     [NetEvent(MessageId.RoleSkillViewRequest)]
-    public RpcResult OnRoleSkillViewRequest(/*RoleSkillViewRequest request*/)
+    public RpcResult OnRoleSkillViewRequest(RoleSkillViewRequest request)
     {
-        //roleId_ = other.roleId_;
-        //skillId_ = other.skillId_;
-        return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+        int curlv = 1;//TODO：get current skill lv
+        //int curtimes = 0;
+        int maxlv = 1;
+        List<OneSkillEffect> desc = [];
+        List<OneSkillEffect> descpre = [];
+        if (request.SkillId == 0 || request.RoleId == 0)
         {
-        Code = 0,
-        IsConditionFinish = true,
-
-        });
+            return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+            {
+                Code = (int)ErrorCode.ErrSkillInfoParamError
+            });
+        }
+        else
+        {
+            foreach (RoleSkillConfig skillConfig in _configManager.Enumerate<RoleSkillConfig>())
+            {
+                if (request.SkillId == skillConfig.Id)
+                {
+                    maxlv = skillConfig.MaxSkillLevel;
+                    foreach (RoleSkilldescConfig skilldescConfig in _configManager.Enumerate<RoleSkilldescConfig>())
+                    {
+                        if (skillConfig.SkillGroupId == skilldescConfig.SkillLevelGroupId)
+                        {
+                            OneSkillEffect se = new() { Id = skilldescConfig.Id, Desc = { skilldescConfig.SkillDetailNum[0].ArrayString[curlv - 1] } };
+                            descpre.Add(se);
+                            OneSkillEffect see = new() { Id = skilldescConfig.Id, Desc = { skilldescConfig.SkillDetailNum[0].ArrayString[curlv] } };
+                            desc.Add(see);
+                        }
+                    }
+                    break;
+                }
+            }
+            return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+            {
+                Code = 0,
+                IsConditionFinish = true,
+                SkillEffectList = { new SkillEffect { Level = curlv, EffectDescList = { desc } } },
+                PreSkillEffectList = { new SkillEffect { Level = curlv - 1, EffectDescList = { descpre } } },
+            });
+        }
     }
 
 
@@ -207,7 +260,7 @@ internal class RoleController : Controller
         return Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse
         {
             FavorList = { _modelManager.Favor.FavorList }
-        }) ;
+        });
     }
 
     [NetEvent(MessageId.ResonantChainUnlockRequest)]
@@ -240,7 +293,7 @@ internal class RoleController : Controller
         });
     }
 
-    private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
+    public static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {
         List<ArrayIntInt> baseProp = [];
         if (config == null) return baseProp;
