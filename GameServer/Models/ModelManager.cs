@@ -44,6 +44,7 @@ internal class ModelManager
     public LivenessModel Liveness { get; } = new();
     public PayShopModel PayShop { get; } = new();
     public PropertyModel PropertyModel { get; } = new();
+    public SkillModel SkillModel { get; } = new();
 
 
 }

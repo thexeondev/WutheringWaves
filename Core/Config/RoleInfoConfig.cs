@@ -111,3 +111,19 @@ public class SkillDetailNum
 {
     public List<string> ArrayString { get; set; } = [];
 }
+[ConfigCollection("skillTree/skilltree.json")]
+public class RoleSkillTreeConfig : IConfig
+{
+    public ConfigType Type => ConfigType.Roleskilltree;
+    public int Identifier => Id;
+ 
+    public int Id { get; set; }
+    public int NodeIndex { get; set; }
+    public int NodeGroup { get; set; }
+    public List<int> ParentNodes { get; set; } = [];
+    public int NodeType { get; set; }
+    public int Coordinate { get; set; }
+    public List<int> Condition { get; set; } = [];
+    public int SkillId { get; set; }
+
+}

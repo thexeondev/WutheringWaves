@@ -5,6 +5,8 @@ using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
+using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using Protocol;
 
 
@@ -35,12 +37,30 @@ internal class RoleController : Controller
 
     [GameEvent(GameEventType.DebugUnlockAllRoles)]
     public void UnlockAllRoles(ConfigManager configManager)
-    {//now lv90 and breakthrough 6
+    {//now lv90 , breakthrough 6 , ResonantChain 6,skilllv 10
         foreach (RoleInfoConfig roleConfig in configManager.Enumerate<RoleInfoConfig>())
         {
-            roleInfo role = _modelManager.Roles.Create(roleConfig.Id);
+            _modelManager.SkillModel.ClearSkills();
+            foreach (RoleSkillConfig RoleSkillConfig in _configManager.Enumerate<RoleSkillConfig>())
+            {
+                if (RoleSkillConfig.SkillGroupId == roleConfig.Id)
+                {
+                    _modelManager.SkillModel.Addskill(RoleSkillConfig.Id, RoleSkillConfig.MaxSkillLevel);
+                }
+            }
+            foreach (RoleSkillTreeConfig TreeConfig in _configManager.Enumerate<RoleSkillTreeConfig>())
+            {
+                if (TreeConfig.NodeGroup == roleConfig.Id)
+                {
+                    _modelManager.SkillModel.AddSkillNode(TreeConfig.Id,true, TreeConfig.SkillId);
+                }
+            }
+            roleInfo role = _modelManager.Roles.DebugCreate(roleConfig.Id);
+
             role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
-            ApplyLvGrowthProperties(role);
+            role.Skills.AddRange(_modelManager.SkillModel.SkillsList);
+            role.SkillNodeState.AddRange(_modelManager.SkillModel.SkillNodesList);
+            role.ApplyLvGrowthProperties(_configManager);
             WeaponItem weapon = _modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
             weapon.RoleId = role.RoleId;
 
@@ -73,7 +93,7 @@ internal class RoleController : Controller
 
 
     [NetEvent(MessageId.RoleLevelUpViewRequest)]
-    public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request, CreatureController creatureController*/)
+    public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request*/)
     {
 
         //request.ItemList;
@@ -81,14 +101,14 @@ internal class RoleController : Controller
         return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
         {
             Code = 0,
-            Level = 90,
-            Exp = 99,
-            AddExp = 99,
-            LevelExpInfo = { new ArrayIntInt { } },
-            FinalProp = { new ArrayIntDouble { } },
-            CostList = { new ArrayIntInt { } },
-            OverflowList = { new ArrayIntInt { } },
-            ItemList = { new ArrayIntInt { } },
+            //Level = 90,
+            //Exp = 99,
+            //AddExp = 99,
+            //LevelExpInfo = { new ArrayIntInt { } },
+            //FinalProp = { new ArrayIntDouble { } },
+            //CostList = { new ArrayIntInt { } },
+            //OverflowList = { new ArrayIntInt { } },
+            //ItemList = { new ArrayIntInt { } },
 
         });
 
@@ -96,7 +116,7 @@ internal class RoleController : Controller
 
 
     [NetEvent(MessageId.PbUpLevelRoleRequest)]
-    public RpcResult/*async Task<RpcResult>*/ OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request)
+    public RpcResult OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request)
     {
         //    //roleId_ = other.roleId_;
         //    //itemList_ = other.itemList_.Clone();
@@ -107,48 +127,13 @@ internal class RoleController : Controller
         {
             Code = 0,
             RoleId = request.RoleId,
-            Level = 9,
-            Exp = 99,
-            ItemMap = { }
+            //Level = 9,
+            //Exp = 99,
+           // ItemMap = { }
         });
     }
 
-    public void ApplyLvGrowthProperties(roleInfo role)
-    {
-        int level = role.Level;
-        int breach = role.Breakthrough;
-        float LifemaxRatio = 1.0f;
-        float AtkRatio = 1.0f;
-        float DefRatio = 1.0f;
 
-
-        List<ArrayIntInt> baselist = [.. role.BaseProp];
-        if (baselist.Count > 0)
-        {
-            foreach (RolePropertyGrowthConfig GrowthConfig in _configManager.Enumerate<RolePropertyGrowthConfig>())
-            {
-                if (GrowthConfig.Level == level && GrowthConfig.BreachLevel == breach)
-                {
-                    LifemaxRatio = GrowthConfig.LifeMaxRatio / 10000;
-                    AtkRatio = GrowthConfig.AtkRatio / 10000;
-                    DefRatio = GrowthConfig.DefRatio / 10000;
-                }
-            }
-            ArrayIntInt lv = baselist[(int)EAttributeType.Lv - 1];
-            lv.Value = level;
-            ArrayIntInt lifemax = baselist[(int)EAttributeType.LifeMax - 1];
-            lifemax.Value = (int)(lifemax.Value * LifemaxRatio);
-            ArrayIntInt life = baselist[(int)EAttributeType.Life - 1];
-            life.Value = lifemax.Value;
-            ArrayIntInt atk = baselist[(int)EAttributeType.Atk - 1];
-            atk.Value = (int)(atk.Value * AtkRatio);
-            ArrayIntInt def = baselist[(int)EAttributeType.Def - 1];
-            def.Value = (int)(def.Value * DefRatio);
-        }
-
-        role.BaseProp.Clear();
-        role.BaseProp.Add(baselist);
-    }
 
     [NetEvent(MessageId.PbUpLevelSkillRequest)]
     public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request)
@@ -180,7 +165,8 @@ internal class RoleController : Controller
     [NetEvent(MessageId.RoleSkillViewRequest)]
     public RpcResult OnRoleSkillViewRequest(RoleSkillViewRequest request)
     {
-        int curlv = 1;//TODO：get current skill lv
+
+        int curlv = 9;//TODO：get current skill lv
         //int curtimes = 0;
         int maxlv = 1;
         List<OneSkillEffect> desc = [];
@@ -223,6 +209,29 @@ internal class RoleController : Controller
     }
 
 
+    [NetEvent(MessageId.RoleActivateSkillRequest)]
+    public RpcResult OnRoleActivateSkillRequest(RoleActivateSkillRequest request)
+    {
+        //roleId_ = other.roleId_;
+        //skillNodeId_ = other.skillNodeId_;
+        if (request.RoleId == 0 || request.SkillNodeId == 0)
+        {
+            return Response(MessageId.RoleActivateSkillResponse, new RoleActivateSkillResponse { Code = (int)ErrorCode.ErrRolSkillNodeTypeActive });
+        }
+        else
+        {
+            return Response(MessageId.RoleActivateSkillResponse, new RoleActivateSkillResponse
+            {
+                Code = 0,
+                RoleId = request.RoleId,
+                SkillInfo = new ArrayIntInt { }
+            });
+        }
+
+
+
+
+    }
     [NetEvent(MessageId.RoleFavorListRequest)]
     public RpcResult OnRoleFavorListRequest() //{ItemType Word = 0, Story = 1, Goods = 2}
     {

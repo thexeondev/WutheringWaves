@@ -27,5 +27,6 @@ public enum ConfigType
     monsterpropertygrowth,
     roleskill,
     roleskillscription,
+    Roleskilltree,
 
 }

@@ -143,7 +143,7 @@ internal class ChatPlayerCommandHandler
             return;
         }
 
-        _roleManager.ApplyLvGrowthProperties(role);
+        role.ApplyLvGrowthProperties(_configManager);
 
         _listener.OnRolePropertiesUpdated(entity.ConfigId, role.BaseProp, role.AddProp);
         entity?.ChangeGameplayAttributes(role.GetAttributeList());
