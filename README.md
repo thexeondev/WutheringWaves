@@ -1,6 +1,8 @@
 # WutheringWaves
-
 Wuthering Waves server emulator (0.9.0)
+
+### OUTDATED
+This project is not maintaned anymore. If you're still interested in Wuthering Waves server emulator, consider using our new one: [Shorekeeper](https://github.com/thexeondev/Shorekeeper)
 
 ## How to run
 - Compile and run SDKServer and GameServer using dotnet8 (Visual Studio 2022 recommended)
