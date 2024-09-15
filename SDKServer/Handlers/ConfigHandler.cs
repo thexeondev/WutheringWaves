@@ -7,22 +7,25 @@ internal static class ConfigHandler
 {
     public static JsonHttpResult<BaseConfigModel> GetBaseConfig()
     {
+
+        var config = ConfigManager.GetConfig()!;
+
         return TypedResults.Json(new BaseConfigModel
         {
             CdnUrl = [
                 new CdnUrlEntry
                 {
-                    Url = "http://127.0.0.1:5500/dev/client/",
+                    Url = $"http://{config.SDKServer.Host}:{config.SDKServer.Port}/dev/client/",
                     Weight = "100"
                 },
                 new CdnUrlEntry
                 {
-                    Url = "http://127.0.0.1:5500/dev/client/",
+                    Url = $"http://{config.SDKServer.Host}:{config.SDKServer.Port}/dev/client/",
                     Weight = "100"
                 }
             ],
             SecondaryUrl = [],
-            GmOpen = false,
+            GmOpen = true,
             PayUrl = "http://114.132.150.182:12281/ReceiptNotify/PayNotify",
             TDCfg = new TDConfig
             {
@@ -40,9 +43,9 @@ internal static class ConfigHandler
             LoginServers = [
                 new LoginServerEntry
                 {
-                    Id = "1074",
-                    Name = "ReversedRooms",
-                    Ip = "127.0.0.1"
+                    Id = "1000",
+                    Name = $"{config.SDKServer.Name}",
+                    Ip = $"{config.SDKServer.Host}"
                 }
             ],
             PrivateServers = new PrivateServersConfig
@@ -52,4 +55,7 @@ internal static class ConfigHandler
             }
         });
     }
+
+
+
 }

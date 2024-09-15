@@ -2,6 +2,7 @@
 using GameServer.Controllers.Combat;
 using GameServer.Models;
 using GameServer.Network;
+using GameServer.Settings;
 using GameServer.Systems.Entity;
 using GameServer.Systems.Event;
 using Microsoft.Extensions.Logging;
@@ -60,12 +61,15 @@ internal class CombatMessageController : Controller
                     combatPackNotify.Data.Add(new CombatReceiveData
                     {
                         CombatResponseData = responseData
+                        
                     });
                 }
             }
         }
 
-        await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
+            await Session.Push(MessageId.CombatReceivePackNotify, combatPackNotify);
+
+        
         return Response(MessageId.CombatSendPackResponse, new CombatSendPackResponse());
     }
 }

@@ -5,18 +5,26 @@ using GameServer.Models;
 using GameServer.Network;
 using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
+using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using Protocol;
+
+
+
+
 
 namespace GameServer.Controllers;
 internal class RoleController : Controller
 {
     private readonly ModelManager _modelManager;
     private readonly IGameActionListener _listener;
+    private readonly ConfigManager _configManager;
 
-    public RoleController(PlayerSession session, ModelManager modelManager, IGameActionListener listener) : base(session)
+    public RoleController(PlayerSession session, ModelManager modelManager, IGameActionListener listener, ConfigManager configManager) : base(session)
     {
         _modelManager = modelManager;
         _listener = listener;
+        _configManager = configManager;
     }
 
     public void ApplyWeaponPropertiesToRole(int roleId, WeaponConfig weaponConfiguration)
@@ -29,12 +37,30 @@ internal class RoleController : Controller
 
     [GameEvent(GameEventType.DebugUnlockAllRoles)]
     public void UnlockAllRoles(ConfigManager configManager)
-    {
+    {//now lv90 , breakthrough 6 , ResonantChain 6,skilllv 10
         foreach (RoleInfoConfig roleConfig in configManager.Enumerate<RoleInfoConfig>())
         {
-            roleInfo role = _modelManager.Roles.Create(roleConfig.Id);
-            role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
+            _modelManager.SkillModel.ClearSkills();
+            foreach (RoleSkillConfig RoleSkillConfig in _configManager.Enumerate<RoleSkillConfig>())
+            {
+                if (RoleSkillConfig.SkillGroupId == roleConfig.Id)
+                {
+                    _modelManager.SkillModel.Addskill(RoleSkillConfig.Id, RoleSkillConfig.MaxSkillLevel);
+                }
+            }
+            foreach (RoleSkillTreeConfig TreeConfig in _configManager.Enumerate<RoleSkillTreeConfig>())
+            {
+                if (TreeConfig.NodeGroup == roleConfig.Id)
+                {
+                    _modelManager.SkillModel.AddSkillNode(TreeConfig.Id,true, TreeConfig.SkillId);
+                }
+            }
+            roleInfo role = _modelManager.Roles.DebugCreate(roleConfig.Id);
 
+            role.BaseProp.AddRange(CreateBasePropList(configManager.GetConfig<BasePropertyConfig>(roleConfig.Id)));
+            role.Skills.AddRange(_modelManager.SkillModel.SkillsList);
+            role.SkillNodeState.AddRange(_modelManager.SkillModel.SkillNodesList);
+            role.ApplyLvGrowthProperties(_configManager);
             WeaponItem weapon = _modelManager.Inventory.AddNewWeapon(roleConfig.InitWeaponItemId);
             weapon.RoleId = role.RoleId;
 
@@ -64,40 +90,219 @@ internal class RoleController : Controller
         });
     }
 
+
+
+    [NetEvent(MessageId.RoleLevelUpViewRequest)]
+    public RpcResult OnRoleLevelUpViewRequest(/*RoleLevelUpViewRequest request*/)
+    {
+
+        //request.ItemList;
+        //request.MaxItemId;
+        return Response(MessageId.RoleLevelUpViewResponse, new RoleLevelUpViewResponse
+        {
+            Code = 0,
+            //Level = 90,
+            //Exp = 99,
+            //AddExp = 99,
+            //LevelExpInfo = { new ArrayIntInt { } },
+            //FinalProp = { new ArrayIntDouble { } },
+            //CostList = { new ArrayIntInt { } },
+            //OverflowList = { new ArrayIntInt { } },
+            //ItemList = { new ArrayIntInt { } },
+
+        });
+
+    }
+
+
+    [NetEvent(MessageId.PbUpLevelRoleRequest)]
+    public RpcResult OnPbUpLevelRoleRequest(PbUpLevelRoleRequest request)
+    {
+        //    //roleId_ = other.roleId_;
+        //    //itemList_ = other.itemList_.Clone();
+
+
+        //    await  /*levelup*/ ;
+        return Response(MessageId.PbUpLevelRoleResponse, new PbUpLevelRoleResponse
+        {
+            Code = 0,
+            RoleId = request.RoleId,
+            //Level = 9,
+            //Exp = 99,
+           // ItemMap = { }
+        });
+    }
+
+
+
+    [NetEvent(MessageId.PbUpLevelSkillRequest)]
+    public RpcResult OnPbUpLevelSkillRequest(PbUpLevelSkillRequest request)
+    {
+        //request.SkillId;
+        return Response(MessageId.PbUpLevelSkillResponse, new PbUpLevelSkillResponse
+        {
+            Code = 0,
+            RoleId = request.RoleId,
+            SkillInfo = new ArrayIntInt
+            {
+            }
+        });
+    }
+    [NetEvent(MessageId.RoleSkillLevelUpViewRequest)]
+    public RpcResult OnRoleSkillLevelUpViewRequest(RoleSkillLevelUpViewRequest request)
+    {
+        //roleId_ = other.roleId_;
+        //skillId_ = other.skillId_;
+        return Response(MessageId.PbUpLevelSkillResponse, new RoleSkillLevelUpViewResponse
+        {
+            Code = 0,
+            SkillEffectList = { new SkillEffect { Level = 1, EffectDescList = { new OneSkillEffect { Id = 1, Desc = { "" } } } } },
+            CostList = { new ArrayIntInt { } }
+
+        });
+    }
+
+    [NetEvent(MessageId.RoleSkillViewRequest)]
+    public RpcResult OnRoleSkillViewRequest(RoleSkillViewRequest request)
+    {
+
+        int curlv = 9;//TODO：get current skill lv
+        //int curtimes = 0;
+        int maxlv = 1;
+        List<OneSkillEffect> desc = [];
+        List<OneSkillEffect> descpre = [];
+        if (request.SkillId == 0 || request.RoleId == 0)
+        {
+            return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+            {
+                Code = (int)ErrorCode.ErrSkillInfoParamError
+            });
+        }
+        else
+        {
+            foreach (RoleSkillConfig skillConfig in _configManager.Enumerate<RoleSkillConfig>())
+            {
+                if (request.SkillId == skillConfig.Id)
+                {
+                    maxlv = skillConfig.MaxSkillLevel;
+                    foreach (RoleSkilldescConfig skilldescConfig in _configManager.Enumerate<RoleSkilldescConfig>())
+                    {
+                        if (skillConfig.SkillGroupId == skilldescConfig.SkillLevelGroupId)
+                        {
+                            OneSkillEffect se = new() { Id = skilldescConfig.Id, Desc = { skilldescConfig.SkillDetailNum[0].ArrayString[curlv - 1] } };
+                            descpre.Add(se);
+                            OneSkillEffect see = new() { Id = skilldescConfig.Id, Desc = { skilldescConfig.SkillDetailNum[0].ArrayString[curlv] } };
+                            desc.Add(see);
+                        }
+                    }
+                    break;
+                }
+            }
+            return Response(MessageId.RoleSkillViewResponse, new RoleSkillViewResponse
+            {
+                Code = 0,
+                IsConditionFinish = true,
+                SkillEffectList = { new SkillEffect { Level = curlv, EffectDescList = { desc } } },
+                PreSkillEffectList = { new SkillEffect { Level = curlv - 1, EffectDescList = { descpre } } },
+            });
+        }
+    }
+
+
+    [NetEvent(MessageId.RoleActivateSkillRequest)]
+    public RpcResult OnRoleActivateSkillRequest(RoleActivateSkillRequest request)
+    {
+        //roleId_ = other.roleId_;
+        //skillNodeId_ = other.skillNodeId_;
+        if (request.RoleId == 0 || request.SkillNodeId == 0)
+        {
+            return Response(MessageId.RoleActivateSkillResponse, new RoleActivateSkillResponse { Code = (int)ErrorCode.ErrRolSkillNodeTypeActive });
+        }
+        else
+        {
+            return Response(MessageId.RoleActivateSkillResponse, new RoleActivateSkillResponse
+            {
+                Code = 0,
+                RoleId = request.RoleId,
+                SkillInfo = new ArrayIntInt { }
+            });
+        }
+
+
+
+
+    }
     [NetEvent(MessageId.RoleFavorListRequest)]
-    public RpcResult OnRoleFavorListRequest() => Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse());
+    public RpcResult OnRoleFavorListRequest() //{ItemType Word = 0, Story = 1, Goods = 2}
+    {
+        _modelManager.Favor.FavorList.Clear();
+        foreach (RoleInfoConfig roleConfig in _configManager.Enumerate<RoleInfoConfig>())
+        {
+            if (roleConfig.RoleType == 1)
+            {
+                foreach (FavorWordConfig favorWord in _configManager.Enumerate<FavorWordConfig>())
+                {
+                    if (favorWord.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorWord.Id, 0);
+                    }
+                }
+                foreach (FavorStoryConfig favorStory in _configManager.Enumerate<FavorStoryConfig>())
+                {
+                    if (favorStory.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorStory.Id, 1);
+                    }
+                }
+                foreach (FavorGoodsConfig favorGoods in _configManager.Enumerate<FavorGoodsConfig>())
+                {
+                    if (favorGoods.RoleId == roleConfig.Id)
+                    {
+                        _modelManager.Favor.AddFavor(favorGoods.Id, 2);
+                    }
+                }
+                _modelManager.Favor.AddFavorRole(roleConfig.Id, _modelManager.Favor.FavorWords, _modelManager.Favor.FavorStory, _modelManager.Favor.FavorGoods);
+                _modelManager.Favor.CleanFavor();
+            }
+            _modelManager.Favor.CleanFavor(); //the code is shit because there is a problem with parsing information in a json file, I do not know how to optimize it. #tapochka
+        }
+        return Response(MessageId.RoleFavorListResponse, new RoleFavorListResponse
+        {
+            FavorList = { _modelManager.Favor.FavorList }
+        });
+    }
 
     [NetEvent(MessageId.ResonantChainUnlockRequest)]
     public RpcResult OnResonantChainUnlockRequest(ResonantChainUnlockRequest request, ModelManager modelManager, ConfigManager configManager)
     {
         roleInfo? role = modelManager.Roles.Roles.Find(r => r.RoleId == request.RoleId)!;
-    
+
         if (role != null)
         {
             RoleInfoConfig roleConfig = configManager.GetConfig<RoleInfoConfig>(request.RoleId)!;
-    
+
             int resonantChainGroupId = roleConfig.ResonantChainGroupId;
-    
+
             // Todo: add buff by _resonantChainGroupId
-    
+
             int curr = role.ResonantChainGroupIndex;
             int next = Math.Min(curr + 1, 6);
             role.ResonantChainGroupIndex = next;
-    
+
             return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
             {
                 RoleId = request.RoleId,
                 ResonantChainGroupIndex = next
             });
         }
-    
+
         return Response(MessageId.ResonantChainUnlockResponse, new ResonantChainUnlockResponse
         {
             ErrCode = (int)ErrorCode.ErrRoleResonNotActive
         });
     }
 
-    private static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
+    public static List<ArrayIntInt> CreateBasePropList(BasePropertyConfig? config)
     {
         List<ArrayIntInt> baseProp = [];
         if (config == null) return baseProp;
@@ -241,4 +446,12 @@ internal class RoleController : Controller
 
         return baseProp;
     }
+
+
+
+
+
+
+
+
 }

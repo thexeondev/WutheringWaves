@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using GameServer.Controllers.Attributes;
 using GameServer.Extensions.Logic;
 using GameServer.Models;
@@ -10,6 +10,8 @@ using GameServer.Systems.Event;
 using GameServer.Systems.Notify;
 using Microsoft.Extensions.Options;
 using Protocol;
+
+
 
 namespace GameServer.Controllers;
 internal class CreatureController : Controller
@@ -98,6 +100,9 @@ internal class CreatureController : Controller
     public void OnPlayerPositionChanged()
     {
         _modelManager.Player.Position.MergeFrom(GetPlayerEntity()!.Pos);
+        DBManager.UpdateDB("StartingValues.Position.X", _modelManager.Player.Position.X);
+        DBManager.UpdateDB("StartingValues.Position.Y", _modelManager.Player.Position.Y);
+        DBManager.UpdateDB("StartingValues.Position.Z", _modelManager.Player.Position.Z);
 
         if (_lastDynamicSpawnPos.GetDistance(_modelManager.Player.Position) >= DynamicSpawnPositionDelta)
         {
@@ -222,11 +227,11 @@ internal class CreatureController : Controller
             MaxHp = playerEntity.HealthMax,
             IsControl = playerEntity.Id == _modelManager.Creature.PlayerEntityId,
             RoleId = playerEntity.ConfigId,
-            RoleLevel = 1,
+            RoleLevel = playerEntity.Level,
         });
     }
 
-    private void CreateTeamPlayerEntities()
+    public void CreateTeamPlayerEntities()
     {
         PlayerEntity[] playerEntities = new PlayerEntity[_modelManager.Formation.RoleIds.Length];
 
@@ -236,16 +241,14 @@ internal class CreatureController : Controller
 
             PlayerEntity entity = _entityFactory.CreatePlayer(roleId, _modelManager.Player.Id);
             entity.Pos = _modelManager.Player.Position.Clone();
-            entity.IsCurrentRole = i == 0;
-            
+            entity.IsCurrentRole = i == 0;          
             entity.ComponentSystem.Get<EntityAttributeComponent>().SetAll(_modelManager.Roles.GetRoleById(roleId)!.GetAttributeList());
-
             CreateConcomitants(entity);
             entity.WeaponId = _modelManager.Inventory.GetEquippedWeapon(roleId)?.Id ?? 0;
 
             if (i == 0) _modelManager.Creature.PlayerEntityId = entity.Id;
 
-            if (_gameplayFeatures.UnlimitedEnergy)
+            if (_gameplayFeatures.UnlimitedEnergy )
             {
                 EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
                 attr.SetAttribute(EAttributeType.EnergyMax, 0);
@@ -255,13 +258,19 @@ internal class CreatureController : Controller
                 attr.SetAttribute(EAttributeType.SpecialEnergy4Max, 0);
             }
 
+            if (_gameplayFeatures.UnlimitedCD )
+            {
+                EntityAttributeComponent attr = entity.ComponentSystem.Get<EntityAttributeComponent>();
+                attr.SetAttribute(EAttributeType.CdReduse, 0);
+            }
+
             playerEntities[i] = entity;
         }
 
         _entitySystem.Add(playerEntities);
     }
 
-    private void CreateConcomitants(PlayerEntity entity)
+    public void CreateConcomitants(PlayerEntity entity)
     {
         (int roleId, int summonConfigId) = entity.ConfigId switch
         {
@@ -306,28 +315,52 @@ internal class CreatureController : Controller
     {
         Vector playerPos = _modelManager.Player.Position;
 
-        // Currently only monsters
+        
         IEnumerable<LevelEntityConfig> entitiesToSpawn = _configManager.Enumerate<LevelEntityConfig>()
-        .Where(config => config.MapId == 8 && Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius && Math.Abs(config.Transform[0].Y / 100 - playerPos.Y) < DynamicSpawnRadius &&
-        config.BlueprintType.StartsWith("Monster"));
+            .Where(config => config.MapId == 8 &&
+                             Math.Abs(config.Transform[0].X / 100 - playerPos.X) < DynamicSpawnRadius &&
+                             Math.Abs(config.Transform[0].Y / 100 - playerPos.Y) < DynamicSpawnRadius &&
+                             (config.BlueprintType.StartsWith("Monster") ||
+                              config.BlueprintType.StartsWith("NPC") ||
+                              config.BlueprintType.StartsWith("SimpleNPC") ||
+                              config.BlueprintType.StartsWith("Animal")));
 
-        List<MonsterEntity> spawnMonsters = [];
+        List<EntityBase> spawnEntities = [];
         foreach (LevelEntityConfig levelEntity in entitiesToSpawn)
         {
             if (_entitySystem.HasDynamicEntity(levelEntity.EntityId)) continue;
 
-            MonsterEntity monster = _entityFactory.CreateMonster(levelEntity.EntityId);
-            monster.Pos = new()
+            EntityBase entity;
+
+            
+            if (levelEntity.BlueprintType.StartsWith("Monster"))
+            {
+                entity = _entityFactory.CreateMonster(levelEntity.EntityId);
+                entity.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
+            }
+            else if (levelEntity.BlueprintType.StartsWith("NPC") || levelEntity.BlueprintType.StartsWith("SimpleNPC"))
+            {
+                entity = _entityFactory.CreateNpc(levelEntity.EntityId);
+            }
+            else if (levelEntity.BlueprintType.StartsWith("Animal"))
+            {
+                entity = _entityFactory.CreateAnimal(levelEntity.EntityId);
+            }
+            else
+            {              
+                continue;
+            }
+          
+            entity.Pos = new Vector
             {
                 X = levelEntity.Transform[0].X / 100,
                 Y = levelEntity.Transform[0].Y / 100,
                 Z = levelEntity.Transform[0].Z / 100
             };
 
-            monster.InitProps(_configManager.GetConfig<BasePropertyConfig>(600000100)!);
-            spawnMonsters.Add(monster);
+            spawnEntities.Add(entity);
         }
-
-        _entitySystem.Add(spawnMonsters);
+    
+        _entitySystem.Add(spawnEntities);
     }
 }

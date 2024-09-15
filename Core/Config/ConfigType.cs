@@ -6,5 +6,27 @@ public enum ConfigType
     BaseProperty,
     LevelEntity,
     Blueprint,
-    ItemInfo
+    ItemInfo,
+    FavorGoods,
+    FavorStory,
+    FavorWord,
+    Activity,
+    Achievement,
+    AchievementGroup,
+    BattlePass,
+    BattlePassTask,
+    BattlePassReward,
+    Quest,
+    QuestData,
+    Liveness,//daily_activity
+    Livenesstask,
+    Payshop,
+    Payshopgood,
+    monsterhandbook,//illustrated?
+    rolepropertygrowth,
+    monsterpropertygrowth,
+    roleskill,
+    roleskillscription,
+    Roleskilltree,
+
 }
